@@ -4,7 +4,6 @@ import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { getAdminDb } from "@/lib/firebase-admin";
 import { computePatternVariables, type ReportEntry, type PatternVariables } from "@/lib/report-patterns";
-import { formatReport, type StructuredReport } from "@/lib/report-formatter";
 import { formatCustomTokens } from "@/lib/context-labels";
 
 const SYSTEM_PROMPT = fs.readFileSync(
@@ -40,28 +39,21 @@ function buildUserMessage(
     locale === "ru" ? "Write the entire report in Russian." : "Write the entire report in English.";
 
   return [
-    "Generate a 14-entry report following the Fourteen-Entry Report Structure (Section 7) and the Output Format (Section 12) from your instructions.",
+    "Generate a 14-entry report following the Fourteen-Entry Report Structure (Section 7) and the content guidance in the Output Format (Section 12) from your instructions.",
     languageInstruction,
+    "",
+    "This response streams to the reader word by word as you write it, so write the report as the final text directly — plain paragraphs, not the JSON structure from Section 12.",
+    "Open with the pattern statement as a lead paragraph, no heading.",
+    "For each finding, put its short label in capital letters alone on its own line, then the finding's text on the next line.",
+    "If there is a map story, give it its own paragraph (no heading). Follow with any axis note or distortion flag as plain paragraphs if they apply.",
+    "Close with the something-to-sit-with line by itself.",
+    "Separate every paragraph and labeled finding with a single blank line. Do not use markdown formatting (no #, *, or backticks) and do not wrap anything in JSON.",
     "",
     `Here is this person's check-in data from their most recent ${patterns.entryCount} moments, in chronological order.`,
     "Some moments include an optional \"context\" field with sleep, energy, hunger, activity, social context, and the emotion they logged — apply the Variable-Specific Writing Rules (Section 8) wherever thresholds are met. Moments without a context field simply had none of that logged.",
     "",
     JSON.stringify(payload, null, 2),
-    "",
-    "Respond with only the JSON object described in the Output Format section — no other text.",
   ].join("\n");
-}
-
-function extractJson(text: string): string {
-  const trimmed = text.trim();
-  const fenced = trimmed.match(/^```(?:json)?\s*([\s\S]*?)\s*```$/);
-  if (fenced) return fenced[1];
-  const start = trimmed.indexOf("{");
-  const end = trimmed.lastIndexOf("}");
-  if (start !== -1 && end !== -1 && end > start) {
-    return trimmed.slice(start, end + 1);
-  }
-  return trimmed;
 }
 
 export async function POST(request: NextRequest) {
@@ -116,44 +108,51 @@ export async function POST(request: NextRequest) {
   const patterns = computePatternVariables(entriesChronological);
   const userMessage = buildUserMessage(patterns, entriesChronological, locale ?? "en");
 
-  let structured: StructuredReport;
-  try {
-    const anthropic = new Anthropic();
-    const stream = anthropic.messages.stream({
-      model: "claude-sonnet-4-6",
-      max_tokens: 8000,
-      thinking: { type: "adaptive" },
-      output_config: { effort: "medium" },
-      system: SYSTEM_PROMPT,
-      messages: [{ role: "user", content: userMessage }],
-    });
-    const response = await stream.finalMessage();
+  const anthropic = new Anthropic();
+  const stream = anthropic.messages.stream({
+    model: "claude-sonnet-4-6",
+    max_tokens: 8000,
+    thinking: { type: "adaptive" },
+    output_config: { effort: "medium" },
+    system: SYSTEM_PROMPT,
+    messages: [{ role: "user", content: userMessage }],
+  });
 
-    if (response.stop_reason === "refusal") {
-      return NextResponse.json({ error: "The report could not be generated." }, { status: 502 });
-    }
+  const encoder = new TextEncoder();
+  let sentAny = false;
 
-    const textBlock = response.content.find((block) => block.type === "text");
-    if (!textBlock || textBlock.type !== "text") {
-      console.error(
-        "Claude returned no text block. stop_reason:",
-        response.stop_reason,
-        "content types:",
-        response.content.map((b) => b.type),
-      );
-      return NextResponse.json({ error: "Claude returned no report text." }, { status: 502 });
-    }
+  const readable = new ReadableStream({
+    async start(controller) {
+      try {
+        for await (const event of stream) {
+          if (event.type === "content_block_delta" && event.delta.type === "text_delta") {
+            sentAny = true;
+            controller.enqueue(encoder.encode(event.delta.text));
+          }
+        }
 
-    try {
-      structured = JSON.parse(extractJson(textBlock.text));
-    } catch (parseError) {
-      console.error("Failed to parse report JSON. Raw text:", textBlock.text);
-      throw parseError;
-    }
-  } catch (error) {
-    console.error("Report generation via Claude failed", error);
-    return NextResponse.json({ error: "Could not generate report." }, { status: 500 });
-  }
+        if (!sentAny) {
+          const finalMessage = await stream.finalMessage();
+          console.error(
+            "Claude produced no text output. stop_reason:",
+            finalMessage.stop_reason,
+            "content types:",
+            finalMessage.content.map((b) => b.type),
+          );
+          controller.enqueue(encoder.encode("Could not generate a report. Try again."));
+        }
+      } catch (error) {
+        console.error("Report generation via Claude failed", error);
+        if (!sentAny) {
+          controller.enqueue(encoder.encode("Could not generate a report. Try again."));
+        }
+      } finally {
+        controller.close();
+      }
+    },
+  });
 
-  return NextResponse.json({ report: formatReport(structured) });
+  return new Response(readable, {
+    headers: { "Content-Type": "text/plain; charset=utf-8" },
+  });
 }

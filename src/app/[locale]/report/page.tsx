@@ -106,16 +106,30 @@ export default function ReportPage() {
   async function fetchReport() {
     if (!user) return;
     setReportStatus("loading");
+    setReportText(null);
     try {
       const res = await fetch("/api/report", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId: user.uid, locale }),
       });
-      if (!res.ok) throw new Error("Report request failed");
-      const data = await res.json();
-      setReportText(data.report);
-      setReportStatus("loaded");
+      if (!res.ok || !res.body) throw new Error("Report request failed");
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let text = "";
+      let firstChunk = true;
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        text += decoder.decode(value, { stream: true });
+        if (firstChunk) {
+          setReportStatus("loaded");
+          firstChunk = false;
+        }
+        setReportText(text);
+      }
+      if (!text) throw new Error("Empty report");
     } catch {
       setReportStatus("error");
     }
