@@ -1,0 +1,63 @@
+.emoArea {
+  padding: 0 22px;
+  margin-bottom: 20px;
+}
+
+.emoQ {
+  font-size: 16px;
+  font-weight: 500;
+  color: #2a2825;
+  margin-bottom: 4px;
+}
+
+.emoHint {
+  font-size: 13px;
+  color: #b0adb8;
+  margin-bottom: 12px;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  padding: 9px 16px;
+  border: 1px solid #d8d5ce;
+  border-radius: 24px;
+  font-size: 14px;
+  color: #6a6870;
+  cursor: pointer;
+  background: #fff;
+  min-height: 46px;
+  display: flex;
+  align-items: center;
+}
+
+.chipSelected {
+  background: #2a2825;
+  color: #f0eeec;
+  border-color: #2a2825;
+}
+
+.chipOther {
+  border-style: dashed;
+  color: #b0adb8;
+}
+
+.otherInput {
+  width: 100%;
+  margin-top: 10px;
+  padding: 12px 16px;
+  border: 1px solid #d8d5ce;
+  border-radius: 14px;
+  font-size: 15px;
+  color: #2a2825;
+  background: #fff;
+  outline: none;
+}
+
+.otherInput:focus {
+  border-color: #6b5fd0;
+}

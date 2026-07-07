@@ -1,0 +1,190 @@
+.lightScreen {
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: #f7f6f4;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+.maxW {
+  width: 100%;
+  max-width: 430px;
+  margin: 0 auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  padding: calc(env(safe-area-inset-top, 0px) + 18px) 22px 0;
+}
+
+.navBack {
+  width: 36px;
+  flex-shrink: 0;
+  font-size: 28px;
+  color: #bbb9b2;
+  cursor: pointer;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  min-height: 48px;
+  text-decoration: none;
+}
+
+.navTitle {
+  flex: 1;
+  text-align: center;
+  font-size: 16px;
+  color: #2a2825;
+}
+
+.navSp {
+  width: 36px;
+  flex-shrink: 0;
+}
+
+.catLbl {
+  text-align: center;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  margin: 22px 0 12px;
+}
+
+.catS {
+  color: #c07040;
+}
+
+.catY {
+  color: #6b5fd0;
+}
+
+.qWrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 28px;
+}
+
+.question {
+  font-size: 23px;
+  color: #1a1815;
+  text-align: center;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+.sliderArea {
+  padding: 0 24px;
+}
+
+.liveWord {
+  text-align: center;
+  font-size: 15px;
+  font-weight: 600;
+  min-height: 40px;
+  margin: 20px 0 18px;
+  transition: font-size 0.1s ease, opacity 0.1s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lwS {
+  color: #c07040;
+}
+
+.lwY {
+  color: #6b5fd0;
+}
+
+.range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 3px;
+  border-radius: 2px;
+  background: #ccc9c2;
+  outline: none;
+  cursor: pointer;
+}
+
+.range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #f0eeec;
+  border: 1.5px solid #b8b5ae;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.14);
+  cursor: pointer;
+}
+
+.endLabels {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 24px;
+  margin-top: 14px;
+}
+
+.el {
+  max-width: 140px;
+}
+
+.r {
+  text-align: right;
+}
+
+.elMain {
+  font-size: 15px;
+  font-weight: 600;
+  color: #2a2825;
+  margin-bottom: 4px;
+}
+
+.elSub {
+  font-size: 12px;
+  color: #b0adb8;
+  line-height: 1.55;
+}
+
+.progDots {
+  display: flex;
+  gap: 7px;
+  justify-content: center;
+  margin: 22px 0 18px;
+}
+
+.pdot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #d0cdc8;
+}
+
+.on {
+  background: #2a2825;
+}
+
+.btnMain {
+  display: block;
+  margin: 0 22px;
+  padding: 17px;
+  background: #2a2825;
+  border: none;
+  border-radius: 14px;
+  color: #f0eeec;
+  font-size: 17px;
+  cursor: pointer;
+  text-align: center;
+  width: calc(100% - 44px);
+}
+
+.pb {
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 28px);
+}

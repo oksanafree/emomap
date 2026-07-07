@@ -1,0 +1,88 @@
+.ctxHint {
+  font-size: 14px;
+  color: #c0bdb8;
+  text-align: center;
+  padding: 12px 24px 0;
+}
+
+.ctxScroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 22px 8px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.ctxSec {
+  margin-bottom: 20px;
+}
+
+.ctxLbl {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: #b0adb8;
+  margin-bottom: 12px;
+}
+
+.ctxQ {
+  font-size: 14px;
+  color: #6a6870;
+  margin-bottom: 8px;
+}
+
+.ctxQHint {
+  color: #c8c4be;
+  font-size: 11px;
+}
+
+.ctxChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.cc {
+  padding: 8px 14px;
+  border: 1px solid #d8d5ce;
+  border-radius: 24px;
+  font-size: 13px;
+  color: #6a6870;
+  cursor: pointer;
+  background: #fff;
+  min-height: 46px;
+  display: flex;
+  align-items: center;
+}
+
+.ccSelected {
+  background: #2a2825;
+  color: #f0eeec;
+  border-color: #2a2825;
+}
+
+.ctxDiv {
+  height: 1px;
+  background: #e8e5e0;
+  margin: 4px 0 20px;
+}
+
+.ctxGap {
+  height: 14px;
+}
+
+.saveWrap {
+  padding: 8px 22px calc(env(safe-area-inset-bottom, 0px) + 28px);
+  flex-shrink: 0;
+}
+
+.btnSave {
+  width: 100%;
+  padding: 17px;
+  background: #2a2825;
+  border: none;
+  border-radius: 14px;
+  color: #f0eeec;
+  font-size: 17px;
+  cursor: pointer;
+  text-align: center;
+}

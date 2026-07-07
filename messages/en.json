@@ -1,0 +1,175 @@
+{
+  "HomePage": {
+    "title": "Welcome to Emomapp",
+    "description": "Track and understand your emotions.",
+    "switchLocale": "Русский"
+  },
+  "Onboarding": {
+    "slogan": "Know your reality",
+    "body": "A two-question check-in that maps how you're reading yourself and the world.",
+    "cta": "Let's start",
+    "quadrants": {
+      "protecting": "Protecting",
+      "building": "Building",
+      "enduring": "Enduring",
+      "receiving": "Receiving"
+    }
+  },
+  "World": {
+    "navTitle": "Emomapp",
+    "category": "SITUATION",
+    "question": "How is your life treating you now?",
+    "liveWord": {
+      "ambiguous": "Ambiguous",
+      "favorable": "Favorable",
+      "against": "Against me"
+    },
+    "endLabels": {
+      "leftMain": "Unfavorable",
+      "leftSub": "Creating friction<br></br>Pushing back",
+      "rightMain": "Giving",
+      "rightSub": "Easing things<br></br>Opening doors"
+    },
+    "next": "Next →"
+  },
+  "Self": {
+    "navTitle": "Emomapp",
+    "category": "YOU",
+    "question": "How are you experiencing YOURSELF right now?",
+    "liveWord": {
+      "ambiguous": "Ambiguous",
+      "active": "I direct",
+      "passive": "I follow"
+    },
+    "endLabels": {
+      "leftMain": "Going along",
+      "leftSub": "Watching things unfold<br></br>Receiving",
+      "rightMain": "Taking initiative",
+      "rightSub": "Steering things<br></br>Shaping what happens"
+    },
+    "cta": "See my map →"
+  },
+  "Map": {
+    "navTitle": "Emomapp",
+    "quadrants": {
+      "protecting": "Protecting",
+      "building": "Building",
+      "enduring": "Enduring",
+      "receiving": "Receiving"
+    },
+    "youAreHere": "You are here:",
+    "states": {
+      "Building": { "name": "Building", "sub": "World favorable · You in charge" },
+      "Protecting": { "name": "Protecting", "sub": "World pressuring · You directed" },
+      "Receiving": { "name": "Receiving", "sub": "World open · You flowing with it" },
+      "Enduring": { "name": "Enduring", "sub": "World against you · Direction low" },
+      "Opening": { "name": "Opening", "sub": "World open · Your role still forming" },
+      "Bracing": { "name": "Bracing", "sub": "World pressuring · Your response forming" },
+      "Seeking": { "name": "Seeking", "sub": "You directed · World still unclear" },
+      "Drifting": { "name": "Drifting", "sub": "You flowing · World still unclear" },
+      "Still": { "name": "Still", "sub": "Both still forming" }
+    },
+    "continue": "Continue →",
+    "emotionQuestion": "What are you feeling right now?",
+    "emotionHint": "Tap one if it fits — or continue",
+    "emotionOther": "Something else...",
+    "emotionPlaceholder": "Describe what you're feeling...",
+    "emotions": {
+      "Building": ["Inspired", "Hopeful", "Confident", "Energized", "Proud", "Joyful"],
+      "Protecting": ["Frustrated", "Determined", "Alert", "Defensive", "Irritated", "Impatient"],
+      "Receiving": ["At ease", "Nostalgic", "Trusting", "Peaceful", "Relaxed", "Receptive"],
+      "Enduring": ["Anxious", "Exhausted", "Sad", "Numb", "Hopeless", "Resigned"],
+      "Opening": ["Curious", "Expectant", "Hopeful", "Tentative"],
+      "Bracing": ["Wary", "Tense", "Alert", "Uncertain"],
+      "Seeking": ["Restless", "Driven", "Focused", "Unsure"],
+      "Drifting": ["Floating", "Calm", "Disconnected", "Unclear"],
+      "Still": ["Mixed", "Uncertain", "Peaceful", "Numb"]
+    }
+  },
+  "Context": {
+    "navTitle": "Add context",
+    "hint": "Optional — skip any question",
+    "whatWho": "WHAT & WHO",
+    "activityQuestion": "What were you doing recently?",
+    "activityHint": "select all that apply",
+    "activities": {
+      "work": "Work / Study",
+      "family": "Family",
+      "socializing": "Socializing",
+      "resting": "Resting",
+      "exercise": "Exercise",
+      "leisure": "Leisure",
+      "scrolling": "Scrolling",
+      "other": "Other"
+    },
+    "socialQuestion": "Who were you with?",
+    "social": {
+      "alone": "Alone",
+      "withOthers": "With others",
+      "online": "Online"
+    },
+    "bodyState": "BODY STATE",
+    "sleepQuestion": "Sleep last night?",
+    "sleep": {
+      "under6": "Under 6h",
+      "from6to7": "6–7h",
+      "from7to8": "7–8h",
+      "over8": "8h+"
+    },
+    "energyQuestion": "Energy right now?",
+    "energy": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High"
+    },
+    "hungerQuestion": "Hunger?",
+    "hunger": {
+      "notHungry": "Not hungry",
+      "justAte": "Just ate",
+      "hungry": "Hungry",
+      "veryHungry": "Very hungry"
+    },
+    "save": "Save entry →",
+    "saveError": "Could not save. Try again."
+  },
+  "History": {
+    "title": "Your trail",
+    "newMoment": "+ New moment",
+    "entriesCount": "{count, plural, one {# entry} other {# entries}}",
+    "daysCount": "{count, plural, one {# day} other {# days}}",
+    "progressToInsight": "{count} of 5 · {remaining} more to your first insight",
+    "recent": "RECENT",
+    "loading": "Loading…",
+    "empty": "No entries yet.",
+    "error": "Could not load your entries.",
+    "seeReport": "See your report →"
+  },
+  "Insight": {
+    "headline": "A pattern is starting to form",
+    "cta": "See your trail →",
+    "descriptions": {
+      "Building": "Moving forward with support behind you",
+      "Protecting": "Holding your ground in a resistant world",
+      "Receiving": "Open and carried by what's around you",
+      "Enduring": "Pushing through with little to hold onto",
+      "Opening": "The world is clear but you're finding your pace",
+      "Bracing": "Steadying yourself before what's coming",
+      "Seeking": "Looking for footing in uncertain ground",
+      "Drifting": "Floating without clear direction",
+      "Still": "Quiet and centered"
+    }
+  },
+  "Report": {
+    "navTitle": "Emomapp",
+    "headline": "A trail has formed.",
+    "subtext": "Your check-ins are starting to show how you've been reading yourself and the world.",
+    "checkinsCount": "{count, plural, one {# check-in} other {# check-ins}}",
+    "reveal": "See what this reveals →",
+    "placeholder": "Your AI report will appear here.",
+    "loading": "Loading…",
+    "empty": "No entries yet.",
+    "generating": "Reading your trail…",
+    "reportError": "Could not generate your report. Try again.",
+    "retry": "Try again →"
+  }
+}

@@ -1,36 +1,47 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Emomapp
 
-## Getting Started
+Next.js 14 (App Router) app with EN/RU i18n via [next-intl](https://next-intl.dev), and Firebase (Firestore + Anonymous Auth).
 
-First, run the development server:
+## Getting started
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+1. Copy `.env.local.example` to `.env.local` and fill in your Firebase project's web config:
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+   ```bash
+   cp .env.local.example .env.local
+   ```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+2. Install dependencies and run the dev server:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+   ```bash
+   npm install
+   npm run dev
+   ```
 
-## Learn More
+3. Open [http://localhost:3000](http://localhost:3000) — you'll be redirected to `/en` (or `/ru` based on browser locale).
 
-To learn more about Next.js, take a look at the following resources:
+## Project structure
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `src/app/[locale]/` — localized routes (App Router), root layout wraps pages in `NextIntlClientProvider`
+- `src/i18n/routing.ts` — supported locales (`en`, `ru`) and default locale
+- `src/i18n/navigation.ts` — locale-aware `Link`, `useRouter`, `usePathname`
+- `src/i18n/request.ts` — loads messages for the active locale
+- `src/middleware.ts` — next-intl middleware for locale detection/routing
+- `messages/en.json`, `messages/ru.json` — translation strings
+- `src/lib/firebase.ts` — Firebase app/Firestore/Auth initialization
+- `src/lib/use-anonymous-auth.ts` — hook that signs the user in anonymously and exposes the current user
+- `firestore.rules` / `firebase.json` / `firestore.indexes.json` — Firestore config (not deployed yet)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Firebase setup
 
-## Deploy on Vercel
+This project is **not deployed** yet. To connect it to a real Firebase project:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Create a project at [console.firebase.google.com](https://console.firebase.google.com).
+2. Enable **Firestore** and the **Anonymous** sign-in provider under Authentication.
+3. Register a Web App and copy the config values into `.env.local`.
+4. When ready to deploy rules: `firebase deploy --only firestore:rules` (requires the Firebase CLI and `firebase login`).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Learn more
+
+- [Next.js Documentation](https://nextjs.org/docs)
+- [next-intl Documentation](https://next-intl.dev)
+- [Firebase Documentation](https://firebase.google.com/docs)

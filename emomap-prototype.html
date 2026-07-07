@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#080914">
+<title>EmoMap</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;background:#080914;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;overflow:hidden;}
+.screen{display:none;position:fixed;top:0;left:0;right:0;bottom:0;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.screen.active{display:flex;flex-direction:column;}
+.max-w{width:100%;max-width:430px;margin:0 auto;flex:1;display:flex;flex-direction:column;}
+
+/* LANDING */
+#s-land{background:#080914;}
+.wordmark{font-size:12px;letter-spacing:0.22em;color:rgba(255,255,255,0.30);font-weight:600;text-align:center;padding-top:calc(env(safe-area-inset-top,0px) + 28px);}
+.land-inner{flex:1;display:flex;flex-direction:column;align-items:center;padding:32px 32px 0;}
+.land-map{position:relative;width:220px;height:220px;margin:0 auto 48px;}
+.land-map svg{position:absolute;top:0;left:0;width:100%;height:100%;}
+.hero{font-size:30px;color:rgba(255,255,255,0.92);text-align:center;line-height:1.4;font-weight:400;margin-bottom:16px;}
+.hero-sub{font-size:16px;color:rgba(255,255,255,0.35);text-align:center;line-height:1.7;}
+.land-bottom{padding:28px 24px calc(env(safe-area-inset-bottom,0px) + 36px);}
+.prog-row{display:flex;gap:7px;justify-content:center;margin-bottom:22px;}
+.pd{width:7px;height:7px;border-radius:50%;}
+.btn-cta{width:100%;padding:18px;background:#4a3fa0;border:none;border-radius:16px;color:#fff;font-size:17px;cursor:pointer;}
+
+/* LIGHT SCREENS */
+.light-screen{background:#f7f6f4;}
+.nav{display:flex;align-items:center;padding:calc(env(safe-area-inset-top,0px) + 18px) 22px 0;}
+.nav-back{width:36px;flex-shrink:0;font-size:28px;color:#bbb9b2;cursor:pointer;line-height:1;display:flex;align-items:center;min-height:48px;}
+.nav-title{flex:1;text-align:center;font-size:16px;color:#2a2825;}
+.nav-sp{width:36px;flex-shrink:0;}
+.cat-lbl{text-align:center;font-size:15px;font-weight:700;letter-spacing:0.18em;margin:22px 0 12px;}
+.cat-s{color:#c07040;}
+.cat-y{color:#6b5fd0;}
+.q-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:0 28px;}
+.question{font-size:23px;color:#1a1815;text-align:center;line-height:1.5;font-weight:400;}
+.slider-area{padding:0 24px;}
+.live-word{text-align:center;font-size:15px;font-weight:600;min-height:40px;margin:20px 0 18px;transition:font-size 0.1s ease,opacity 0.1s ease;display:flex;align-items:center;justify-content:center;}
+.lw-s{color:#c07040;}
+.lw-y{color:#6b5fd0;}
+input[type=range]{-webkit-appearance:none;width:100%;height:3px;border-radius:2px;background:#ccc9c2;outline:none;cursor:pointer;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:34px;height:34px;border-radius:50%;background:#f0eeec;border:1.5px solid #b8b5ae;box-shadow:0 2px 8px rgba(0,0,0,0.14);cursor:pointer;}
+.end-labels{display:flex;justify-content:space-between;padding:0 24px;margin-top:14px;}
+.el{max-width:140px;}.el.r{text-align:right;}
+.el-main{font-size:15px;font-weight:600;color:#2a2825;margin-bottom:4px;}
+.el-sub{font-size:12px;color:#b0adb8;line-height:1.55;}
+.prog-dots{display:flex;gap:7px;justify-content:center;margin:22px 0 18px;}
+.pdot{width:7px;height:7px;border-radius:50%;background:#d0cdc8;}
+.pdot.on{background:#2a2825;}
+.btn-main{display:block;margin:0 22px;padding:17px;background:#2a2825;border:none;border-radius:14px;color:#f0eeec;font-size:17px;cursor:pointer;text-align:center;width:calc(100% - 44px);}
+.pb{padding-bottom:calc(env(safe-area-inset-bottom,0px) + 28px);}
+
+/* MAP RESULT */
+#s-result{background:#f7f6f4;}
+.map-wrap{position:relative;width:calc(100% - 32px);max-width:320px;aspect-ratio:1;margin:16px auto 0;border-radius:18px;overflow:hidden;background:#080914;flex-shrink:0;}
+.ax-h{position:absolute;width:100%;height:1px;top:50%;background:rgba(255,255,255,0.55);}
+.ax-v{position:absolute;height:100%;width:1px;left:50%;background:rgba(255,255,255,0.55);}
+.ring{position:absolute;border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%);border:2px solid rgba(255,255,255,0.28);}
+.ql{position:absolute;font-size:9px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:rgba(255,255,255,0.65);}
+.map-svg{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;}
+#mdot{position:absolute;width:16px;height:16px;border-radius:50%;background:#7c6cf0;box-shadow:0 0 14px rgba(124,108,240,0.6);transform:translate(-50%,-50%);transition:left 0.6s ease,top 0.6s ease;z-index:10;}
+.yah-row{display:flex;align-items:baseline;justify-content:center;gap:7px;margin:20px 0 5px;}
+.yah-pre{font-size:15px;color:#b0adb8;}
+.yah-name{font-size:24px;font-weight:700;color:#1a1815;letter-spacing:0.05em;}
+.yah-sub{font-size:13px;color:#b0adb8;text-align:center;padding:0 24px;margin-bottom:24px;}
+
+/* EMOTIONS — separated from map */
+.emo-area{padding:0 22px;margin-bottom:20px;}
+.emo-q{font-size:16px;font-weight:500;color:#2a2825;margin-bottom:4px;}
+.emo-hint{font-size:13px;color:#b0adb8;margin-bottom:12px;}
+.chips{display:flex;flex-wrap:wrap;gap:8px;}
+.chip{padding:9px 16px;border:1px solid #d8d5ce;border-radius:24px;font-size:14px;color:#6a6870;cursor:pointer;background:#fff;min-height:46px;display:flex;align-items:center;}
+.chip.sel{background:#2a2825;color:#f0eeec;border-color:#2a2825;}
+.chip.other{border-style:dashed;color:#b0adb8;}
+.other-input{display:none;width:calc(100% - 0px);margin-top:10px;padding:12px 16px;border:1px solid #d8d5ce;border-radius:14px;font-size:15px;color:#2a2825;background:#fff;outline:none;}
+.other-input:focus{border-color:#6b5fd0;}
+
+/* CONTEXT */
+#s-context{background:#f7f6f4;}
+.ctx-hint{font-size:14px;color:#c0bdb8;text-align:center;padding:12px 24px 0;}
+.ctx-scroll{flex:1;overflow-y:auto;padding:14px 22px 8px;-webkit-overflow-scrolling:touch;}
+.ctx-scroll::-webkit-scrollbar{display:none;}
+.ctx-sec{margin-bottom:20px;}
+.ctx-lbl{font-size:10px;font-weight:700;letter-spacing:0.14em;color:#b0adb8;margin-bottom:12px;}
+.ctx-q{font-size:14px;color:#6a6870;margin-bottom:8px;}
+.ctx-chips{display:flex;flex-wrap:wrap;gap:7px;}
+.cc{padding:8px 14px;border:1px solid #d8d5ce;border-radius:24px;font-size:13px;color:#6a6870;cursor:pointer;background:#fff;min-height:46px;display:flex;align-items:center;}
+.cc.ms,.cc.ss{background:#2a2825;color:#f0eeec;border-color:#2a2825;}
+.ctx-div{height:1px;background:#e8e5e0;margin:4px 0 20px;}
+.ctx-gap{height:14px;}
+.save-wrap{padding:8px 22px calc(env(safe-area-inset-bottom,0px) + 28px);flex-shrink:0;}
+.btn-save{width:100%;padding:17px;background:#2a2825;border:none;border-radius:14px;color:#f0eeec;font-size:17px;cursor:pointer;text-align:center;}
+
+/* HISTORY */
+#s-history{background:#f7f6f4;}
+.hist-hdr{padding:calc(env(safe-area-inset-top,0px) + 18px) 22px 14px;border-bottom:1px solid #e8e5e0;flex-shrink:0;}
+.hist-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
+.hist-title{font-size:24px;font-weight:500;color:#1a1815;}
+.hist-new{padding:9px 18px;background:#2a2825;border:none;border-radius:22px;color:#f0eeec;font-size:14px;cursor:pointer;min-height:46px;}
+.hist-sub{font-size:14px;color:#b0adb8;}
+.hist-scroll{flex:1;overflow-y:auto;padding:16px 20px;-webkit-overflow-scrolling:touch;}
+.hist-scroll::-webkit-scrollbar{display:none;}
+.unlock-r{background:#2a2825;border-radius:16px;padding:18px;margin-bottom:10px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;min-height:68px;}
+.unlock-rt{font-size:15px;font-weight:500;color:#f0eeec;margin-bottom:4px;}
+.unlock-rs{font-size:13px;color:rgba(255,255,255,0.45);}
+.unlock-arr{font-size:22px;color:rgba(255,255,255,0.4);}
+.unlock-l{background:#eeeae4;border:1px dashed #d0cdc8;border-radius:16px;padding:18px;margin-bottom:18px;}
+.unlock-lt{font-size:15px;font-weight:500;color:#9a9890;margin-bottom:7px;}
+.prog-bar{height:3px;background:#d8d5ce;border-radius:2px;overflow:hidden;margin-bottom:5px;}
+.prog-fill{height:100%;background:#9a9890;}
+.unlock-ls{font-size:13px;color:#c0bdb8;}
+.sec-lbl{font-size:11px;font-weight:600;letter-spacing:0.1em;color:#c0bdb8;margin-bottom:12px;}
+.entry-row{display:flex;align-items:flex-start;gap:14px;padding:14px 16px;background:#fff;border:1px solid #e8e5e0;border-radius:14px;margin-bottom:8px;min-height:60px;}
+.entry-dot{width:11px;height:11px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+.entry-body{flex:1;}
+.entry-state{font-size:15px;font-weight:500;color:#2a2825;margin-bottom:3px;}
+.entry-meta{font-size:13px;color:#b0adb8;line-height:1.5;}
+.entry-int{font-size:13px;color:#c0bdb8;flex-shrink:0;margin-top:4px;}
+</style>
+</head>
+<body>
+
+
+<!-- PRE-LANDING — shown once only -->
+<div class="screen" id="s-onboard" style="background:#080914;">
+<div class="max-w" style="background:#080914;">
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:calc(env(safe-area-inset-top,0px)+36px) 30px 0;">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
+    <div style="position:relative;width:210px;height:210px;flex-shrink:0;">
+      <svg viewBox="0 0 200 200" style="position:absolute;top:0;left:0;width:100%;height:100%;" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="100" cy="100" r="30" fill="none" stroke="rgba(255,255,255,0.28)" stroke-width="2"/>
+        <circle cx="100" cy="100" r="62" fill="none" stroke="rgba(255,255,255,0.20)" stroke-width="2"/>
+        <circle cx="100" cy="100" r="92" fill="none" stroke="rgba(255,255,255,0.14)" stroke-width="2"/>
+        <line x1="0" y1="100" x2="200" y2="100" stroke="rgba(255,255,255,0.45)" stroke-width="1"/>
+        <line x1="100" y1="0" x2="100" y2="200" stroke="rgba(255,255,255,0.45)" stroke-width="1"/>
+        <text x="6" y="16" font-size="9" fill="rgba(255,255,255,0.50)" font-family="-apple-system,sans-serif" font-weight="700" letter-spacing="0.07em">PROTECTING</text>
+        <text x="194" y="16" font-size="9" fill="rgba(255,255,255,0.50)" font-family="-apple-system,sans-serif" font-weight="700" letter-spacing="0.07em" text-anchor="end">BUILDING</text>
+        <text x="6" y="197" font-size="9" fill="rgba(255,255,255,0.50)" font-family="-apple-system,sans-serif" font-weight="700" letter-spacing="0.07em">ENDURING</text>
+        <text x="194" y="197" font-size="9" fill="rgba(255,255,255,0.50)" font-family="-apple-system,sans-serif" font-weight="700" letter-spacing="0.07em" text-anchor="end">RECEIVING</text>
+        <circle cx="78" cy="112" r="5" fill="rgba(255,255,255,0.14)"/>
+        <circle cx="88" cy="105" r="5.5" fill="rgba(255,255,255,0.18)"/>
+        <circle cx="108" cy="88" r="6" fill="rgba(255,255,255,0.22)"/>
+        <line x1="78" y1="112" x2="88" y2="105" stroke="rgba(255,255,255,0.09)" stroke-width="1.2" stroke-dasharray="3,4"/>
+        <line x1="88" y1="105" x2="108" y2="88" stroke="rgba(255,255,255,0.14)" stroke-width="1.2" stroke-dasharray="3,4"/>
+        <line x1="108" y1="88" x2="124" y2="74" stroke="rgba(255,255,255,0.22)" stroke-width="1.2" stroke-dasharray="3,4"/>
+        <circle cx="124" cy="74" r="9" fill="#7c6cf0" opacity="0.9"/>
+        <circle cx="124" cy="74" r="15" fill="#7c6cf0" opacity="0.14"/>
+      </svg>
+    </div>
+    <div style="text-align:center;">
+      <div style="font-size:34px;color:#e8e4ff;line-height:1.2;font-weight:400;margin-bottom:0;letter-spacing:-0.01em;">Know your<br>reality.</div>
+    </div>
+    </div>
+    <div style="text-align:center;padding:0 4px;">
+      <div style="font-size:16px;color:#4848a0;line-height:1.75;">Your mind reads every situation through the same lens — <span style="color:#8080c0;">without noticing.</span> Two questions, answered over time, reveal the pattern.</div>
+    </div>
+  </div>
+  <div style="padding:24px 24px calc(env(safe-area-inset-bottom,0px)+36px);">
+    <button onclick="obDone()" style="width:100%;padding:18px;background:#4a3fa0;border:1px solid #6b5fd0;border-radius:16px;color:#e0d8ff;font-size:17px;cursor:pointer;">Show me &rarr;</button>
+  </div>
+</div>
+</div>
+
+<!-- LANDING -->
+<div class="screen active" id="s-land">
+<div class="max-w">
+  <div class="wordmark">EMOMAP</div>
+  <div class="land-inner">
+    <div class="land-map">
+      <svg viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="110" cy="110" r="33" fill="none" stroke="rgba(255,255,255,0.28)" stroke-width="2"/>
+        <circle cx="110" cy="110" r="68" fill="none" stroke="rgba(255,255,255,0.22)" stroke-width="2"/>
+        <circle cx="110" cy="110" r="102" fill="none" stroke="rgba(255,255,255,0.16)" stroke-width="2"/>
+        <line x1="0" y1="110" x2="220" y2="110" stroke="rgba(255,255,255,0.50)" stroke-width="1"/>
+        <line x1="110" y1="0" x2="110" y2="220" stroke="rgba(255,255,255,0.50)" stroke-width="1"/>
+        <text x="8" y="20" font-size="9" fill="rgba(255,255,255,0.60)" font-family="-apple-system,sans-serif" font-weight="700" letter-spacing="0.07em">PROTECTING</text>
+        <text x="212" y="20" font-size="9" fill="rgba(255,255,255,0.60)" font-family="-apple-system,sans-serif" font-weight="700" letter-spacing="0.07em" text-anchor="end">BUILDING</text>
+        <text x="8" y="215" font-size="9" fill="rgba(255,255,255,0.60)" font-family="-apple-system,sans-serif" font-weight="700" letter-spacing="0.07em">ENDURING</text>
+        <text x="212" y="215" font-size="9" fill="rgba(255,255,255,0.60)" font-family="-apple-system,sans-serif" font-weight="700" letter-spacing="0.07em" text-anchor="end">RECEIVING</text>
+        <line x1="110" y1="110" x2="128" y2="86" stroke="rgba(255,255,255,0.08)" stroke-width="1.2" stroke-dasharray="3,4"/>
+        <line x1="128" y1="86" x2="120" y2="104" stroke="rgba(255,255,255,0.11)" stroke-width="1.2" stroke-dasharray="3,4"/>
+        <line x1="120" y1="104" x2="82" y2="118" stroke="rgba(255,255,255,0.14)" stroke-width="1.2" stroke-dasharray="3,4"/>
+        <line x1="82" y1="118" x2="140" y2="76" stroke="rgba(255,255,255,0.20)" stroke-width="1.2" stroke-dasharray="3,4"/>
+        <circle cx="110" cy="110" r="5.5" fill="rgba(255,255,255,0.15)"/>
+        <circle cx="128" cy="86" r="6" fill="rgba(255,255,255,0.18)"/>
+        <circle cx="120" cy="104" r="6.5" fill="rgba(255,255,255,0.20)"/>
+        <circle cx="82" cy="118" r="7" fill="rgba(255,255,255,0.22)"/>
+        <circle cx="140" cy="76" r="9" fill="#7c6cf0" opacity="0.9"/>
+        <circle cx="140" cy="76" r="14" fill="#7c6cf0" opacity="0.2"/>
+      </svg>
+    </div>
+  </div>
+  <div class="land-bottom">
+    <button class="btn-cta" onclick="go('s-world');snd('nav');">Start check-in</button>
+  </div>
+</div>
+</div>
+
+<!-- SITUATION SLIDER — left=against, right=favorable -->
+<div class="screen light-screen" id="s-world">
+<div class="max-w">
+  <div class="nav">
+    <div class="nav-back" onclick="go('s-land')">‹</div>
+    <div class="nav-title">EmoMap</div>
+    <div class="nav-sp"></div>
+  </div>
+  <div class="cat-lbl cat-s">SITUATION</div>
+  <div class="q-wrap"><div class="question">How does your current situation feel?</div></div>
+  <div class="slider-area">
+    <div class="live-word lw-s" id="ww">—</div>
+    <input type="range" min="0" max="100" value="50" id="ws" oninput="uww(this.value)" step="1" ontouchstart="startSlide()">
+  </div>
+  <div class="end-labels">
+    <div class="el"><div class="el-main">Working against me</div><div class="el-sub">Creating friction<br>Pushing back</div></div>
+    <div class="el r"><div class="el-main">Working with me</div><div class="el-sub">Easing things<br>Opening doors</div></div>
+  </div>
+  <div class="prog-dots"><div class="pdot on"></div><div class="pdot"></div></div>
+  <div class="pb"><button class="btn-main" onclick="go('s-self');snd('nav');">Next →</button></div>
+</div>
+</div>
+
+<!-- YOU SLIDER -->
+<div class="screen light-screen" id="s-self">
+<div class="max-w">
+  <div class="nav">
+    <div class="nav-back" onclick="go('s-world')">‹</div>
+    <div class="nav-title">EmoMap</div>
+    <div class="nav-sp"></div>
+  </div>
+  <div class="cat-lbl cat-y">YOU</div>
+  <div class="q-wrap"><div class="question">How are you experiencing yourself right now?</div></div>
+  <div class="slider-area">
+    <div class="live-word lw-y" id="sw">—</div>
+    <input type="range" min="0" max="100" value="50" id="ss" oninput="uss(this.value)" step="1" ontouchstart="startSlide()">
+  </div>
+  <div class="end-labels">
+    <div class="el"><div class="el-main">Going along</div><div class="el-sub">Watching things unfold<br>Responding to what comes</div></div>
+    <div class="el r"><div class="el-main">I take initiative</div><div class="el-sub">Steering things<br>Shaping what happens</div></div>
+  </div>
+  <div class="prog-dots"><div class="pdot"></div><div class="pdot on"></div></div>
+  <div class="pb"><button class="btn-main" onclick="showResult()">See my map →</button></div>
+</div>
+</div>
+
+<!-- MAP RESULT -->
+<div class="screen light-screen" id="s-result">
+<div class="max-w">
+  <div class="nav">
+    <div class="nav-back" onclick="go('s-self')">‹</div>
+    <div class="nav-title">EmoMap</div>
+    <div class="nav-sp"></div>
+  </div>
+  <div class="map-wrap">
+    <div class="ax-h"></div><div class="ax-v"></div>
+    <div class="ring" style="width:23%;height:23%;"></div>
+    <div class="ring" style="width:46%;height:46%;"></div>
+    <div class="ring" style="width:70%;height:70%;"></div>
+    <div class="ql" style="top:8px;left:10px;">Protecting</div>
+    <div class="ql" style="top:8px;right:10px;">Building</div>
+    <div class="ql" style="bottom:8px;left:10px;">Enduring</div>
+    <div class="ql" style="bottom:8px;right:10px;">Receiving</div>
+    <svg class="map-svg" id="msvg">
+      <circle cx="53%" cy="63%" r="4%" fill="rgba(255,255,255,0.12)"/>
+      <circle cx="37%" cy="57%" r="4.5%" fill="rgba(255,255,255,0.15)"/>
+      <circle cx="61%" cy="36%" r="5%" fill="rgba(255,255,255,0.18)"/>
+      <line x1="53%" y1="63%" x2="37%" y2="57%" stroke="rgba(255,255,255,0.07)" stroke-width="1.2" stroke-dasharray="3,4"/>
+      <line x1="37%" y1="57%" x2="61%" y2="36%" stroke="rgba(255,255,255,0.10)" stroke-width="1.2" stroke-dasharray="3,4"/>
+      <line x1="61%" y1="36%" x2="0" y2="0" stroke="rgba(255,255,255,0.16)" stroke-width="1.2" stroke-dasharray="3,4" id="ltrl"/>
+    </svg>
+    <div id="mdot" style="left:50%;top:50%;"></div>
+  </div>
+  <div class="yah-row">
+    <span class="yah-pre">You are here:</span>
+    <span class="yah-name" id="sname">—</span>
+  </div>
+  <div class="yah-sub" id="ssub"></div>
+  <div class="emo-area">
+    <div class="emo-q">What are you feeling right now?</div>
+    <div class="emo-hint">Tap one if it fits — or continue</div>
+    <div class="chips" id="echips"></div>
+    <input class="other-input" id="other-txt" type="text" placeholder="Describe what you're feeling..." maxlength="60">
+  </div>
+  <div class="pb">
+    <button class="btn-main" onclick="go('s-context');snd('nav');">Continue →</button>
+  </div>
+</div>
+</div>
+
+<!-- CONTEXT -->
+<div class="screen light-screen" id="s-context">
+<div class="max-w">
+  <div class="nav">
+    <div class="nav-back" onclick="go('s-result')">‹</div>
+    <div class="nav-title">Add context</div>
+    <div class="nav-sp"></div>
+  </div>
+  <div class="ctx-hint">Optional — skip any question</div>
+  <div class="ctx-scroll">
+    <div style="height:14px;"></div>
+    <div class="ctx-sec">
+      <div class="ctx-lbl">WHAT & WHO</div>
+      <div class="ctx-q">What were you doing? <span style="color:#c8c4be;font-size:11px;">select all that apply</span></div>
+      <div class="ctx-chips">
+        <div class="cc" onclick="ms(this)">Work / Study</div>
+        <div class="cc" onclick="ms(this)">Family</div>
+        <div class="cc" onclick="ms(this)">Socializing</div>
+        <div class="cc" onclick="ms(this)">Resting</div>
+        <div class="cc" onclick="ms(this)">Exercise</div>
+        <div class="cc" onclick="ms(this)">Leisure</div>
+        <div class="cc" onclick="ms(this)">Scrolling</div>
+        <div class="cc" onclick="ms(this)">Other</div>
+      </div>
+      <div class="ctx-gap"></div>
+      <div class="ctx-q">Who were you with?</div>
+      <div class="ctx-chips" id="g-soc">
+        <div class="cc" onclick="togSoc(this,'alone')">Alone</div>
+        <div class="cc" onclick="togSoc(this,'with')">With others</div>
+        <div class="cc" onclick="togSoc(this,'online')">Online</div>
+      </div>
+    </div>
+    <div class="ctx-div"></div>
+    <div class="ctx-sec">
+      <div class="ctx-lbl">BODY STATE</div>
+      <div class="ctx-q">Sleep last night?</div>
+      <div class="ctx-chips" id="g-slp">
+        <div class="cc" onclick="sg(this,'g-slp')">Under 6h</div>
+        <div class="cc" onclick="sg(this,'g-slp')">6–7h</div>
+        <div class="cc" onclick="sg(this,'g-slp')">7–8h</div>
+        <div class="cc" onclick="sg(this,'g-slp')">8h+</div>
+      </div>
+      <div class="ctx-gap"></div>
+      <div class="ctx-q">Energy right now?</div>
+      <div class="ctx-chips" id="g-enr">
+        <div class="cc" onclick="sg(this,'g-enr')">Low</div>
+        <div class="cc" onclick="sg(this,'g-enr')">Medium</div>
+        <div class="cc" onclick="sg(this,'g-enr')">High</div>
+      </div>
+      <div class="ctx-gap"></div>
+      <div class="ctx-q">Hunger?</div>
+      <div class="ctx-chips" id="g-hun">
+        <div class="cc" onclick="sg(this,'g-hun')">Not hungry</div>
+        <div class="cc" onclick="sg(this,'g-hun')">Just ate</div>
+        <div class="cc" onclick="sg(this,'g-hun')">Hungry</div>
+        <div class="cc" onclick="sg(this,'g-hun')">Very hungry</div>
+      </div>
+    </div>
+
+  </div>
+  <div class="save-wrap">
+    <button class="btn-save" onclick="go('s-notif');snd('save');">Save entry →</button>
+  </div>
+</div>
+</div>
+
+<!-- HISTORY -->
+<div class="screen light-screen" id="s-history">
+<div class="max-w">
+  <div class="hist-hdr">
+    <div class="hist-top">
+      <div class="hist-title">Your trail</div>
+      <button class="hist-new" onclick="go('s-world');snd('nav');">+ New check-in</button>
+    </div>
+    <div class="hist-sub">5 entries · 4 days</div>
+  </div>
+  <div class="hist-scroll">
+    <div style="height:4px;"></div>
+    <div class="unlock-r" onclick="snd('chip')">
+      <div><div class="unlock-rt">✦ A pattern is appearing</div><div class="unlock-rs">Your first 5 entries revealed something</div></div>
+      <div class="unlock-arr">→</div>
+    </div>
+    <div class="unlock-l">
+      <div class="unlock-lt">Two-week report</div>
+      <div class="prog-bar"><div class="prog-fill" style="width:36%;"></div></div>
+      <div class="unlock-ls">9 more entries to unlock</div>
+    </div>
+    <div class="sec-lbl">RECENT</div>
+    <div id="new-row"></div>
+    <div class="entry-row"><div class="entry-dot" style="background:#5a4888;"></div><div class="entry-body"><div class="entry-state">Protecting</div><div class="entry-meta">2 hours ago · Family · Hungry</div></div><div class="entry-int">Strong</div></div>
+    <div class="entry-row"><div class="entry-dot" style="background:#4a4278;"></div><div class="entry-body"><div class="entry-state">Enduring</div><div class="entry-meta">Yesterday, 9pm · Alone · Under 6h sleep</div></div><div class="entry-int">Moderate</div></div>
+    <div class="entry-row"><div class="entry-dot" style="background:#3a3468;"></div><div class="entry-body"><div class="entry-state">Bracing</div><div class="entry-meta">Yesterday, 2pm · Work · Low energy</div></div><div class="entry-int">Mild</div></div>
+    <div class="entry-row"><div class="entry-dot" style="background:#2e2a58;"></div><div class="entry-body"><div class="entry-state">Building</div><div class="entry-meta">2 days ago · Socializing · With others</div></div><div class="entry-int">Mild</div></div>
+  </div>
+</div>
+</div>
+
+<script>
+function go(id){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
+
+// WORLD: left=against(negative x), right=favorable(positive x)
+// x = (world_raw - 50) / 50
+var wv=50,sv=50;
+
+function calcFont(v){
+  var dist=Math.abs(v-50);
+  return Math.round(14+(dist/50)*20);
+}
+
+function uww(v){
+  wv=parseInt(v);
+  var el=document.getElementById('ww');
+  var dist=Math.abs(wv-50);
+  var fs=calcFont(wv);
+  if(dist<6){
+    el.textContent='Ambiguous';
+    el.style.fontSize='15px';
+    el.style.opacity='0.5';
+  } else if(wv>50){
+    el.textContent='Favorable';
+    el.style.fontSize=fs+'px';
+    el.style.opacity=(0.4+(dist/50)*0.6).toFixed(2);
+  } else {
+    el.textContent='Against me';
+    el.style.fontSize=fs+'px';
+    el.style.opacity=(0.4+(dist/50)*0.6).toFixed(2);
+  }
+  snd('slide',wv);
+}
+
+function uss(v){
+  sv=parseInt(v);
+  var el=document.getElementById('sw');
+  var dist=Math.abs(sv-50);
+  var fs=calcFont(sv);
+  if(dist<6){
+    el.textContent='Ambiguous';
+    el.style.fontSize='15px';
+    el.style.opacity='0.5';
+  } else if(sv>50){
+    el.textContent='I direct';
+    el.style.fontSize=fs+'px';
+    el.style.opacity=(0.4+(dist/50)*0.6).toFixed(2);
+  } else {
+    el.textContent='Going along';
+    el.style.fontSize=fs+'px';
+    el.style.opacity=(0.4+(dist/50)*0.6).toFixed(2);
+  }
+  snd('slide',sv);
+}
+
+var EMOS={Building:['Inspired','Hopeful','Confident','Energized','Proud','Joyful'],Protecting:['Frustrated','Determined','Alert','Defensive','Irritated','Impatient'],Receiving:['At ease','Nostalgic','Trusting','Peaceful','Relaxed','Receptive'],Enduring:['Anxious','Exhausted','Sad','Numb','Hopeless','Resigned'],Opening:['Curious','Expectant','Hopeful','Tentative'],Bracing:['Wary','Tense','Alert','Uncertain'],Seeking:['Restless','Driven','Focused','Unsure'],Drifting:['Floating','Calm','Disconnected','Unclear'],Still:['Mixed','Uncertain','Peaceful','Numb']};
+var SUBS={Building:'World favorable · You in charge',Protecting:'World pressuring · You directed',Receiving:'World open · You flowing with it',Enduring:'World against you · Direction low',Opening:'World open · Your role still forming',Bracing:'World pressuring · Your response forming',Seeking:'You directed · World still unclear',Drifting:'You flowing · World still unclear',Still:'Both still forming'};
+
+function detectState(x,y){
+  var r=Math.sqrt(x*x+y*y)/Math.sqrt(2);
+  if(r<0.18)return{name:'Still',sub:SUBS.Still};
+  var ax=Math.abs(x),ay=Math.abs(y);
+  if(ay<0.12&&ax>=0.12)return x>0?{name:'Opening',sub:SUBS.Opening}:{name:'Bracing',sub:SUBS.Bracing};
+  if(ax<0.12&&ay>=0.12)return y>0?{name:'Seeking',sub:SUBS.Seeking}:{name:'Drifting',sub:SUBS.Drifting};
+  if(x>=0&&y>=0)return{name:'Building',sub:SUBS.Building};
+  if(x<0&&y>=0)return{name:'Protecting',sub:SUBS.Protecting};
+  if(x>=0&&y<0)return{name:'Receiving',sub:SUBS.Receiving};
+  return{name:'Enduring',sub:SUBS.Enduring};
+}
+
+function showResult(){
+  // Right=favorable=positive x: x = (wv-50)/50
+  var x=(wv-50)/50, y=(sv-50)/50;
+  var st=detectState(x,y);
+  document.getElementById('sname').textContent=st.name.toUpperCase();
+  document.getElementById('ssub').textContent=st.sub;
+  var px=50+x*42, py=50-y*42;
+  var dot=document.getElementById('mdot');
+  dot.style.transition='none';dot.style.left='50%';dot.style.top='50%';
+  setTimeout(function(){dot.style.transition='left 0.6s ease,top 0.6s ease';dot.style.left=px+'%';dot.style.top=py+'%';snd('land');},80);
+  document.getElementById('ltrl').setAttribute('x2',px+'%');
+  document.getElementById('ltrl').setAttribute('y2',py+'%');
+  var emos=EMOS[st.name]||EMOS.Still;
+  var h='';
+  emos.forEach(function(e){h+='<div class="chip" onclick="csel(this,false)">'+e+'</div>';});
+  h+='<div class="chip other" onclick="csel(this,true)">Something else...</div>';
+  document.getElementById('echips').innerHTML=h;
+  document.getElementById('other-txt').style.display='none';
+  document.getElementById('other-txt').value='';
+  document.getElementById('new-row').innerHTML='<div class="entry-row"><div class="entry-dot" style="background:#7c6cf0;"></div><div class="entry-body"><div class="entry-state">'+st.name+'</div><div class="entry-meta">Just now</div></div><div class="entry-int">Moderate</div></div>';
+  go('s-result');
+}
+
+function csel(el,isOther){
+  document.querySelectorAll('#echips .chip').forEach(function(c){c.classList.remove('sel');});
+  el.classList.add('sel');snd('chip');
+  var inp=document.getElementById('other-txt');
+  if(isOther){inp.style.display='block';setTimeout(function(){inp.focus();},100);}
+  else{inp.style.display='none';}
+}
+
+function ms(el){el.classList.toggle('ms');snd('chip');}
+function togSoc(el,type){
+  if(type==='online'){el.classList.toggle('ss');snd('chip');return;}
+  document.querySelectorAll('#g-soc .cc').forEach(function(c){
+    if(c.textContent.trim()!=='Online')c.classList.remove('ss');
+  });
+  el.classList.toggle('ss');snd('chip');
+}
+function sg(el,g){document.querySelectorAll('#'+g+' .cc').forEach(function(c){c.classList.remove('ss');});el.classList.add('ss');snd('chip');}
+
+var actx=null,lastS=0;
+function getCtx(){if(!actx)actx=new(window.AudioContext||window.webkitAudioContext)();if(actx.state==='suspended')actx.resume();return actx;}
+function startSlide(){try{getCtx();}catch(e){}}
+function snd(t,v){
+  try{
+    var c=getCtx(),n=c.currentTime;
+    if(t==='slide'){
+      if(Date.now()-lastS<80)return;lastS=Date.now();
+      var o=c.createOscillator(),g=c.createGain();
+      o.connect(g);g.connect(c.destination);
+      o.type='sine';o.frequency.value=260+(v/100)*200;
+      g.gain.setValueAtTime(0.04,n);g.gain.exponentialRampToValueAtTime(0.001,n+0.12);
+      o.start(n);o.stop(n+0.12);
+    }
+    if(t==='nav'){
+      var o=c.createOscillator(),g=c.createGain();
+      o.connect(g);g.connect(c.destination);o.type='sine';
+      o.frequency.setValueAtTime(300,n);o.frequency.exponentialRampToValueAtTime(460,n+0.18);
+      g.gain.setValueAtTime(0.06,n);g.gain.exponentialRampToValueAtTime(0.001,n+0.22);
+      o.start(n);o.stop(n+0.22);
+    }
+    if(t==='land'){
+      [0,0.07,0.14].forEach(function(d,i){
+        var o=c.createOscillator(),g=c.createGain();
+        o.connect(g);g.connect(c.destination);o.type='sine';
+        o.frequency.value=[528,660,792][i];
+        g.gain.setValueAtTime(0,n+d);g.gain.linearRampToValueAtTime(0.07,n+d+0.02);
+        g.gain.exponentialRampToValueAtTime(0.001,n+d+0.75);
+        o.start(n+d);o.stop(n+d+0.75);
+      });
+    }
+    if(t==='chip'){
+      var o=c.createOscillator(),g=c.createGain();
+      o.connect(g);g.connect(c.destination);o.type='sine';o.frequency.value=680;
+      g.gain.setValueAtTime(0.03,n);g.gain.exponentialRampToValueAtTime(0.001,n+0.07);
+      o.start(n);o.stop(n+0.07);
+    }
+    if(t==='save'){
+      [0,0.09,0.18].forEach(function(d,i){
+        var o=c.createOscillator(),g=c.createGain();
+        o.connect(g);g.connect(c.destination);o.type='sine';
+        o.frequency.value=[261,329,392][i];
+        g.gain.setValueAtTime(0.05,n+d);g.gain.exponentialRampToValueAtTime(0.001,n+d+0.65);
+        o.start(n+d);o.stop(n+d+0.65);
+      });
+    }
+  }catch(e){}
+}
+
+// ONBOARDING — show once
+function obSwipe(d){
+  if(obCur===3&&d===1){
+    localStorage.setItem('em_onboarded','1');
+    go('s-land');
+    return;
+  }
+  document.getElementById('ob'+obCur).style.display='none';
+  document.getElementById('od'+obCur).style.background='#1e1c38';
+  obCur=Math.max(1,Math.min(3,obCur+d));
+  document.getElementById('ob'+obCur).style.display='flex';
+  document.getElementById('ob'+obCur).style.flexDirection='column';
+  document.getElementById('od'+obCur).style.background='#7c6cf0';
+  document.getElementById('ob-back').style.opacity=obCur>1?'1':'0';
+  document.getElementById('ob-next').textContent=obCur===3?'Start mapping →':'Next →';
+}
+// Check on load — skip onboarding if already seen
+function obDone(){localStorage.setItem('em_onboarded','1');go('s-world');}
+(function(){
+  var firstScreen=localStorage.getItem('em_onboarded')?'s-land':'s-onboard';
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  document.getElementById(firstScreen).classList.add('active');
+})();
+
+uww(50);uss(50);
+// init live word styles
+document.getElementById('ww').style.color='#c07040';
+document.getElementById('sw').style.color='#6b5fd0';
+</script>
+
+<!-- NOTIFICATION PERMISSION -->
+<div class="screen" id="s-notif">
+<div class="max-w" style="background:#080914;">
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 28px 20px;">
+    <div style="width:72px;height:72px;border-radius:50%;background:#1e1c38;border:1px solid #3a3468;display:flex;align-items:center;justify-content:center;margin-bottom:28px;">
+      <div style="width:26px;height:26px;border-radius:50%;background:#7c6cf0;box-shadow:0 0 14px rgba(124,108,240,0.5);"></div>
+    </div>
+    <div style="font-size:24px;color:#e8e4ff;text-align:center;line-height:1.4;font-weight:400;margin-bottom:16px;">Patterns need<br>input to appear.</div>
+    <div style="font-size:15px;color:#5858a0;text-align:center;line-height:1.75;">People who notice meaningful patterns in their map check in <span style="color:#9090c8;">at least twice a day</span> — and when something happens.<br><br>Turn on reminders and we'll nudge you to check in.</div>
+  </div>
+  <div style="padding:0 24px calc(env(safe-area-inset-bottom,0px) + 32px);">
+    <button style="width:100%;padding:17px;background:#4a3fa0;border:1px solid #6b5fd0;border-radius:14px;color:#e0d8ff;font-size:16px;cursor:pointer;margin-bottom:12px;" onclick="go('s-history');snd('nav');">Turn on reminders</button>
+    <button style="width:100%;padding:12px;background:transparent;border:none;color:#3a3860;font-size:14px;cursor:pointer;" onclick="go('s-history')">Skip for now</button>
+  </div>
+</div>
+</div>
+</body>
+</html>
