@@ -1,0 +1,100 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <div id="emomap"></div>
+    <script>
+        // Data for the EmoMap
+        const data = [{"x": 8.0, "y": 8.0, "emotion": "Ecstatic", "description": "High-energy joy and excitement, feeling deeply positive about self and world.", "quadrant": 1}, {"x": 8.0, "y": 7.0, "emotion": "Inspired", "description": "Motivated and optimistic, with high self-appraisal and world-appraisal.", "quadrant": 1}, {"x": 6.0, "y": 8.0, "emotion": "Trusting", "description": "Confident with a strong sense of trust in the world.", "quadrant": 1}, {"x": 6.0, "y": 6.0, "emotion": "Proud", "description": "Positive sense of self-worth with a good view of the world.", "quadrant": 1}, {"x": 5.0, "y": 5.0, "emotion": "Happy", "description": "General sense of well-being and satisfaction.", "quadrant": 1}, {"x": 4.0, "y": 4.0, "emotion": "Hopeful", "description": "Positive expectations without high intensity.", "quadrant": 1}, {"x": 3.0, "y": 3.0, "emotion": "Content", "description": "Calm satisfaction with self and surroundings.", "quadrant": 1}, {"x": 2.0, "y": 3.0, "emotion": "Curious", "description": "Mild interest and openness toward the world.", "quadrant": 1}, {"x": 2.0, "y": 2.0, "emotion": "Accepting", "description": "Mild acceptance of self and world.", "quadrant": 1}, {"x": 6.0, "y": 7.0, "emotion": "Affectionate", "description": "Warm, positive regard for others and self, feeling connected.", "quadrant": 1}, {"x": 7.0, "y": 4.0, "emotion": "Grateful", "description": "Appreciation and gratitude toward self and the world.", "quadrant": 1}, {"x": -6.0, "y": 5.0, "emotion": "Angry", "description": "High-energy response to perceived injustice or frustration with obstacles.", "quadrant": 2}, {"x": -10.0, "y": 8.0, "emotion": "Enraged", "description": "Intense anger with a hostile view of the world.", "quadrant": 2}, {"x": -4.0, "y": 3.0, "emotion": "Jealous", "description": "High self-appraisal but negative view of others\u2019 advantages.", "quadrant": 2}, {"x": -2.0, "y": 1.0, "emotion": "Annoyed", "description": "Mild irritation toward minor annoyances.", "quadrant": 2}, {"x": -3.0, "y": 2.0, "emotion": "Frustrated", "description": "Irritation with obstacles in the world.", "quadrant": 2}, {"x": -7.0, "y": 3.0, "emotion": "Defensive", "description": "Guarded and protective stance, expecting confrontation.", "quadrant": 2}, {"x": -5.0, "y": 1.0, "emotion": "Impatient", "description": "Eager for progress, frustrated by delays or obstacles.", "quadrant": 2}, {"x": -2.0, "y": 3.0, "emotion": "Irritated", "description": "Mild to moderate frustration or annoyance with obstacles.", "quadrant": 2}, {"x": -5.0, "y": -4.0, "emotion": "Afraid", "description": "Low self-appraisal with distrust and fear of the world.", "quadrant": 3}, {"x": -4.0, "y": -3.0, "emotion": "Disappointed", "description": "Mild dissatisfaction with self and world.", "quadrant": 3}, {"x": -4.0, "y": -3.0, "emotion": "Guilty", "description": "Self-criticism combined with a negative view of circumstances.", "quadrant": 3}, {"x": -5.0, "y": -3.0, "emotion": "Anxious", "description": "High-energy worry with insecurity and a hostile world view.", "quadrant": 3}, {"x": -6.0, "y": -4.0, "emotion": "Ashamed", "description": "Low self-worth combined with a fear of judgment.", "quadrant": 3}, {"x": -5.0, "y": -5.0, "emotion": "Sad", "description": "General sadness and feeling of inadequacy.", "quadrant": 3}, {"x": -8.0, "y": -8.0, "emotion": "Despair", "description": "Overwhelming hopelessness with little belief in self or world.", "quadrant": 3}, {"x": -9.0, "y": -7.0, "emotion": "Hopelessness", "description": "Feeling of having no control, no hope from the world.", "quadrant": 3}, {"x": -9.0, "y": -6.0, "emotion": "Misery", "description": "Persistent sadness with a bleak view of self and world.", "quadrant": 3}, {"x": -6.0, "y": -5.0, "emotion": "Distraughtness", "description": "Intense distress and agitation in a hostile environment.", "quadrant": 3}, {"x": -10.0, "y": -10.0, "emotion": "Depressed", "description": "Deep hopelessness and disconnection from self and world.", "quadrant": 3}, {"x": 4.0, "y": -5.0, "emotion": "Needy", "description": "Low self-worth with dependency on external support.", "quadrant": 4}, {"x": 2.0, "y": -6.0, "emotion": "Lonely", "description": "Feeling isolated despite seeing the world as somewhat supportive.", "quadrant": 4}, {"x": 2.0, "y": -1.0, "emotion": "Bored", "description": "Low engagement, expecting stimulation from a positive world.", "quadrant": 4}, {"x": -3.0, "y": -6.0, "emotion": "Grief", "description": "Intense sadness, feeling loss but with some support.", "quadrant": 3}, {"x": 4.0, "y": -4.0, "emotion": "Helplessness", "description": "Low self-confidence with mild positivity toward world.", "quadrant": 4}, {"x": 3.0, "y": -3.0, "emotion": "Discouragement", "description": "Loss of motivation, feeling a need for support.", "quadrant": 4}, {"x": -5.0, "y": -5.0, "emotion": "Disgusted", "description": "Strong aversion toward something perceived as bad or harmful.", "quadrant": 3}, {"x": 9.0, "y": -5.0, "emotion": "Craving", "description": "Strong craving and dependency, with some pleasure but also compulsion.", "quadrant": 4}, {"x": 1.0, "y": 1.0, "emotion": "Chill", "description": "Neutral calmness, mild positivity.", "quadrant": 1}, {"x": 2.0, "y": -4.0, "emotion": "Teary", "description": "Sadness or emotional vulnerability with some sense of support.", "quadrant": 4}, {"x": -3.0, "y": -2.0, "emotion": "Uneasy", "description": "Low-level anxiety or discomfort, slightly negative in self and world.", "quadrant": 3}, {"x": 3.0, "y": -5.0, "emotion": "Vulnerable", "description": "Feeling exposed or sensitive, in need of support.", "quadrant": 4}, {"x": 0.0, "y": 0.0, "emotion": "Optimal", "description": "Centered, balanced, ideal state of self and world perception.", "quadrant": "Center"}, {"x": -1.0, "y": -1.0, "emotion": "Apathy", "description": "Mild detachment and lack of interest in self and world.", "quadrant": 3}, {"x": 10.0, "y": -10.0, "emotion": "Addicted ", "description": "Deeply consuming\u00a0and\u00a0relentless\u00a0in its craving", "quadrant": 4}, {"x": 9.0, "y": -9.0, "emotion": "Obsessed", "description": "overwhelming focus on an idea, person, or goal", "quadrant": 4}];
+        
+        // Color generation function
+        function getColor(quadrant, intensity) {
+            const baseColors = {
+                1: [255, 0, 0],      // Red
+                2: [0, 255, 0],      // Green
+                3: [0, 0, 255],      // Blue
+                4: [255, 255, 0],    // Yellow
+                'Center': [128, 128, 128]  // Gray
+            };
+            
+            if (quadrant === 'Center') {
+                return 'rgba(128, 128, 128, 0.8)';
+            }
+            
+            const [baseR, baseG, baseB] = baseColors[quadrant];
+            const opacity = 0.3 + (intensity * 0.7);
+            const r = Math.round(baseR * intensity + 255 * (1 - intensity));
+            const g = Math.round(baseG * intensity + 255 * (1 - intensity));
+            const b = Math.round(baseB * intensity + 255 * (1 - intensity));
+            return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+        }
+
+        // Calculate distances and colors
+        const points = data.map(point => {
+            const distance = Math.sqrt(point.x ** 2 + point.y ** 2);
+            const maxDistance = Math.max(...data.map(p => Math.sqrt(p.x ** 2 + p.y ** 2)));
+            const normalizedDistance = distance / maxDistance;
+            return {
+                ...point,
+                color: getColor(point.quadrant, normalizedDistance)
+            };
+        });
+
+        // Create the plot
+        const trace1 = {
+            x: points.map(p => p.x),
+            y: points.map(p => p.y),
+            mode: 'markers',
+            type: 'scatter',
+            marker: {
+                size: 8,
+                color: points.map(p => p.color),
+                line: {color: 'black', width: 1}
+            },
+            hovertemplate: '<b>%{text}</b><br>' +
+                          '<i>%{customdata}</i><extra></extra>',
+            text: points.map(p => p.emotion),
+            customdata: points.map(p => p.description)
+        };
+
+        const trace2 = {
+            x: points.map(p => p.x),
+            y: points.map(p => p.y + 0.01),  // Small offset for labels
+            mode: 'text',
+            type: 'scatter',
+            text: points.map(p => p.emotion),
+            textposition: points.map(p => p.y < 0 ? 'top center' : 'bottom center'),
+            textfont: {size: 11, family: 'Arial'},
+            showlegend: false,
+            hoverinfo: 'skip'
+        };
+
+        const layout = {
+            title: 'Emomap',
+            xaxis: {
+                title: 'World Appraisal',
+                zeroline: true,
+                zerolinewidth: 2,
+                zerolinecolor: 'black',
+                gridcolor: 'lightgray'
+            },
+            yaxis: {
+                title: 'Self Appraisal',
+                zeroline: true,
+                zerolinewidth: 2,
+                zerolinecolor: 'black',
+                gridcolor: 'lightgray'
+            },
+            plot_bgcolor: 'white',
+            width: 1000,
+            height: 800,
+            showlegend: false
+        };
+
+        Plotly.newPlot('emomap', [trace1, trace2], layout);
+    </script>
+</body>
+</html>
