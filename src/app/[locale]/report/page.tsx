@@ -40,6 +40,13 @@ function ReportPageInner() {
   const [cachedReportText, setCachedReportText] = useState<string | null>(null);
   const [loadingMessageIndex, setLoadingMessageIndex] = useState(0);
   const part2Ref = useRef<HTMLDivElement>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
+
+  useEffect(() => {
+    return () => {
+      abortControllerRef.current?.abort();
+    };
+  }, []);
 
   useEffect(() => {
     if (!user) return;
@@ -148,11 +155,14 @@ function ReportPageInner() {
     if (!user) return;
     setReportStatus("loading");
     setReportText(null);
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
     try {
       const res = await fetch("/api/report", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId: user.uid, locale }),
+        signal: controller.signal,
       });
       if (!res.ok || !res.body) throw new Error("Report request failed");
 
@@ -181,7 +191,8 @@ function ReportPageInner() {
       } catch {
         // Non-fatal: the report is already shown, caching it is best-effort.
       }
-    } catch {
+    } catch (err) {
+      if (err instanceof Error && err.name === "AbortError") return;
       setReportStatus("error");
     }
   }

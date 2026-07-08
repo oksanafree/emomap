@@ -9,12 +9,7 @@ import {
   doc,
   getCountFromServer,
   getDoc,
-  getDocs,
-  limit,
-  orderBy,
-  query,
   serverTimestamp,
-  Timestamp,
   updateDoc,
 } from "firebase/firestore";
 import { Link, useRouter } from "@/i18n/navigation";
@@ -37,10 +32,6 @@ import type { StateKey } from "@/lib/state-detection";
 import { AuthGuard } from "@/components/AuthGuard";
 import checkinStyles from "@/styles/checkin-screen.module.css";
 import styles from "./context.module.css";
-
-function startOfDay(d: Date): number {
-  return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
-}
 
 function ContextPageInner() {
   const t = useTranslations("Context");
@@ -183,35 +174,14 @@ function ContextPageInner() {
       return;
     }
 
-    if (count === 5) {
+    if (count > 0 && count % 5 === 0) {
       fetch("/api/report/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId: user.uid, locale }),
       }).catch(() => {});
-      router.push("/report-pending?milestone=five");
+      router.push("/report-pending");
       return;
-    }
-
-    try {
-      const firstSnap = await getDocs(query(entriesRef, orderBy("timestamp", "asc"), limit(1)));
-      const firstTimestamp = firstSnap.docs[0]?.data().timestamp;
-      if (firstTimestamp instanceof Timestamp) {
-        const dayDiff = Math.round(
-          (startOfDay(new Date()) - startOfDay(firstTimestamp.toDate())) / (24 * 60 * 60 * 1000),
-        );
-        if (dayDiff === 14) {
-          fetch("/api/report/generate", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ userId: user.uid, locale }),
-          }).catch(() => {});
-          router.push("/report-pending?milestone=twoWeek");
-          return;
-        }
-      }
-    } catch {
-      // Fall through to the normal history navigation below.
     }
 
     router.push("/history");

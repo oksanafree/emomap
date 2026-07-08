@@ -213,12 +213,8 @@
     "retry": "Try again →"
   },
   "ReportPending": {
-    "five": {
-      "message": "Your first report is being prepared. We'll notify you when it's ready — usually within a minute. Keep checking in."
-    },
-    "twoWeek": {
-      "message": "Your two-week map is being prepared. This is your most detailed report yet."
-    },
+    "headline": "Your report is being prepared.",
+    "body": "We'll send you a notification when it's ready — usually within a minute. Keep checking in.",
     "cta": "Back to my map →"
   },
   "Auth": {

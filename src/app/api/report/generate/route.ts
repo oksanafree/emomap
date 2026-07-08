@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
     const anthropic = new Anthropic();
     const stream = anthropic.messages.stream({
       model: "claude-sonnet-4-6",
-      max_tokens: 8000,
+      max_tokens: 14000,
       thinking: { type: "adaptive" },
       output_config: { effort: "medium" },
       system: SYSTEM_PROMPT,
@@ -114,7 +114,7 @@ export async function POST(request: NextRequest) {
       await getMessaging(getAdminApp()).send({
         token: fcmToken,
         notification: {
-          title: "Your Emomapp report is ready",
+          title: "Your report is ready",
           body: "Your trail has been read. Tap to see your patterns.",
         },
         data: { url: `/${locale ?? "en"}/report` },
