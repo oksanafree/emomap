@@ -5,15 +5,32 @@
     "switchLocale": "Русский"
   },
   "Onboarding": {
-    "slogan": "Know your reality",
-    "body": "A two-question check-in that maps how you're reading yourself and the world.",
-    "cta": "Let's start",
+    "next": "Next →",
+    "start": "Let's start →",
     "quadrants": {
       "protecting": "Protecting",
       "building": "Building",
       "enduring": "Enduring",
       "receiving": "Receiving"
-    }
+    },
+    "steps": [
+      {
+        "headline": "Your mind scans every moment.",
+        "body": "Most of it goes unnoticed. Emomapp makes it visible and creates your reality trajectory."
+      },
+      {
+        "headline": "Two questions. Ten seconds.",
+        "body": "How is life treating you right now? How are YOU moving through it? Your answers are coordinates on a map. Check in often — and the map becomes a trail."
+      },
+      {
+        "headline": "Emomapp will track your inner world.",
+        "body": "After enough check-ins, you will see your unique patterns. Where do you tend to land? What moves you? An AI reads your trail and reflects it back."
+      },
+      {
+        "headline": "Your first report in 5 check-ins.",
+        "body": "After two weeks of regular check-ins — a detailed analysis of your unique patterns. The more you check in, the clearer the picture."
+      }
+    ]
   },
   "World": {
     "navTitle": "Emomapp",

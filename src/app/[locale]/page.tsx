@@ -1,15 +1,21 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
+import type { TouchEvent } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { OnboardingMap } from "@/components/onboarding-map";
+import { TrailMap } from "@/components/trail-map";
 
 const ONBOARDED_KEY = "em_onboarded";
+const TOTAL_STEPS = 4;
+const SWIPE_THRESHOLD = 50;
 
 export default function OnboardingPage() {
   const t = useTranslations("Onboarding");
   const router = useRouter();
+  const [step, setStep] = useState(0);
+  const touchStartX = useRef<number | null>(null);
 
   useEffect(() => {
     if (localStorage.getItem(ONBOARDED_KEY)) {
@@ -17,36 +23,86 @@ export default function OnboardingPage() {
     }
   }, [router]);
 
+  function goNext() {
+    setStep((s) => Math.min(s + 1, TOTAL_STEPS - 1));
+  }
+
+  function goBack() {
+    setStep((s) => Math.max(s - 1, 0));
+  }
+
   function handleStart() {
     localStorage.setItem(ONBOARDED_KEY, "1");
     router.push("/world");
   }
 
+  function handleTouchStart(e: TouchEvent<HTMLDivElement>) {
+    touchStartX.current = e.touches[0].clientX;
+  }
+
+  function handleTouchEnd(e: TouchEvent<HTMLDivElement>) {
+    if (touchStartX.current === null) return;
+    const deltaX = e.changedTouches[0].clientX - touchStartX.current;
+    touchStartX.current = null;
+    if (deltaX < -SWIPE_THRESHOLD) goNext();
+    else if (deltaX > SWIPE_THRESHOLD) goBack();
+  }
+
+  const mapLabels = {
+    protectingLabel: t("quadrants.protecting"),
+    buildingLabel: t("quadrants.building"),
+    enduringLabel: t("quadrants.enduring"),
+    receivingLabel: t("quadrants.receiving"),
+  };
+
   return (
-    <div className="flex min-h-screen flex-col items-center bg-[#080914] px-8 pt-[calc(env(safe-area-inset-top)+36px)]">
+    <div
+      className="relative flex min-h-screen flex-col items-center bg-[#080914] px-8 pt-[calc(env(safe-area-inset-top)+36px)]"
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
+      {step > 0 && (
+        <button
+          type="button"
+          onClick={goBack}
+          aria-label="Back"
+          className="absolute left-2 top-[calc(env(safe-area-inset-top)+20px)] flex h-11 w-11 items-center justify-center text-2xl text-[#4848a0]"
+        >
+          ‹
+        </button>
+      )}
+
       <div className="flex flex-1 flex-col items-center justify-between">
         <div className="flex flex-col items-center gap-3">
-          <OnboardingMap
-            protectingLabel={t("quadrants.protecting")}
-            buildingLabel={t("quadrants.building")}
-            enduringLabel={t("quadrants.enduring")}
-            receivingLabel={t("quadrants.receiving")}
-          />
+          {step === 0 && <OnboardingMap {...mapLabels} />}
+          {step === 2 && <TrailMap {...mapLabels} />}
           <h1 className="text-center text-[34px] font-normal leading-tight tracking-tight text-[#e8e4ff]">
-            {t("slogan")}
+            {t(`steps.${step}.headline`)}
           </h1>
         </div>
         <p className="px-1 text-center text-base leading-relaxed text-[#4848a0]">
-          {t("body")}
+          {t(`steps.${step}.body`)}
         </p>
       </div>
-      <div className="w-full px-2 pb-[calc(env(safe-area-inset-bottom)+36px)] pt-6">
+
+      <div className="flex items-center gap-2 pb-6 pt-4">
+        {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
+          <div
+            key={i}
+            className={`h-2 w-2 rounded-full transition-colors ${
+              i === step ? "bg-[#7c6cf0]" : "bg-white/15"
+            }`}
+          />
+        ))}
+      </div>
+
+      <div className="w-full px-2 pb-[calc(env(safe-area-inset-bottom)+36px)]">
         <button
           type="button"
-          onClick={handleStart}
+          onClick={step === TOTAL_STEPS - 1 ? handleStart : goNext}
           className="w-full rounded-2xl border border-[#6b5fd0] bg-[#4a3fa0] py-[18px] text-[17px] text-[#e0d8ff]"
         >
-          {t("cta")}
+          {step === TOTAL_STEPS - 1 ? t("start") : t("next")}
         </button>
       </div>
     </div>
