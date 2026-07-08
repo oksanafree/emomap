@@ -130,12 +130,19 @@ function ReportPageInner() {
   const mover = visibleCount > 0 ? steps[visibleCount - 1] : null;
 
   const dateFormatter = new Intl.DateTimeFormat(locale, { month: "long", day: "numeric" });
-  const dateRangeText =
+  const bodyText =
     timestamps && timestamps.length > 0
-      ? timestamps.length === 1
-        ? dateFormatter.format(timestamps[0])
-        : `${dateFormatter.format(timestamps[0])} – ${dateFormatter.format(timestamps[timestamps.length - 1])}`
-      : null;
+      ? (() => {
+          const first = timestamps[0];
+          const last = timestamps[timestamps.length - 1];
+          return first.toDateString() === last.toDateString()
+            ? t("bodySameDay", { date: dateFormatter.format(first) })
+            : t("body", {
+                firstDate: dateFormatter.format(first),
+                lastDate: dateFormatter.format(last),
+              });
+        })()
+      : "";
 
   async function fetchFreshReport() {
     if (!user) return;
@@ -263,8 +270,7 @@ function ReportPageInner() {
           ) : (
             <>
               <div className={styles.headline}>{t("headline")}</div>
-              <div className={styles.subtext}>{t("subtext")}</div>
-              <div className={styles.dateRange}>{dateRangeText}</div>
+              <div className={styles.subtext}>{bodyText}</div>
               <div className={styles.checkinsCount}>{t("checkinsCount", { count: timestamps.length })}</div>
               <button type="button" className={styles.revealBtn} onClick={handleReveal}>
                 {t("reveal")}

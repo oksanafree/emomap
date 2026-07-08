@@ -193,8 +193,9 @@
   },
   "Report": {
     "navTitle": "Emomapp",
-    "headline": "A trail has formed.",
-    "subtext": "Your check-ins are starting to show how you've been reading yourself and the world.",
+    "headline": "This is your personal journey.",
+    "body": "Your check-ins are showing how you've seen the world and yourself from {firstDate} to {lastDate}.",
+    "bodySameDay": "Your check-ins from {date} are showing how you've seen the world and yourself.",
     "checkinsCount": "{count, plural, one {# check-in} other {# check-ins}}",
     "reveal": "See what this reveals →",
     "placeholder": "Your AI report will appear here.",
