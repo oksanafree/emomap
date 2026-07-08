@@ -73,7 +73,7 @@ function AuthPageInner() {
       } else {
         await signInWithEmailAndPassword(auth, email, password);
       }
-      router.push("/world");
+      router.push("/");
     } catch (err) {
       setError(mapError((err as { code?: string }).code));
       setSubmitting(false);
