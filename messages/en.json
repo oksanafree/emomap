@@ -168,7 +168,13 @@
     "loading": "Loading…",
     "empty": "No entries yet.",
     "error": "Could not load your entries.",
-    "seeReport": "See your report →"
+    "seeReport": "See your report →",
+    "regenerate": "Regenerate →",
+    "logOut": "Log out",
+    "editContext": "Edit context",
+    "delete": "Delete",
+    "confirmDelete": "Delete this entry?",
+    "deleteError": "Could not delete. Try again."
   },
   "Insight": {
     "headline": "A pattern is starting to form",
@@ -194,9 +200,25 @@
     "placeholder": "Your AI report will appear here.",
     "loading": "Loading…",
     "empty": "No entries yet.",
-    "generating": "Reading your trail…",
+    "loadingMessages": [
+      "Reading your trail...",
+      "Looking for what repeats...",
+      "Mapping your patterns...",
+      "Finding your arc...",
+      "This takes about 15 seconds..."
+    ],
+    "notEnoughEntries": "Keep checking in — your first report arrives after 5 entries",
     "reportError": "Could not generate your report. Try again.",
     "retry": "Try again →"
+  },
+  "ReportPending": {
+    "five": {
+      "message": "Your first report is being prepared. We'll notify you when it's ready — usually within a minute. Keep checking in."
+    },
+    "twoWeek": {
+      "message": "Your two-week map is being prepared. This is your most detailed report yet."
+    },
+    "cta": "Back to my map →"
   },
   "Auth": {
     "signupHeadline": "Create your account",

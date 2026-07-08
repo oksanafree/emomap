@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { collection, getDocs, orderBy, query, Timestamp } from "firebase/firestore";
+import { collection, deleteDoc, doc, getDoc, getDocs, orderBy, query, Timestamp } from "firebase/firestore";
+import { signOut } from "firebase/auth";
 import { Link, useRouter } from "@/i18n/navigation";
 import { useAnonymousAuth } from "@/lib/use-anonymous-auth";
 import { useSliderSound } from "@/lib/use-slider-sound";
-import { db } from "@/lib/firebase";
+import { db, getFirebaseAuth } from "@/lib/firebase";
 import type { StateKey } from "@/lib/state-detection";
 import { AuthGuard } from "@/components/AuthGuard";
 import { NotificationPrompt } from "@/components/NotificationPrompt";
@@ -38,6 +39,25 @@ export default function HistoryPage() {
   const [error, setError] = useState(false);
   const [showNotifPrompt, setShowNotifPrompt] = useState(false);
   const [showIOSBanner, setShowIOSBanner] = useState(false);
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState(false);
+  const [cachedReport, setCachedReport] = useState<string | null>(null);
+  const [showSettings, setShowSettings] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    let cancelled = false;
+    getDoc(doc(db, "users", user.uid)).then((snap) => {
+      if (cancelled) return;
+      const reportText = snap.data()?.report?.text;
+      if (typeof reportText === "string" && reportText) {
+        setCachedReport(reportText);
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
 
   useEffect(() => {
     if ("serviceWorker" in navigator) {
@@ -102,6 +122,31 @@ export default function HistoryPage() {
     router.push("/world");
   }
 
+  async function handleLogout() {
+    setShowSettings(false);
+    await signOut(getFirebaseAuth());
+    router.push("/auth");
+  }
+
+  function handleEditContext(entryId: string) {
+    setOpenMenuId(null);
+    router.push(`/context?entryId=${entryId}`);
+  }
+
+  async function handleDelete(entryId: string) {
+    setOpenMenuId(null);
+    if (!user) return;
+    if (!window.confirm(t("confirmDelete"))) return;
+
+    setDeleteError(false);
+    try {
+      await deleteDoc(doc(db, "users", user.uid, "entries", entryId));
+      setEntries((prev) => (prev ? prev.filter((e) => e.id !== entryId) : prev));
+    } catch {
+      setDeleteError(true);
+    }
+  }
+
   const dayCount = entries
     ? new Set(entries.filter((e) => e.timestamp).map((e) => e.timestamp!.toDateString())).size
     : 0;
@@ -114,13 +159,33 @@ export default function HistoryPage() {
   return (
     <AuthGuard>
       {showNotifPrompt && <NotificationPrompt onClose={() => setShowNotifPrompt(false)} />}
+      {showSettings && (
+        <>
+          <div className={styles.settingsBackdrop} onClick={() => setShowSettings(false)} />
+          <div className={styles.settingsSheet}>
+            <button type="button" className={styles.settingsLogout} onClick={handleLogout}>
+              {t("logOut")}
+            </button>
+          </div>
+        </>
+      )}
       <div className="flex min-h-screen flex-col bg-[#f7f6f4]">
         <div className={styles.histHdr}>
           <div className={styles.histTop}>
             <div className={styles.histTitle}>{t("title")}</div>
-            <button type="button" className={styles.histNew} onClick={handleNewMoment}>
-              {t("newMoment")}
-            </button>
+            <div className={styles.histTopActions}>
+              <button type="button" className={styles.histNew} onClick={handleNewMoment}>
+                {t("newMoment")}
+              </button>
+              <button
+                type="button"
+                className={styles.settingsBtn}
+                aria-label="Settings"
+                onClick={() => setShowSettings(true)}
+              >
+                ⚙
+              </button>
+            </div>
           </div>
           <div className={styles.histSub}>
             {entries && entries.length > 0
@@ -133,13 +198,21 @@ export default function HistoryPage() {
             </div>
           )}
           {entries && entries.length >= 5 && (
-            <Link href="/report" className={styles.histNew}>
+            <Link href="/report?fresh=1" className={styles.histNew}>
               {t("seeReport")}
             </Link>
           )}
         </div>
 
         <div className={styles.histScroll}>
+          {cachedReport && (
+            <div className={styles.reportCard}>
+              <p className={styles.reportCardText}>{cachedReport}</p>
+              <Link href="/report?fresh=1" className={styles.regenerateLink}>
+                {t("regenerate")}
+              </Link>
+            </div>
+          )}
           {showIOSBanner && (
             <div className={styles.iosBanner}>
               <p className={styles.iosBannerText}>{tInstall("iosText")}</p>
@@ -187,6 +260,7 @@ export default function HistoryPage() {
           ) : (
             <>
               <div className={styles.secLbl}>{t("recent")}</div>
+              {deleteError && <p className={styles.secLbl}>{t("deleteError")}</p>}
               {entries.map((entry) => (
                 <div key={entry.id} className={styles.entryRow}>
                   <div className={styles.entryDot} />
@@ -197,6 +271,35 @@ export default function HistoryPage() {
                     <div className={styles.entryMeta}>
                       {entry.timestamp ? dateFormatter.format(entry.timestamp) : "—"}
                     </div>
+                  </div>
+                  <div className={styles.entryMenuWrap}>
+                    <button
+                      type="button"
+                      className={styles.entryMenuBtn}
+                      aria-label="More"
+                      onClick={() => setOpenMenuId((id) => (id === entry.id ? null : entry.id))}
+                    >
+                      ···
+                    </button>
+                    {openMenuId === entry.id && (
+                      <>
+                        <div className={styles.entryMenuBackdrop} onClick={() => setOpenMenuId(null)} />
+                        <div className={styles.entryMenu}>
+                          <div
+                            className={styles.entryMenuItem}
+                            onClick={() => handleEditContext(entry.id)}
+                          >
+                            {t("editContext")}
+                          </div>
+                          <div
+                            className={`${styles.entryMenuItem} ${styles.entryMenuItemDanger}`}
+                            onClick={() => handleDelete(entry.id)}
+                          >
+                            {t("delete")}
+                          </div>
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
               ))}

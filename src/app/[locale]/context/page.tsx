@@ -1,9 +1,22 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { addDoc, collection, getCountFromServer, serverTimestamp } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  getCountFromServer,
+  getDoc,
+  getDocs,
+  limit,
+  orderBy,
+  query,
+  serverTimestamp,
+  Timestamp,
+  updateDoc,
+} from "firebase/firestore";
 import { Link, useRouter } from "@/i18n/navigation";
 import { useAnonymousAuth } from "@/lib/use-anonymous-auth";
 import { useSliderSound } from "@/lib/use-slider-sound";
@@ -25,6 +38,10 @@ import { AuthGuard } from "@/components/AuthGuard";
 import checkinStyles from "@/styles/checkin-screen.module.css";
 import styles from "./context.module.css";
 
+function startOfDay(d: Date): number {
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+}
+
 function ContextPageInner() {
   const t = useTranslations("Context");
   const locale = useLocale();
@@ -38,8 +55,10 @@ function ContextPageInner() {
   const x = Number(searchParams.get("x")) || 0;
   const y = Number(searchParams.get("y")) || 0;
   const state = (searchParams.get("state") as StateKey) || "Still";
-  const emotion = searchParams.get("emotion") ?? "";
+  const entryId = searchParams.get("entryId");
+  const isEditing = Boolean(entryId);
 
+  const [emotion, setEmotion] = useState(searchParams.get("emotion") ?? "");
   const [activities, setActivities] = useState<Set<ActivityKey>>(new Set());
   const [social, setSocial] = useState<Set<SocialKey>>(new Set());
   const [sleep, setSleep] = useState<SleepKey | null>(null);
@@ -47,6 +66,32 @@ function ContextPageInner() {
   const [hunger, setHunger] = useState<HungerKey | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [loadingEntry, setLoadingEntry] = useState(isEditing);
+
+  useEffect(() => {
+    if (!entryId || !user) return;
+    let cancelled = false;
+    getDoc(doc(db, "users", user.uid, "entries", entryId))
+      .then((snap) => {
+        if (cancelled || !snap.exists()) return;
+        const tokens = snap.data().custom_tokens ?? {};
+        const toArray = (value: unknown): string[] =>
+          Array.isArray(value) ? value : typeof value === "string" && value ? [value] : [];
+
+        if (tokens.emotion) setEmotion(tokens.emotion);
+        setActivities(new Set(toArray(tokens.activity) as ActivityKey[]));
+        setSocial(new Set(toArray(tokens.social) as SocialKey[]));
+        setSleep((tokens.sleep as SleepKey) ?? null);
+        setEnergy((tokens.energy as EnergyKey) ?? null);
+        setHunger((tokens.hunger as HungerKey) ?? null);
+      })
+      .finally(() => {
+        if (!cancelled) setLoadingEntry(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [entryId, user]);
 
   function toggleActivity(key: ActivityKey) {
     setActivities((prev) => {
@@ -84,7 +129,7 @@ function ContextPageInner() {
   }
 
   async function handleSave() {
-    if (!user || saving) return;
+    if (!user || saving || loadingEntry) return;
     setSaving(true);
     setError(null);
     sndSave();
@@ -98,6 +143,21 @@ function ContextPageInner() {
     if (hunger) customTokens.hunger = hunger;
 
     const entriesRef = collection(db, "users", user.uid, "entries");
+
+    if (isEditing && entryId) {
+      try {
+        await updateDoc(doc(db, "users", user.uid, "entries", entryId), {
+          custom_tokens: customTokens,
+        });
+      } catch {
+        setError(t("saveError"));
+        setSaving(false);
+        return;
+      }
+      router.push("/history");
+      return;
+    }
+
     try {
       await addDoc(entriesRef, {
         timestamp: serverTimestamp(),
@@ -115,19 +175,53 @@ function ContextPageInner() {
       return;
     }
 
+    let count = 0;
     try {
-      const count = (await getCountFromServer(entriesRef)).data().count;
-      router.push(count === 5 ? "/insight" : "/history");
+      count = (await getCountFromServer(entriesRef)).data().count;
     } catch {
       router.push("/history");
+      return;
     }
+
+    if (count === 5) {
+      fetch("/api/report/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: user.uid, locale }),
+      }).catch(() => {});
+      router.push("/report-pending?milestone=five");
+      return;
+    }
+
+    try {
+      const firstSnap = await getDocs(query(entriesRef, orderBy("timestamp", "asc"), limit(1)));
+      const firstTimestamp = firstSnap.docs[0]?.data().timestamp;
+      if (firstTimestamp instanceof Timestamp) {
+        const dayDiff = Math.round(
+          (startOfDay(new Date()) - startOfDay(firstTimestamp.toDate())) / (24 * 60 * 60 * 1000),
+        );
+        if (dayDiff === 14) {
+          fetch("/api/report/generate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userId: user.uid, locale }),
+          }).catch(() => {});
+          router.push("/report-pending?milestone=twoWeek");
+          return;
+        }
+      }
+    } catch {
+      // Fall through to the normal history navigation below.
+    }
+
+    router.push("/history");
   }
 
   return (
     <div className={checkinStyles.lightScreen}>
       <div className={checkinStyles.maxW}>
         <div className={checkinStyles.nav}>
-          <Link href="/map" className={checkinStyles.navBack}>
+          <Link href={isEditing ? "/history" : "/map"} className={checkinStyles.navBack}>
             ‹
           </Link>
           <div className={checkinStyles.navTitle}>{t("navTitle")}</div>
@@ -222,7 +316,7 @@ function ContextPageInner() {
             type="button"
             className={styles.btnSave}
             onClick={handleSave}
-            disabled={!user || saving}
+            disabled={!user || saving || loadingEntry}
           >
             {t("save")}
           </button>

@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState, type FormEvent } from "react";
+import { Suspense, useEffect, useState, type FormEvent } from "react";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
@@ -25,6 +25,18 @@ function AuthPageInner() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [showBack, setShowBack] = useState(false);
+
+  useEffect(() => {
+    if (searchParams.get("from") === "onboarding" && localStorage.getItem("em_onboarded")) {
+      setShowBack(true);
+    }
+  }, [searchParams]);
+
+  function handleBack() {
+    localStorage.removeItem("em_onboarded");
+    router.push("/");
+  }
 
   function mapError(code: string | undefined): string {
     switch (code) {
@@ -75,6 +87,11 @@ function AuthPageInner() {
 
   return (
     <div className={styles.screen}>
+      {showBack && (
+        <button type="button" onClick={handleBack} aria-label="Back" className={styles.backButton}>
+          ‹
+        </button>
+      )}
       <div className={styles.wordmark}>EMOMAP</div>
       <div className={styles.content}>
         <h1 className={styles.headline}>

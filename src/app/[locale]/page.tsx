@@ -47,13 +47,13 @@ export default function OnboardingPage() {
     if (authUser && !authUser.isAnonymous) {
       router.push("/world");
     } else {
-      router.push("/auth");
+      router.push("/auth?from=onboarding");
     }
   }
 
   function handleLogin() {
     localStorage.setItem(ONBOARDED_KEY, "1");
-    router.push("/auth?mode=login");
+    router.push("/auth?mode=login&from=onboarding");
   }
 
   function handleTouchStart(e: TouchEvent<HTMLDivElement>) {
