@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { Suspense, useState, type FormEvent } from "react";
+import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
   createUserWithEmailAndPassword,
@@ -14,10 +15,11 @@ import styles from "./auth.module.css";
 
 type Mode = "signup" | "login";
 
-export default function AuthPage() {
+function AuthPageInner() {
   const t = useTranslations("Auth");
   const router = useRouter();
-  const [mode, setMode] = useState<Mode>("signup");
+  const searchParams = useSearchParams();
+  const [mode, setMode] = useState<Mode>(searchParams.get("mode") === "login" ? "login" : "signup");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -120,5 +122,13 @@ export default function AuthPage() {
         </button>
       </div>
     </div>
+  );
+}
+
+export default function AuthPage() {
+  return (
+    <Suspense fallback={null}>
+      <AuthPageInner />
+    </Suspense>
   );
 }

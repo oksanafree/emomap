@@ -51,6 +51,11 @@ export default function OnboardingPage() {
     }
   }
 
+  function handleLogin() {
+    localStorage.setItem(ONBOARDED_KEY, "1");
+    router.push("/auth?mode=login");
+  }
+
   function handleTouchStart(e: TouchEvent<HTMLDivElement>) {
     touchStartX.current = e.touches[0].clientX;
   }
@@ -86,6 +91,14 @@ export default function OnboardingPage() {
           ‹
         </button>
       )}
+
+      <button
+        type="button"
+        onClick={handleLogin}
+        className="absolute right-6 top-[calc(env(safe-area-inset-top)+32px)] text-sm text-[#6868b0]"
+      >
+        {t("login")}
+      </button>
 
       <div className="flex flex-1 flex-col items-center justify-center gap-4">
         {step === 0 && <OnboardingMap {...mapLabels} />}
