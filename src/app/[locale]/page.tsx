@@ -4,8 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import type { TouchEvent } from "react";
 import { useTranslations } from "next-intl";
 import { onAuthStateChanged, type User } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
 import { useRouter } from "@/i18n/navigation";
-import { getFirebaseAuth } from "@/lib/firebase";
+import { getFirebaseAuth, db } from "@/lib/firebase";
 import { OnboardingMap } from "@/components/onboarding-map";
 import { TrailMap } from "@/components/trail-map";
 import { OnboardingSliderPreview } from "@/components/onboarding-slider-preview";
@@ -20,19 +21,43 @@ export default function OnboardingPage() {
   const router = useRouter();
   const [step, setStep] = useState(0);
   const [authUser, setAuthUser] = useState<User | null>(null);
+  const [authResolved, setAuthResolved] = useState(false);
+  const [showLanding, setShowLanding] = useState(false);
+  const [hasCachedReport, setHasCachedReport] = useState(false);
   const touchStartX = useRef<number | null>(null);
 
   useEffect(() => {
-    if (localStorage.getItem(ONBOARDED_KEY)) {
-      router.replace("/world");
-    }
-  }, [router]);
-
-  useEffect(() => {
     const auth = getFirebaseAuth();
-    const unsubscribe = onAuthStateChanged(auth, setAuthUser);
+    const unsubscribe = onAuthStateChanged(auth, (u) => {
+      setAuthUser(u);
+      setAuthResolved(true);
+    });
     return () => unsubscribe();
   }, []);
+
+  useEffect(() => {
+    if (!authResolved || !localStorage.getItem(ONBOARDED_KEY)) return;
+    if (authUser && !authUser.isAnonymous) {
+      setShowLanding(true);
+    } else {
+      router.replace("/auth");
+    }
+  }, [authResolved, authUser, router]);
+
+  useEffect(() => {
+    if (!showLanding || !authUser) return;
+    let cancelled = false;
+    getDoc(doc(db, "users", authUser.uid)).then((snap) => {
+      if (cancelled) return;
+      const reportText = snap.data()?.report?.text;
+      if (typeof reportText === "string" && reportText) {
+        setHasCachedReport(true);
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [showLanding, authUser]);
 
   function goNext() {
     setStep((s) => Math.min(s + 1, TOTAL_STEPS - 1));
@@ -74,6 +99,32 @@ export default function OnboardingPage() {
     enduringLabel: t("quadrants.enduring"),
     receivingLabel: t("quadrants.receiving"),
   };
+
+  if (showLanding) {
+    return (
+      <div className="flex min-h-screen flex-col items-center bg-[#080914] px-8 pt-[calc(env(safe-area-inset-top)+56px)]">
+        <div className="flex-1" />
+        <div className="w-full px-2 pb-[calc(env(safe-area-inset-bottom)+36px)]">
+          <button
+            type="button"
+            onClick={() => router.push("/world")}
+            className="w-full rounded-2xl border border-[#6b5fd0] bg-[#4a3fa0] py-[18px] text-[17px] text-[#e0d8ff]"
+          >
+            {t("checkInNow")}
+          </button>
+          {hasCachedReport && (
+            <button
+              type="button"
+              onClick={() => router.push("/report")}
+              className="mt-4 block w-full text-center text-[15px] text-[#6868b0]"
+            >
+              {t("seeMyReport")}
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
