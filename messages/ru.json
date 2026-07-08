@@ -4,12 +4,14 @@
     "description": "Отслеживайте и понимайте свои эмоции.",
     "switchLocale": "English"
   },
+  "home": {
+    "viewReport": "Мой отчёт →"
+  },
   "Onboarding": {
     "next": "Далее →",
     "start": "Начнём →",
     "login": "Войти",
     "checkInNow": "Отметиться сейчас →",
-    "seeMyReport": "Мой отчёт →",
     "quadrants": {
       "protecting": "Защищаю",
       "building": "Строю",

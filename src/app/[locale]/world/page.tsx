@@ -38,7 +38,7 @@ export default function WorldPage() {
       <div className={styles.lightScreen}>
         <div className={styles.maxW}>
           <div className={styles.nav}>
-            <Link href="/" className={styles.navBack}>
+            <Link href="/history" className={styles.navBack}>
               ‹
             </Link>
             <div className={styles.navTitle}>{t("navTitle")}</div>

@@ -18,6 +18,7 @@ const SWIPE_THRESHOLD = 50;
 
 export default function OnboardingPage() {
   const t = useTranslations("Onboarding");
+  const tHome = useTranslations("home");
   const router = useRouter();
   const [step, setStep] = useState(0);
   const [authUser, setAuthUser] = useState<User | null>(null);
@@ -116,9 +117,9 @@ export default function OnboardingPage() {
             <button
               type="button"
               onClick={() => router.push("/report")}
-              className="mt-4 block w-full text-center text-[15px] text-[#6868b0]"
+              className="mt-3 w-full rounded-2xl border border-[#3a3468] bg-transparent py-[18px] text-[17px] text-[#6868b0]"
             >
-              {t("seeMyReport")}
+              {tHome("viewReport")}
             </button>
           )}
         </div>
