@@ -9,8 +9,12 @@ import { useSliderSound } from "@/lib/use-slider-sound";
 import { db } from "@/lib/firebase";
 import type { StateKey } from "@/lib/state-detection";
 import { AuthGuard } from "@/components/AuthGuard";
+import { NotificationPrompt } from "@/components/NotificationPrompt";
 import mapStyles from "@/styles/map-visual.module.css";
 import styles from "./history.module.css";
+
+const NOTIF_ASKED_KEY = "notif_asked";
+const INSTALL_PROMPT_SEEN_KEY = "install_prompt_seen";
 
 type HistoryEntry = {
   id: string;
@@ -25,12 +29,43 @@ type HistoryEntry = {
 export default function HistoryPage() {
   const t = useTranslations("History");
   const tMap = useTranslations("Map");
+  const tInstall = useTranslations("Install");
   const locale = useLocale();
   const router = useRouter();
   const { user, loading: authLoading } = useAnonymousAuth();
   const { sndNav } = useSliderSound();
   const [entries, setEntries] = useState<HistoryEntry[] | null>(null);
   const [error, setError] = useState(false);
+  const [showNotifPrompt, setShowNotifPrompt] = useState(false);
+  const [showIOSBanner, setShowIOSBanner] = useState(false);
+
+  useEffect(() => {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/firebase-messaging-sw.js").catch(() => {});
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!entries || entries.length === 0) return;
+    if (!localStorage.getItem(NOTIF_ASKED_KEY)) {
+      setShowNotifPrompt(true);
+    }
+  }, [entries]);
+
+  useEffect(() => {
+    const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    const isStandalone =
+      window.matchMedia("(display-mode: standalone)").matches ||
+      (window.navigator as Navigator & { standalone?: boolean }).standalone === true;
+    if (isIOS && !isStandalone && !localStorage.getItem(INSTALL_PROMPT_SEEN_KEY)) {
+      setShowIOSBanner(true);
+    }
+  }, []);
+
+  function dismissIOSBanner() {
+    localStorage.setItem(INSTALL_PROMPT_SEEN_KEY, "true");
+    setShowIOSBanner(false);
+  }
 
   useEffect(() => {
     if (!user) return;
@@ -78,6 +113,7 @@ export default function HistoryPage() {
 
   return (
     <AuthGuard>
+      {showNotifPrompt && <NotificationPrompt onClose={() => setShowNotifPrompt(false)} />}
       <div className="flex min-h-screen flex-col bg-[#f7f6f4]">
         <div className={styles.histHdr}>
           <div className={styles.histTop}>
@@ -104,6 +140,14 @@ export default function HistoryPage() {
         </div>
 
         <div className={styles.histScroll}>
+          {showIOSBanner && (
+            <div className={styles.iosBanner}>
+              <p className={styles.iosBannerText}>{tInstall("iosText")}</p>
+              <button type="button" className={styles.iosBannerDismiss} onClick={dismissIOSBanner}>
+                {tInstall("dismiss")}
+              </button>
+            </div>
+          )}
           <div className={mapStyles.mapWrap}>
             <div className={mapStyles.axH} />
             <div className={mapStyles.axV} />

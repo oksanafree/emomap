@@ -85,3 +85,32 @@
   color: #b0adb8;
   line-height: 1.5;
 }
+
+.iosBanner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding: 14px 16px;
+  background: #fff;
+  border: 1px solid #e8e5e0;
+  border-radius: 14px;
+}
+
+.iosBannerText {
+  flex: 1;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #2a2825;
+}
+
+.iosBannerDismiss {
+  flex-shrink: 0;
+  padding: 8px 14px;
+  background: #2a2825;
+  border: none;
+  border-radius: 18px;
+  color: #f0eeec;
+  font-size: 13px;
+  cursor: pointer;
+}

@@ -1,0 +1,84 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: #080914;
+  display: flex;
+  flex-direction: column;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 28px 20px;
+}
+
+.badge {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: #1e1c38;
+  border: 1px solid #3a3468;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 28px;
+}
+
+.badgeDot {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #7c6cf0;
+  box-shadow: 0 0 14px rgba(124, 108, 240, 0.5);
+}
+
+.headline {
+  font-size: 24px;
+  color: #e8e4ff;
+  text-align: center;
+  line-height: 1.4;
+  font-weight: 400;
+  margin-bottom: 16px;
+}
+
+.body {
+  font-size: 15px;
+  color: #5858a0;
+  text-align: center;
+  line-height: 1.75;
+}
+
+.emphasis {
+  color: #9090c8;
+}
+
+.actions {
+  padding: 0 24px calc(env(safe-area-inset-bottom, 0px) + 32px);
+}
+
+.turnOn {
+  width: 100%;
+  padding: 17px;
+  background: #4a3fa0;
+  border: 1px solid #6b5fd0;
+  border-radius: 14px;
+  color: #e0d8ff;
+  font-size: 16px;
+  cursor: pointer;
+  margin-bottom: 12px;
+}
+
+.skip {
+  width: 100%;
+  padding: 12px;
+  background: transparent;
+  border: none;
+  color: #3a3860;
+  font-size: 14px;
+  cursor: pointer;
+}

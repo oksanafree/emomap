@@ -218,5 +218,15 @@
       "invalidEmail": "Enter a valid email address",
       "generic": "Something went wrong. Try again."
     }
+  },
+  "Notifications": {
+    "headline": "Patterns need<br></br>input to appear.",
+    "body": "People who notice meaningful patterns in their map check in <em>at least twice a day</em> — and when something happens.<br></br><br></br>Turn on reminders and we'll nudge you to check in.",
+    "turnOn": "Turn on reminders",
+    "skip": "Skip for now"
+  },
+  "Install": {
+    "iosText": "To receive reminders on iPhone, add Emomapp to your home screen. Tap the share button → Add to Home Screen.",
+    "dismiss": "Got it"
   }
 }

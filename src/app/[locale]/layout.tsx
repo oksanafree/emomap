@@ -20,6 +20,12 @@ const geistMono = localFont({
 export const metadata: Metadata = {
   title: "Emomapp",
   description: "Track and understand your emotions.",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Emomapp",
+  },
 };
 
 export function generateStaticParams() {
