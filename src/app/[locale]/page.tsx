@@ -6,6 +6,8 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { OnboardingMap } from "@/components/onboarding-map";
 import { TrailMap } from "@/components/trail-map";
+import { OnboardingSliderPreview } from "@/components/onboarding-slider-preview";
+import { OnboardingMilestones } from "@/components/onboarding-milestones";
 
 const ONBOARDED_KEY = "em_onboarded";
 const TOTAL_STEPS = 4;
@@ -57,7 +59,7 @@ export default function OnboardingPage() {
 
   return (
     <div
-      className="relative flex min-h-screen flex-col items-center bg-[#080914] px-8 pt-[calc(env(safe-area-inset-top)+36px)]"
+      className="relative flex min-h-screen flex-col items-center bg-[#080914] px-8 pt-[calc(env(safe-area-inset-top)+56px)]"
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
@@ -72,25 +74,35 @@ export default function OnboardingPage() {
         </button>
       )}
 
-      <div className="flex flex-1 flex-col items-center justify-between">
-        <div className="flex flex-col items-center gap-3">
-          {step === 0 && <OnboardingMap {...mapLabels} />}
-          {step === 2 && <TrailMap {...mapLabels} />}
-          <h1 className="text-center text-[34px] font-normal leading-tight tracking-tight text-[#e8e4ff]">
-            {t(`steps.${step}.headline`)}
-          </h1>
-        </div>
-        <p className="px-1 text-center text-base leading-relaxed text-[#4848a0]">
+      <div className="flex flex-1 flex-col items-center justify-center gap-4">
+        {step === 0 && <OnboardingMap {...mapLabels} />}
+        {step === 1 && (
+          <OnboardingSliderPreview
+            worldLabel={t("sliderLabels.world")}
+            selfLabel={t("sliderLabels.self")}
+          />
+        )}
+        {step === 2 && <TrailMap {...mapLabels} />}
+        {step === 3 && (
+          <OnboardingMilestones
+            firstLabel={t("milestones.first")}
+            secondLabel={t("milestones.second")}
+          />
+        )}
+        <h1 className="text-center text-[32px] font-light leading-tight tracking-[-0.02em] text-[#e8e4ff]">
+          {t(`steps.${step}.headline`)}
+        </h1>
+        <p className="max-w-[300px] text-center text-[17px] leading-[1.7] text-[#6868b0]">
           {t(`steps.${step}.body`)}
         </p>
       </div>
 
-      <div className="flex items-center gap-2 pb-6 pt-4">
+      <div className="flex items-center gap-[10px] pb-6">
         {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
           <div
             key={i}
             className={`h-2 w-2 rounded-full transition-colors ${
-              i === step ? "bg-[#7c6cf0]" : "bg-white/15"
+              i === step ? "bg-[#7c6cf0]" : "bg-white/20"
             }`}
           />
         ))}

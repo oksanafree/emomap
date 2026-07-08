@@ -12,7 +12,7 @@ export function OnboardingMap({
   receivingLabel,
 }: OnboardingMapProps) {
   return (
-    <div className="relative h-[210px] w-[210px] shrink-0">
+    <div className="relative h-[200px] w-[200px] shrink-0">
       <svg
         viewBox="0 0 200 200"
         className="absolute left-0 top-0 h-full w-full"

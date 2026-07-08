@@ -13,6 +13,14 @@
       "enduring": "Enduring",
       "receiving": "Receiving"
     },
+    "sliderLabels": {
+      "world": "WORLD",
+      "self": "SELF"
+    },
+    "milestones": {
+      "first": "5 check-ins → first report",
+      "second": "2 weeks → full analysis"
+    },
     "steps": [
       {
         "headline": "Your mind scans every moment.",
