@@ -6,6 +6,7 @@ import { collection, getDocs, orderBy, query, Timestamp } from "firebase/firesto
 import { Link } from "@/i18n/navigation";
 import { useAnonymousAuth } from "@/lib/use-anonymous-auth";
 import { db } from "@/lib/firebase";
+import { AuthGuard } from "@/components/AuthGuard";
 import mapStyles from "@/styles/map-visual.module.css";
 import styles from "./report.module.css";
 
@@ -144,93 +145,95 @@ export default function ReportPage() {
   }
 
   return (
-    <div>
-      <div className={styles.darkSection}>
-        <div className={styles.nav}>
-          <Link href="/history" className={styles.navBack}>
-            ‹
-          </Link>
-          <div className={styles.navTitle}>{t("navTitle")}</div>
-          <div className={styles.navSp} />
-        </div>
+    <AuthGuard>
+      <div>
+        <div className={styles.darkSection}>
+          <div className={styles.nav}>
+            <Link href="/history" className={styles.navBack}>
+              ‹
+            </Link>
+            <div className={styles.navTitle}>{t("navTitle")}</div>
+            <div className={styles.navSp} />
+          </div>
 
-        <div className={mapStyles.mapWrap}>
-          <div className={mapStyles.axH} />
-          <div className={mapStyles.axV} />
-          <div className={mapStyles.ring} style={{ width: "23%", height: "23%" }} />
-          <div className={mapStyles.ring} style={{ width: "46%", height: "46%" }} />
-          <div className={mapStyles.ring} style={{ width: "70%", height: "70%" }} />
-          <div className={mapStyles.ql} style={{ top: 8, left: 10 }}>
-            {tMap("quadrants.protecting")}
-          </div>
-          <div className={mapStyles.ql} style={{ top: 8, right: 10 }}>
-            {tMap("quadrants.building")}
-          </div>
-          <div className={mapStyles.ql} style={{ bottom: 8, left: 10 }}>
-            {tMap("quadrants.enduring")}
-          </div>
-          <div className={mapStyles.ql} style={{ bottom: 8, right: 10 }}>
-            {tMap("quadrants.receiving")}
-          </div>
-          <svg className={mapStyles.mapSvg}>
-            {dots.map((d, i) => (
-              <circle key={i} cx={`${d.left}%`} cy={`${d.top}%`} r="3%" fill="rgba(255,255,255,0.25)" />
-            ))}
-            {lines.map((l, i) => (
-              <line
-                key={i}
-                x1={`${l.from.left}%`}
-                y1={`${l.from.top}%`}
-                x2={`${l.to.left}%`}
-                y2={`${l.to.top}%`}
-                stroke={`rgba(255,255,255,${l.opacity})`}
-                strokeWidth="1.2"
-                strokeDasharray="3,5"
+          <div className={mapStyles.mapWrap}>
+            <div className={mapStyles.axH} />
+            <div className={mapStyles.axV} />
+            <div className={mapStyles.ring} style={{ width: "23%", height: "23%" }} />
+            <div className={mapStyles.ring} style={{ width: "46%", height: "46%" }} />
+            <div className={mapStyles.ring} style={{ width: "70%", height: "70%" }} />
+            <div className={mapStyles.ql} style={{ top: 8, left: 10 }}>
+              {tMap("quadrants.protecting")}
+            </div>
+            <div className={mapStyles.ql} style={{ top: 8, right: 10 }}>
+              {tMap("quadrants.building")}
+            </div>
+            <div className={mapStyles.ql} style={{ bottom: 8, left: 10 }}>
+              {tMap("quadrants.enduring")}
+            </div>
+            <div className={mapStyles.ql} style={{ bottom: 8, right: 10 }}>
+              {tMap("quadrants.receiving")}
+            </div>
+            <svg className={mapStyles.mapSvg}>
+              {dots.map((d, i) => (
+                <circle key={i} cx={`${d.left}%`} cy={`${d.top}%`} r="3%" fill="rgba(255,255,255,0.25)" />
+              ))}
+              {lines.map((l, i) => (
+                <line
+                  key={i}
+                  x1={`${l.from.left}%`}
+                  y1={`${l.from.top}%`}
+                  x2={`${l.to.left}%`}
+                  y2={`${l.to.top}%`}
+                  stroke={`rgba(255,255,255,${l.opacity})`}
+                  strokeWidth="1.2"
+                  strokeDasharray="3,5"
+                />
+              ))}
+            </svg>
+            {mover && (
+              <div
+                className={mapStyles.mdot}
+                style={{
+                  left: `${mover.left}%`,
+                  top: `${mover.top}%`,
+                  transition: moverReady ? undefined : "none",
+                }}
               />
-            ))}
-          </svg>
-          {mover && (
-            <div
-              className={mapStyles.mdot}
-              style={{
-                left: `${mover.left}%`,
-                top: `${mover.top}%`,
-                transition: moverReady ? undefined : "none",
-              }}
-            />
+            )}
+          </div>
+
+          {timestamps === null ? (
+            <p className={styles.status}>{t("loading")}</p>
+          ) : timestamps.length === 0 ? (
+            <p className={styles.status}>{t("empty")}</p>
+          ) : (
+            <>
+              <div className={styles.headline}>{t("headline")}</div>
+              <div className={styles.subtext}>{t("subtext")}</div>
+              <div className={styles.dateRange}>{dateRangeText}</div>
+              <div className={styles.checkinsCount}>{t("checkinsCount", { count: timestamps.length })}</div>
+              <button type="button" className={styles.revealBtn} onClick={handleReveal}>
+                {t("reveal")}
+              </button>
+            </>
           )}
         </div>
 
-        {timestamps === null ? (
-          <p className={styles.status}>{t("loading")}</p>
-        ) : timestamps.length === 0 ? (
-          <p className={styles.status}>{t("empty")}</p>
-        ) : (
-          <>
-            <div className={styles.headline}>{t("headline")}</div>
-            <div className={styles.subtext}>{t("subtext")}</div>
-            <div className={styles.dateRange}>{dateRangeText}</div>
-            <div className={styles.checkinsCount}>{t("checkinsCount", { count: timestamps.length })}</div>
-            <button type="button" className={styles.revealBtn} onClick={handleReveal}>
-              {t("reveal")}
-            </button>
-          </>
-        )}
+        <div ref={part2Ref} className={styles.lightSection} style={{ opacity: revealed ? 1 : 0 }}>
+          {reportStatus === "loading" && <p className={styles.generating}>{t("generating")}</p>}
+          {reportStatus === "error" && (
+            <>
+              <p className={styles.placeholder}>{t("reportError")}</p>
+              <button type="button" className={styles.revealBtn} onClick={fetchReport}>
+                {t("retry")}
+              </button>
+            </>
+          )}
+          {reportStatus === "loaded" && reportText && <p className={styles.reportText}>{reportText}</p>}
+          {reportStatus === "idle" && <p className={styles.placeholder}>{t("placeholder")}</p>}
+        </div>
       </div>
-
-      <div ref={part2Ref} className={styles.lightSection} style={{ opacity: revealed ? 1 : 0 }}>
-        {reportStatus === "loading" && <p className={styles.generating}>{t("generating")}</p>}
-        {reportStatus === "error" && (
-          <>
-            <p className={styles.placeholder}>{t("reportError")}</p>
-            <button type="button" className={styles.revealBtn} onClick={fetchReport}>
-              {t("retry")}
-            </button>
-          </>
-        )}
-        {reportStatus === "loaded" && reportText && <p className={styles.reportText}>{reportText}</p>}
-        {reportStatus === "idle" && <p className={styles.placeholder}>{t("placeholder")}</p>}
-      </div>
-    </div>
+    </AuthGuard>
   );
 }

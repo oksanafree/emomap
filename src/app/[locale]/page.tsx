@@ -3,7 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import type { TouchEvent } from "react";
 import { useTranslations } from "next-intl";
+import { onAuthStateChanged, type User } from "firebase/auth";
 import { useRouter } from "@/i18n/navigation";
+import { getFirebaseAuth } from "@/lib/firebase";
 import { OnboardingMap } from "@/components/onboarding-map";
 import { TrailMap } from "@/components/trail-map";
 import { OnboardingSliderPreview } from "@/components/onboarding-slider-preview";
@@ -17,6 +19,7 @@ export default function OnboardingPage() {
   const t = useTranslations("Onboarding");
   const router = useRouter();
   const [step, setStep] = useState(0);
+  const [authUser, setAuthUser] = useState<User | null>(null);
   const touchStartX = useRef<number | null>(null);
 
   useEffect(() => {
@@ -24,6 +27,12 @@ export default function OnboardingPage() {
       router.replace("/world");
     }
   }, [router]);
+
+  useEffect(() => {
+    const auth = getFirebaseAuth();
+    const unsubscribe = onAuthStateChanged(auth, setAuthUser);
+    return () => unsubscribe();
+  }, []);
 
   function goNext() {
     setStep((s) => Math.min(s + 1, TOTAL_STEPS - 1));
@@ -35,7 +44,11 @@ export default function OnboardingPage() {
 
   function handleStart() {
     localStorage.setItem(ONBOARDED_KEY, "1");
-    router.push("/world");
+    if (authUser && !authUser.isAnonymous) {
+      router.push("/world");
+    } else {
+      router.push("/auth");
+    }
   }
 
   function handleTouchStart(e: TouchEvent<HTMLDivElement>) {

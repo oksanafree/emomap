@@ -196,5 +196,26 @@
     "generating": "Читаем твой путь…",
     "reportError": "Не удалось создать отчёт. Попробуйте ещё раз.",
     "retry": "Попробовать ещё раз →"
+  },
+  "Auth": {
+    "signupHeadline": "Создай аккаунт",
+    "loginHeadline": "С возвращением",
+    "emailPlaceholder": "Email",
+    "passwordPlaceholder": "Пароль",
+    "showPassword": "Показать",
+    "hidePassword": "Скрыть",
+    "createAccount": "Создать аккаунт",
+    "logIn": "Войти",
+    "submitting": "Подождите…",
+    "toggleToLogin": "Уже есть аккаунт? Войти",
+    "toggleToSignup": "Новый пользователь? Создать аккаунт",
+    "errors": {
+      "emailInUse": "Этот email уже используется",
+      "wrongPassword": "Неверный пароль",
+      "noAccount": "Нет аккаунта с таким email",
+      "weakPassword": "Пароль должен быть не менее 6 символов",
+      "invalidEmail": "Введите корректный email",
+      "generic": "Что-то пошло не так. Попробуйте снова."
+    }
   }
 }

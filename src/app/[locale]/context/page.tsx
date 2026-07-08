@@ -21,6 +21,7 @@ import {
   type SocialKey,
 } from "@/lib/context-options";
 import type { StateKey } from "@/lib/state-detection";
+import { AuthGuard } from "@/components/AuthGuard";
 import checkinStyles from "@/styles/checkin-screen.module.css";
 import styles from "./context.module.css";
 
@@ -233,8 +234,10 @@ function ContextPageInner() {
 
 export default function ContextPage() {
   return (
-    <Suspense fallback={null}>
-      <ContextPageInner />
-    </Suspense>
+    <AuthGuard>
+      <Suspense fallback={null}>
+        <ContextPageInner />
+      </Suspense>
+    </AuthGuard>
   );
 }

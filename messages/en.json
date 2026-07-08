@@ -196,5 +196,26 @@
     "generating": "Reading your trail…",
     "reportError": "Could not generate your report. Try again.",
     "retry": "Try again →"
+  },
+  "Auth": {
+    "signupHeadline": "Create your account",
+    "loginHeadline": "Welcome back",
+    "emailPlaceholder": "Email",
+    "passwordPlaceholder": "Password",
+    "showPassword": "Show",
+    "hidePassword": "Hide",
+    "createAccount": "Create account",
+    "logIn": "Log in",
+    "submitting": "Please wait…",
+    "toggleToLogin": "Already have an account? Log in",
+    "toggleToSignup": "New here? Create account",
+    "errors": {
+      "emailInUse": "Email already in use",
+      "wrongPassword": "Wrong password",
+      "noAccount": "No account with this email",
+      "weakPassword": "Password must be at least 6 characters",
+      "invalidEmail": "Enter a valid email address",
+      "generic": "Something went wrong. Try again."
+    }
   }
 }

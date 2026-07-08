@@ -8,6 +8,7 @@ import { useAnonymousAuth } from "@/lib/use-anonymous-auth";
 import { useSliderSound } from "@/lib/use-slider-sound";
 import { db } from "@/lib/firebase";
 import type { StateKey } from "@/lib/state-detection";
+import { AuthGuard } from "@/components/AuthGuard";
 import mapStyles from "@/styles/map-visual.module.css";
 import styles from "./history.module.css";
 
@@ -76,87 +77,89 @@ export default function HistoryPage() {
   });
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#f7f6f4]">
-      <div className={styles.histHdr}>
-        <div className={styles.histTop}>
-          <div className={styles.histTitle}>{t("title")}</div>
-          <button type="button" className={styles.histNew} onClick={handleNewMoment}>
-            {t("newMoment")}
-          </button>
-        </div>
-        <div className={styles.histSub}>
-          {entries && entries.length > 0
-            ? `${t("entriesCount", { count: entries.length })} · ${t("daysCount", { count: dayCount })}`
-            : " "}
-        </div>
-        {entries && entries.length > 0 && entries.length < 5 && (
+    <AuthGuard>
+      <div className="flex min-h-screen flex-col bg-[#f7f6f4]">
+        <div className={styles.histHdr}>
+          <div className={styles.histTop}>
+            <div className={styles.histTitle}>{t("title")}</div>
+            <button type="button" className={styles.histNew} onClick={handleNewMoment}>
+              {t("newMoment")}
+            </button>
+          </div>
           <div className={styles.histSub}>
-            {t("progressToInsight", { count: entries.length, remaining: 5 - entries.length })}
+            {entries && entries.length > 0
+              ? `${t("entriesCount", { count: entries.length })} · ${t("daysCount", { count: dayCount })}`
+              : " "}
           </div>
-        )}
-        {entries && entries.length >= 5 && (
-          <Link href="/report" className={styles.histNew}>
-            {t("seeReport")}
-          </Link>
-        )}
-      </div>
-
-      <div className={styles.histScroll}>
-        <div className={mapStyles.mapWrap}>
-          <div className={mapStyles.axH} />
-          <div className={mapStyles.axV} />
-          <div className={mapStyles.ring} style={{ width: "23%", height: "23%" }} />
-          <div className={mapStyles.ring} style={{ width: "46%", height: "46%" }} />
-          <div className={mapStyles.ring} style={{ width: "70%", height: "70%" }} />
-          <div className={mapStyles.ql} style={{ top: 8, left: 10 }}>
-            {tMap("quadrants.protecting")}
-          </div>
-          <div className={mapStyles.ql} style={{ top: 8, right: 10 }}>
-            {tMap("quadrants.building")}
-          </div>
-          <div className={mapStyles.ql} style={{ bottom: 8, left: 10 }}>
-            {tMap("quadrants.enduring")}
-          </div>
-          <div className={mapStyles.ql} style={{ bottom: 8, right: 10 }}>
-            {tMap("quadrants.receiving")}
-          </div>
-          {entries?.map((entry) => (
-            <div
-              key={entry.id}
-              className={mapStyles.constellationDot}
-              style={{
-                left: `${50 + entry.x * 42}%`,
-                top: `${50 - entry.y * 42}%`,
-              }}
-            />
-          ))}
+          {entries && entries.length > 0 && entries.length < 5 && (
+            <div className={styles.histSub}>
+              {t("progressToInsight", { count: entries.length, remaining: 5 - entries.length })}
+            </div>
+          )}
+          {entries && entries.length >= 5 && (
+            <Link href="/report" className={styles.histNew}>
+              {t("seeReport")}
+            </Link>
+          )}
         </div>
 
-        {authLoading || entries === null ? (
-          <p className={styles.secLbl}>{t("loading")}</p>
-        ) : error ? (
-          <p className={styles.secLbl}>{t("error")}</p>
-        ) : entries.length === 0 ? (
-          <p className={styles.secLbl}>{t("empty")}</p>
-        ) : (
-          <>
-            <div className={styles.secLbl}>{t("recent")}</div>
-            {entries.map((entry) => (
-              <div key={entry.id} className={styles.entryRow}>
-                <div className={styles.entryDot} />
-                <div className={styles.entryBody}>
-                  <div className={styles.entryState}>
-                    {tMap(`states.${entry.state}.name`).toUpperCase()}
-                  </div>
-                  <div className={styles.entryMeta}>
-                    {entry.timestamp ? dateFormatter.format(entry.timestamp) : "—"}
+        <div className={styles.histScroll}>
+          <div className={mapStyles.mapWrap}>
+            <div className={mapStyles.axH} />
+            <div className={mapStyles.axV} />
+            <div className={mapStyles.ring} style={{ width: "23%", height: "23%" }} />
+            <div className={mapStyles.ring} style={{ width: "46%", height: "46%" }} />
+            <div className={mapStyles.ring} style={{ width: "70%", height: "70%" }} />
+            <div className={mapStyles.ql} style={{ top: 8, left: 10 }}>
+              {tMap("quadrants.protecting")}
+            </div>
+            <div className={mapStyles.ql} style={{ top: 8, right: 10 }}>
+              {tMap("quadrants.building")}
+            </div>
+            <div className={mapStyles.ql} style={{ bottom: 8, left: 10 }}>
+              {tMap("quadrants.enduring")}
+            </div>
+            <div className={mapStyles.ql} style={{ bottom: 8, right: 10 }}>
+              {tMap("quadrants.receiving")}
+            </div>
+            {entries?.map((entry) => (
+              <div
+                key={entry.id}
+                className={mapStyles.constellationDot}
+                style={{
+                  left: `${50 + entry.x * 42}%`,
+                  top: `${50 - entry.y * 42}%`,
+                }}
+              />
+            ))}
+          </div>
+
+          {authLoading || entries === null ? (
+            <p className={styles.secLbl}>{t("loading")}</p>
+          ) : error ? (
+            <p className={styles.secLbl}>{t("error")}</p>
+          ) : entries.length === 0 ? (
+            <p className={styles.secLbl}>{t("empty")}</p>
+          ) : (
+            <>
+              <div className={styles.secLbl}>{t("recent")}</div>
+              {entries.map((entry) => (
+                <div key={entry.id} className={styles.entryRow}>
+                  <div className={styles.entryDot} />
+                  <div className={styles.entryBody}>
+                    <div className={styles.entryState}>
+                      {tMap(`states.${entry.state}.name`).toUpperCase()}
+                    </div>
+                    <div className={styles.entryMeta}>
+                      {entry.timestamp ? dateFormatter.format(entry.timestamp) : "—"}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </>
-        )}
+              ))}
+            </>
+          )}
+        </div>
       </div>
-    </div>
+    </AuthGuard>
   );
 }
