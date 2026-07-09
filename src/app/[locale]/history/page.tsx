@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { collection, deleteDoc, doc, getDoc, getDocs, orderBy, query, Timestamp } from "firebase/firestore";
+import { collection, deleteDoc, doc, getDocs, orderBy, query, Timestamp } from "firebase/firestore";
 import { signOut } from "firebase/auth";
-import { Link, useRouter } from "@/i18n/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { useAnonymousAuth } from "@/lib/use-anonymous-auth";
 import { useSliderSound } from "@/lib/use-slider-sound";
 import { db, getFirebaseAuth } from "@/lib/firebase";
@@ -41,23 +41,7 @@ export default function HistoryPage() {
   const [showIOSBanner, setShowIOSBanner] = useState(false);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [deleteError, setDeleteError] = useState(false);
-  const [cachedReport, setCachedReport] = useState<string | null>(null);
   const [showSettings, setShowSettings] = useState(false);
-
-  useEffect(() => {
-    if (!user) return;
-    let cancelled = false;
-    getDoc(doc(db, "users", user.uid)).then((snap) => {
-      if (cancelled) return;
-      const reportText = snap.data()?.report?.text;
-      if (typeof reportText === "string" && reportText) {
-        setCachedReport(reportText);
-      }
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [user]);
 
   useEffect(() => {
     if ("serviceWorker" in navigator) {
@@ -197,22 +181,9 @@ export default function HistoryPage() {
               {t("progressToInsight", { count: entries.length, remaining: 5 - entries.length })}
             </div>
           )}
-          {entries && entries.length >= 5 && (
-            <Link href="/report?fresh=1" className={styles.histNew}>
-              {t("seeReport")}
-            </Link>
-          )}
         </div>
 
         <div className={styles.histScroll}>
-          {cachedReport && (
-            <div className={styles.reportCard}>
-              <p className={styles.reportCardText}>{cachedReport}</p>
-              <Link href="/report?fresh=1" className={styles.regenerateLink}>
-                {t("regenerate")}
-              </Link>
-            </div>
-          )}
           {showIOSBanner && (
             <div className={styles.iosBanner}>
               <p className={styles.iosBannerText}>{tInstall("iosText")}</p>

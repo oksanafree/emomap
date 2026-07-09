@@ -173,8 +173,6 @@
     "loading": "Loading…",
     "empty": "No entries yet.",
     "error": "Could not load your entries.",
-    "seeReport": "See your report →",
-    "regenerate": "Regenerate →",
     "logOut": "Log out",
     "editContext": "Edit context",
     "delete": "Delete",
@@ -203,19 +201,10 @@
     "bodySameDay": "Your check-ins from {date} are showing how you've seen the world and yourself.",
     "checkinsCount": "{count, plural, one {# check-in} other {# check-ins}}",
     "reveal": "See what this reveals →",
-    "placeholder": "Your AI report will appear here.",
     "loading": "Loading…",
     "empty": "No entries yet.",
-    "loadingMessages": [
-      "Reading your trail...",
-      "Looking for what repeats...",
-      "Mapping your patterns...",
-      "Finding your arc...",
-      "This takes about 15 seconds..."
-    ],
-    "notEnoughEntries": "Keep checking in — your first report arrives after 5 entries",
-    "reportError": "Could not generate your report. Try again.",
-    "retry": "Try again →"
+    "notEnoughEntries": "Your report will be ready after 5 check-ins.",
+    "back": "Back to my trail →"
   },
   "ReportPending": {
     "headline": "Your report is being prepared.",

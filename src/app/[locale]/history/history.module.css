@@ -216,27 +216,3 @@
   font-size: 13px;
   cursor: pointer;
 }
-
-.reportCard {
-  margin-bottom: 12px;
-  padding: 16px;
-  background: #fff;
-  border: 1px solid #e8e5e0;
-  border-radius: 14px;
-}
-
-.reportCardText {
-  font-size: 14px;
-  line-height: 1.7;
-  color: #2a2825;
-  white-space: pre-line;
-  max-height: 220px;
-  overflow-y: auto;
-}
-
-.regenerateLink {
-  display: inline-block;
-  margin-top: 10px;
-  font-size: 13px;
-  color: #7c6cf0;
-}

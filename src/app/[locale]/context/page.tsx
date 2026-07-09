@@ -166,22 +166,17 @@ function ContextPageInner() {
       return;
     }
 
-    let count = 0;
     try {
-      count = (await getCountFromServer(entriesRef)).data().count;
+      const count = (await getCountFromServer(entriesRef)).data().count;
+      if (count >= 5) {
+        fetch("/api/report/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userId: user.uid, locale }),
+        }).catch(() => {});
+      }
     } catch {
-      router.push("/history");
-      return;
-    }
-
-    if (count > 0 && count % 5 === 0) {
-      fetch("/api/report/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: user.uid, locale }),
-      }).catch(() => {});
-      router.push("/report-pending");
-      return;
+      // Non-fatal: the entry is already saved, report regeneration is best-effort.
     }
 
     router.push("/history");
