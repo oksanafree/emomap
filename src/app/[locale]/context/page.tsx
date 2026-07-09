@@ -66,6 +66,17 @@ function ContextPageInner() {
   const noteQuestion = stateQuestions[questionIndex] ?? "";
 
   useEffect(() => {
+    console.log("[context] state question check", {
+      stateFromUrl: searchParams.get("state"),
+      resolvedState: state,
+      stateQuestions,
+      questionIndex,
+      noteQuestion,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
     if (!entryId || !user) return;
     let cancelled = false;
     getDoc(doc(db, "users", user.uid, "entries", entryId))
