@@ -24,7 +24,7 @@ export default function OnboardingPage() {
   const [authUser, setAuthUser] = useState<User | null>(null);
   const [authResolved, setAuthResolved] = useState(false);
   const [showLanding, setShowLanding] = useState(false);
-  const [hasCachedReport, setHasCachedReport] = useState(false);
+  const [reportCheckStatus, setReportCheckStatus] = useState<"checking" | "found" | "none">("checking");
   const touchStartX = useRef<number | null>(null);
 
   useEffect(() => {
@@ -48,13 +48,15 @@ export default function OnboardingPage() {
   useEffect(() => {
     if (!showLanding || !authUser) return;
     let cancelled = false;
-    getDoc(doc(db, "users", authUser.uid)).then((snap) => {
-      if (cancelled) return;
-      const reportText = snap.data()?.report?.text;
-      if (typeof reportText === "string" && reportText) {
-        setHasCachedReport(true);
-      }
-    });
+    getDoc(doc(db, "users", authUser.uid))
+      .then((snap) => {
+        if (cancelled) return;
+        const reportText = snap.data()?.report?.text;
+        setReportCheckStatus(typeof reportText === "string" && reportText ? "found" : "none");
+      })
+      .catch(() => {
+        if (!cancelled) setReportCheckStatus("none");
+      });
     return () => {
       cancelled = true;
     };
@@ -104,7 +106,11 @@ export default function OnboardingPage() {
   if (showLanding) {
     return (
       <div className="flex min-h-screen flex-col items-center bg-[#080914] px-8 pt-[calc(env(safe-area-inset-top)+56px)]">
-        <div className="flex-1" />
+        <div className="flex flex-1 flex-col items-center justify-center gap-3">
+          <div className="h-2 w-2 animate-pulse rounded-full bg-[#7c6cf0] shadow-[0_0_14px_rgba(124,108,240,0.5)]" />
+          <div className="text-xs font-semibold tracking-[0.22em] text-[#6868b0]">EMOMAPP</div>
+          <p className="text-[15px] text-[#6868b0]">{tHome("tagline")}</p>
+        </div>
         <div className="w-full px-2 pb-[calc(env(safe-area-inset-bottom)+36px)]">
           <button
             type="button"
@@ -113,7 +119,10 @@ export default function OnboardingPage() {
           >
             {t("checkInNow")}
           </button>
-          {hasCachedReport && (
+          {reportCheckStatus === "checking" && (
+            <div className="mt-3 h-[54px] w-full animate-pulse rounded-2xl border border-[#241f3d] bg-[#12102d]" />
+          )}
+          {reportCheckStatus === "found" && (
             <button
               type="button"
               onClick={() => router.push("/report")}
