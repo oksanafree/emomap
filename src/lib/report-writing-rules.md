@@ -332,7 +332,7 @@ Every pair below is drawn from real corrections made during pilot report review.
 | Entry / entries | Moment / moments |
 | Position on the map | [Describe where the experience landed] |
 | The sliders | How you described the moment / how you perceived the situation |
-| Quadrant names (Building, Protecting, Receiving, Enduring) | Describe the experience: "the world felt pressuring and you felt capable" |
+| State names used only once, in parentheses | State names are proper names — use them naturally throughout as named moments, transitions, or shorthand. Never as a sentence's grammatical subject; never piled up in one sentence. See the State Names Rule (Addendum, "The Core Principle: Experience First, Coordinates Never"). |
 | You took action | You perceived yourself as directing |
 | You pushed back | Your self-perception stayed directed / you saw yourself as capable of meeting it |
 | You arrived in full action | You came to the situation seeing yourself as capable and directed |
@@ -480,7 +480,23 @@ Every sentence must describe a lived experience. Never describe a coordinate, a 
 **Wrong:** "You had 5 Drifting entries with a mean meaningfulness of 5.2."
 **Right:** "Five times you stopped directing while the world's signal went quiet. Most of those moments felt neither meaningful nor difficult — just empty."
 
-State names (Building, Protecting, Receiving, Enduring, Drifting, etc.) may appear in parentheses as a secondary reference, never as the main subject of a sentence.
+**State names rule:**
+
+State names (Building, Protecting, Receiving, Enduring, Opening, Bracing, Seeking, Drifting, Still) are proper names for psychological experiences. Use them naturally throughout the report — not just once in parentheses. They should feel like named places the person moved through, not clinical labels.
+
+**Allowed forms:**
+- As a named moment: "That Protecting stretch through the afternoon..." / "The Enduring hours in the morning..."
+- After a dash: "The afternoon shifted — Building, high energy, the world cooperative."
+- As a transition marker: "You moved from Enduring into Building as the day opened up."
+- In a clause: "When you were Receiving, the sense of ease was..."
+- As shorthand after first use: "The first Protecting moment... The second came an hour later."
+
+**Rules:**
+- Capitalize always (they are proper names)
+- Do NOT use them as the grammatical subject of a sentence: not "Building brought energy" — instead "You were Building, and the energy..."
+- Do NOT pile them up in one sentence: not "You moved from Enduring to Bracing to Building" — space them out across the paragraph
+- Use each state name at least once if that state appeared in the data
+- First mention of a state can briefly gloss it: "a Protecting moment — alert, the world pushing back" — but don't gloss every occurrence
 
 ---
 
