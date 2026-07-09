@@ -1,5 +1,5 @@
 import { getMessaging, getToken } from "firebase/messaging";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { firebaseApp, db, getFirebaseAuth } from "./firebase";
 
 export async function subscribeUserToPush() {
@@ -7,18 +7,36 @@ export async function subscribeUserToPush() {
     const auth = getFirebaseAuth();
     const messaging = getMessaging(firebaseApp);
     const reg = await navigator.serviceWorker.ready;
+
     const token = await getToken(messaging, {
       vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY,
       serviceWorkerRegistration: reg,
     });
-    if (token && auth.currentUser) {
-      await setDoc(
-        doc(db, "users", auth.currentUser.uid),
-        { fcm_token: token, notifications_enabled: true },
-        { merge: true },
-      );
+    console.log("[subscribeUserToPush] getToken() ->", token ? `${token.slice(0, 12)}...` : token);
+
+    if (!token) {
+      console.error("[subscribeUserToPush] No FCM token returned — aborting before write.");
+      return;
     }
+
+    const user = auth.currentUser;
+    if (!user) {
+      console.error("[subscribeUserToPush] auth.currentUser is null — aborting before write.");
+      return;
+    }
+
+    const userRef = doc(db, "users", user.uid);
+    const existingSnap = await getDoc(userRef);
+    console.log(
+      "[subscribeUserToPush] getDoc(userRef) -> exists:",
+      existingSnap.exists(),
+      "uid:",
+      user.uid,
+    );
+
+    await setDoc(userRef, { fcm_token: token, notifications_enabled: true }, { merge: true });
+    console.log("[subscribeUserToPush] setDoc() complete — fcm_token written for uid:", user.uid);
   } catch (err) {
-    console.log("Push subscription failed silently:", err);
+    console.error("[subscribeUserToPush] failed:", err);
   }
 }
