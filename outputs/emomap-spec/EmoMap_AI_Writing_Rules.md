@@ -487,7 +487,7 @@ State names (Building, Protecting, Receiving, Enduring, Opening, Bracing, Seekin
 **Allowed forms:**
 - As a named moment: "That Protecting stretch through the afternoon..." / "The Enduring hours in the morning..."
 - After a dash: "The afternoon shifted — Building, high energy, the world cooperative."
-- As a transition marker: "You moved from Enduring into Building as the day opened up."
+- As a transition marker: "You moved from Enduring into Building as things started to ease."
 - In a clause: "When you were Receiving, the sense of ease was..."
 - As shorthand after first use: "The first Protecting moment... The second came an hour later."
 
