@@ -70,6 +70,39 @@
   height: 14px;
 }
 
+.noteSection {
+  margin-top: 24px;
+}
+
+.noteQuestion {
+  font-size: 12px;
+  font-style: italic;
+  color: #c0bdb8;
+  margin-bottom: 16px;
+}
+
+.noteTextarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 14px;
+  border: 1px solid #e8e5e0;
+  border-radius: 12px;
+  background: #fff;
+  color: #2a2825;
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.noteTextarea::placeholder {
+  color: #c0bdb8;
+}
+
+.noteTextarea:focus {
+  outline: none;
+  border-color: #7c6cf0;
+}
+
 .saveWrap {
   padding: 8px 22px calc(env(safe-area-inset-bottom, 0px) + 28px);
   flex-shrink: 0;

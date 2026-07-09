@@ -44,6 +44,7 @@ export type CustomTokens = {
   sleep?: string;
   energy?: string;
   hunger?: string;
+  note?: string;
 };
 
 // Older entries stored `activity`/`social` as a single string before those
@@ -82,5 +83,11 @@ export function formatCustomTokens(tokens: CustomTokens | undefined | null): str
     .map((s) => SOCIAL_LABELS[s]);
   if (socialLabels.length > 0) parts.push(`With: ${socialLabels.join(", ")}`);
 
-  return parts.length > 0 ? parts.join(" · ") : null;
+  const tokenLine = parts.length > 0 ? parts.join(" · ") : null;
+
+  const note = typeof tokens.note === "string" ? tokens.note.trim() : "";
+  const noteLine = note ? `Note: "${note}"` : null;
+
+  if (!tokenLine && !noteLine) return null;
+  return [tokenLine, noteLine].filter((line): line is string => Boolean(line)).join("\n");
 }

@@ -56,9 +56,14 @@ function ContextPageInner() {
   const [sleep, setSleep] = useState<SleepKey | null>(null);
   const [energy, setEnergy] = useState<EnergyKey | null>(null);
   const [hunger, setHunger] = useState<HungerKey | null>(null);
+  const [note, setNote] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loadingEntry, setLoadingEntry] = useState(isEditing);
+
+  const stateQuestions = t.raw(`stateQuestions.${state}`) as string[];
+  const [questionIndex] = useState(() => Math.floor(Math.random() * stateQuestions.length));
+  const noteQuestion = stateQuestions[questionIndex] ?? "";
 
   useEffect(() => {
     if (!entryId || !user) return;
@@ -76,6 +81,7 @@ function ContextPageInner() {
         setSleep((tokens.sleep as SleepKey) ?? null);
         setEnergy((tokens.energy as EnergyKey) ?? null);
         setHunger((tokens.hunger as HungerKey) ?? null);
+        if (typeof tokens.note === "string") setNote(tokens.note);
       })
       .finally(() => {
         if (!cancelled) setLoadingEntry(false);
@@ -133,6 +139,7 @@ function ContextPageInner() {
     if (sleep) customTokens.sleep = sleep;
     if (energy) customTokens.energy = energy;
     if (hunger) customTokens.hunger = hunger;
+    if (note.trim()) customTokens.note = note.trim();
 
     const entriesRef = collection(db, "users", user.uid, "entries");
 
@@ -275,6 +282,17 @@ function ContextPageInner() {
                   </div>
                 ))}
               </div>
+            </div>
+
+            <div className={styles.noteSection}>
+              <p className={styles.noteQuestion}>{noteQuestion}</p>
+              <textarea
+                className={styles.noteTextarea}
+                placeholder={t("notePlaceholder")}
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                rows={3}
+              />
             </div>
           </div>
 

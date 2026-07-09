@@ -77,6 +77,8 @@ Same logic applies to the pressuring/flowing side — mild words for mild intens
 
 **Absolute prohibition:** The prohibition on "The day opened / ended" is absolute. If this phrase appears in your draft, replace it with a you-subject sentence before outputting.
 
+**Notes rule:** When a note is present for an entry, treat it as the user's own words about that moment. Quote it directly in quotation marks or paraphrase it closely. Never ignore a note — it is the highest-signal data point in that entry.
+
 ---
 
 ## 4. What Never Appears in Reports

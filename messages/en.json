@@ -160,6 +160,22 @@
       "hungry": "Hungry",
       "veryHungry": "Very hungry"
     },
+    "notePlaceholder": "Add a note...",
+    "stateQuestions": {
+      "Building": ["What's driving this?", "What feels possible right now?", "What are you building?"],
+      "Protecting": [
+        "What are you holding your ground on?",
+        "What's pushing back at you?",
+        "What are you protecting?"
+      ],
+      "Receiving": ["What are you letting in?", "What feels easy right now?", "What's flowing toward you?"],
+      "Enduring": ["What's weighing on you?", "What are you getting through?", "What feels heavy right now?"],
+      "Opening": ["What feels new?", "What are you curious about?", "What are you moving toward?"],
+      "Bracing": ["What are you bracing for?", "What feels uncertain?", "What's making you tense?"],
+      "Seeking": ["What are you looking for?", "What's pulling your attention?", "What are you driven toward?"],
+      "Drifting": ["Where is your mind?", "What feels unclear?", "What are you floating through?"],
+      "Still": ["What's hard to name right now?", "What are you sitting with?", "What's in the middle?"]
+    },
     "save": "Save entry →",
     "saveError": "Could not save. Try again."
   },
