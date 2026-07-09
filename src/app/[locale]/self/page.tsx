@@ -7,6 +7,7 @@ import { useCheckin } from "@/lib/checkin-context";
 import { useSliderSound } from "@/lib/use-slider-sound";
 import { calcFont } from "@/lib/slider-math";
 import { AuthGuard } from "@/components/AuthGuard";
+import { HomeNavIcon } from "@/components/HomeNavIcon";
 import styles from "@/styles/checkin-screen.module.css";
 
 export default function SelfPage() {
@@ -35,6 +36,7 @@ export default function SelfPage() {
 
   return (
     <AuthGuard>
+      <HomeNavIcon />
       <div className={styles.lightScreen}>
         <div className={styles.maxW}>
           <div className={styles.nav}>

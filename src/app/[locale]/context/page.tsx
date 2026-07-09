@@ -30,6 +30,7 @@ import {
 } from "@/lib/context-options";
 import type { StateKey } from "@/lib/state-detection";
 import { AuthGuard } from "@/components/AuthGuard";
+import { HomeNavIcon } from "@/components/HomeNavIcon";
 import checkinStyles from "@/styles/checkin-screen.module.css";
 import styles from "./context.module.css";
 
@@ -183,111 +184,114 @@ function ContextPageInner() {
   }
 
   return (
-    <div className={checkinStyles.lightScreen}>
-      <div className={checkinStyles.maxW}>
-        <div className={checkinStyles.nav}>
-          <Link href={isEditing ? "/history" : "/map"} className={checkinStyles.navBack}>
-            ‹
-          </Link>
-          <div className={checkinStyles.navTitle}>{t("navTitle")}</div>
-          <div className={checkinStyles.navSp} />
-        </div>
+    <>
+      <HomeNavIcon />
+      <div className={checkinStyles.lightScreen}>
+        <div className={checkinStyles.maxW}>
+          <div className={checkinStyles.nav}>
+            <Link href={isEditing ? "/history" : "/map"} className={checkinStyles.navBack}>
+              ‹
+            </Link>
+            <div className={checkinStyles.navTitle}>{t("navTitle")}</div>
+            <div className={checkinStyles.navSp} />
+          </div>
 
-        <div className={styles.ctxHint}>{t("hint")}</div>
+          <div className={styles.ctxHint}>{t("hint")}</div>
 
-        <div className={styles.ctxScroll}>
-          <div className={styles.ctxSec}>
-            <div className={styles.ctxLbl}>{t("whatWho")}</div>
-            <div className={styles.ctxQ}>
-              {t("activityQuestion")} <span className={styles.ctxQHint}>{t("activityHint")}</span>
+          <div className={styles.ctxScroll}>
+            <div className={styles.ctxSec}>
+              <div className={styles.ctxLbl}>{t("whatWho")}</div>
+              <div className={styles.ctxQ}>
+                {t("activityQuestion")} <span className={styles.ctxQHint}>{t("activityHint")}</span>
+              </div>
+              <div className={styles.ctxChips}>
+                {ACTIVITY_KEYS.map((key) => (
+                  <div
+                    key={key}
+                    className={`${styles.cc} ${activities.has(key) ? styles.ccSelected : ""}`}
+                    onClick={() => toggleActivity(key)}
+                  >
+                    {t(`activities.${key}`)}
+                  </div>
+                ))}
+              </div>
+
+              <div className={styles.ctxGap} />
+              <div className={styles.ctxQ}>{t("socialQuestion")}</div>
+              <div className={styles.ctxChips}>
+                {SOCIAL_KEYS.map((key) => (
+                  <div
+                    key={key}
+                    className={`${styles.cc} ${social.has(key) ? styles.ccSelected : ""}`}
+                    onClick={() => toggleSocial(key)}
+                  >
+                    {t(`social.${key}`)}
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className={styles.ctxChips}>
-              {ACTIVITY_KEYS.map((key) => (
-                <div
-                  key={key}
-                  className={`${styles.cc} ${activities.has(key) ? styles.ccSelected : ""}`}
-                  onClick={() => toggleActivity(key)}
-                >
-                  {t(`activities.${key}`)}
-                </div>
-              ))}
-            </div>
 
-            <div className={styles.ctxGap} />
-            <div className={styles.ctxQ}>{t("socialQuestion")}</div>
-            <div className={styles.ctxChips}>
-              {SOCIAL_KEYS.map((key) => (
-                <div
-                  key={key}
-                  className={`${styles.cc} ${social.has(key) ? styles.ccSelected : ""}`}
-                  onClick={() => toggleSocial(key)}
-                >
-                  {t(`social.${key}`)}
-                </div>
-              ))}
+            <div className={styles.ctxDiv} />
+
+            <div className={styles.ctxSec}>
+              <div className={styles.ctxLbl}>{t("bodyState")}</div>
+              <div className={styles.ctxQ}>{t("sleepQuestion")}</div>
+              <div className={styles.ctxChips}>
+                {SLEEP_KEYS.map((key) => (
+                  <div
+                    key={key}
+                    className={`${styles.cc} ${sleep === key ? styles.ccSelected : ""}`}
+                    onClick={() => selectSleep(key)}
+                  >
+                    {t(`sleep.${key}`)}
+                  </div>
+                ))}
+              </div>
+
+              <div className={styles.ctxGap} />
+              <div className={styles.ctxQ}>{t("energyQuestion")}</div>
+              <div className={styles.ctxChips}>
+                {ENERGY_KEYS.map((key) => (
+                  <div
+                    key={key}
+                    className={`${styles.cc} ${energy === key ? styles.ccSelected : ""}`}
+                    onClick={() => selectEnergy(key)}
+                  >
+                    {t(`energy.${key}`)}
+                  </div>
+                ))}
+              </div>
+
+              <div className={styles.ctxGap} />
+              <div className={styles.ctxQ}>{t("hungerQuestion")}</div>
+              <div className={styles.ctxChips}>
+                {HUNGER_KEYS.map((key) => (
+                  <div
+                    key={key}
+                    className={`${styles.cc} ${hunger === key ? styles.ccSelected : ""}`}
+                    onClick={() => selectHunger(key)}
+                  >
+                    {t(`hunger.${key}`)}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
-          <div className={styles.ctxDiv} />
-
-          <div className={styles.ctxSec}>
-            <div className={styles.ctxLbl}>{t("bodyState")}</div>
-            <div className={styles.ctxQ}>{t("sleepQuestion")}</div>
-            <div className={styles.ctxChips}>
-              {SLEEP_KEYS.map((key) => (
-                <div
-                  key={key}
-                  className={`${styles.cc} ${sleep === key ? styles.ccSelected : ""}`}
-                  onClick={() => selectSleep(key)}
-                >
-                  {t(`sleep.${key}`)}
-                </div>
-              ))}
-            </div>
-
-            <div className={styles.ctxGap} />
-            <div className={styles.ctxQ}>{t("energyQuestion")}</div>
-            <div className={styles.ctxChips}>
-              {ENERGY_KEYS.map((key) => (
-                <div
-                  key={key}
-                  className={`${styles.cc} ${energy === key ? styles.ccSelected : ""}`}
-                  onClick={() => selectEnergy(key)}
-                >
-                  {t(`energy.${key}`)}
-                </div>
-              ))}
-            </div>
-
-            <div className={styles.ctxGap} />
-            <div className={styles.ctxQ}>{t("hungerQuestion")}</div>
-            <div className={styles.ctxChips}>
-              {HUNGER_KEYS.map((key) => (
-                <div
-                  key={key}
-                  className={`${styles.cc} ${hunger === key ? styles.ccSelected : ""}`}
-                  onClick={() => selectHunger(key)}
-                >
-                  {t(`hunger.${key}`)}
-                </div>
-              ))}
-            </div>
+          <div className={styles.saveWrap}>
+            {error && <p className="mb-2 text-center text-sm text-red-600">{error}</p>}
+            <button
+              type="button"
+              className={styles.btnSave}
+              onClick={handleSave}
+              disabled={!user || saving || loadingEntry}
+            >
+              {t("save")}
+            </button>
           </div>
-        </div>
-
-        <div className={styles.saveWrap}>
-          {error && <p className="mb-2 text-center text-sm text-red-600">{error}</p>}
-          <button
-            type="button"
-            className={styles.btnSave}
-            onClick={handleSave}
-            disabled={!user || saving || loadingEntry}
-          >
-            {t("save")}
-          </button>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 

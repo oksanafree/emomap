@@ -7,6 +7,7 @@ import { useCheckin } from "@/lib/checkin-context";
 import { useSliderSound } from "@/lib/use-slider-sound";
 import { detectState } from "@/lib/state-detection";
 import { AuthGuard } from "@/components/AuthGuard";
+import { HomeNavIcon } from "@/components/HomeNavIcon";
 import checkinStyles from "@/styles/checkin-screen.module.css";
 import styles from "@/styles/map-visual.module.css";
 import emoStyles from "./emotion-chips.module.css";
@@ -84,6 +85,7 @@ export default function MapPage() {
 
   return (
     <AuthGuard>
+      <HomeNavIcon />
       <div className={checkinStyles.lightScreen}>
         <div className={checkinStyles.maxW}>
           <div className={checkinStyles.nav}>
