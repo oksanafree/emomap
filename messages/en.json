@@ -173,6 +173,7 @@
     "loading": "Loading…",
     "empty": "No entries yet.",
     "error": "Could not load your entries.",
+    "seeReport": "See your report →",
     "logOut": "Log out",
     "editContext": "Edit context",
     "delete": "Delete",

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { collection, deleteDoc, doc, getDocs, orderBy, query, Timestamp } from "firebase/firestore";
 import { signOut } from "firebase/auth";
-import { useRouter } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { useAnonymousAuth } from "@/lib/use-anonymous-auth";
 import { useSliderSound } from "@/lib/use-slider-sound";
 import { db, getFirebaseAuth } from "@/lib/firebase";
@@ -180,6 +180,11 @@ export default function HistoryPage() {
             <div className={styles.histSub}>
               {t("progressToInsight", { count: entries.length, remaining: 5 - entries.length })}
             </div>
+          )}
+          {entries && entries.length >= 5 && (
+            <Link href="/report" className={styles.histNew}>
+              {t("seeReport")}
+            </Link>
           )}
         </div>
 
