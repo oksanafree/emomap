@@ -48,13 +48,19 @@ export default function OnboardingPage() {
   useEffect(() => {
     if (!showLanding || !authUser) return;
     let cancelled = false;
+    // The report is a field on the users/{userId} document itself (written by
+    // /api/report/generate via `.set({ report: {...} }, { merge: true })`),
+    // not a users/{userId}/report subcollection document.
     getDoc(doc(db, "users", authUser.uid))
       .then((snap) => {
         if (cancelled) return;
         const reportText = snap.data()?.report?.text;
-        setReportCheckStatus(typeof reportText === "string" && reportText ? "found" : "none");
+        const found = typeof reportText === "string" && reportText.length > 0;
+        console.log("[landing] report check", { uid: authUser.uid, docExists: snap.exists(), found });
+        setReportCheckStatus(found ? "found" : "none");
       })
-      .catch(() => {
+      .catch((err) => {
+        console.log("[landing] report check failed", { uid: authUser.uid, error: err });
         if (!cancelled) setReportCheckStatus("none");
       });
     return () => {
