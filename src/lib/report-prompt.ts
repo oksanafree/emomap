@@ -35,10 +35,10 @@ export function buildReportUserMessage(
     locale === "ru" ? "Write the entire report in Russian." : "Write the entire report in English.";
 
   return [
-    "Generate a 14-entry report following the Fourteen-Entry Report Structure (Section 7) and the content guidance in the Output Format (Section 12) from your instructions.",
+    "Generate a 14-entry report following the Fourteen-Entry Report Structure (Section 7) and the content guidance in the Output Format (Section 13) from your instructions.",
     languageInstruction,
     "",
-    "This response streams to the reader word by word as you write it, so write the report as the final text directly — plain paragraphs, not the JSON structure from Section 12.",
+    "This response streams to the reader word by word as you write it, so write the report as the final text directly — plain paragraphs, not the JSON structure from Section 13.",
     "Open with the pattern statement as a lead paragraph, no heading.",
     "For each finding, put its short label in capital letters alone on its own line, then the finding's text on the next line.",
     "If there is a map story, give it its own paragraph (no heading). Follow with any axis note or distortion flag as plain paragraphs if they apply.",

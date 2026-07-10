@@ -366,7 +366,35 @@ Every pair below is drawn from real corrections made during pilot report review.
 
 ---
 
-## 10. Special Cases
+## 10. Russian Language Rules
+
+### Forbidden Phrases (Russian)
+
+_Pending — the source table's row/column structure was lost in transit (no delimiters between cells) and needs to be resent before it can be added accurately to a document that directly shapes live report generation._
+
+### Structural Rules (apply to both EN and RU)
+
+Never comment on emotion-state mismatch ("the emotion didn't match the quadrant") in any report with fewer than 20 entries. This feels like a diagnosis. If the data shows it, describe what was there — don't analyze the contradiction.
+
+Never repeat the day's arc at the end of the report if it was already described in the body. One traversal of the timeline is enough.
+
+Closing question must be specific, short, and grounded in actual logged data.
+
+❌ "What was happening — work, solitude and anxiety in an open world?"
+✅ "What was making you anxious when the world was helping?"
+
+### Russian Sentence Structure
+
+Avoid translating English report structure literally.
+
+❌ "С семьёй вечером мир ощущался явно открытым — один раз в Созидании с ощущением воодушевления, другой раз — в Принятии" is a bad Russian sentence.
+✅ Restructure around the person: "Когда ты была с семьёй, первый раз ты ощущала подъём, второй — расслабление."
+
+In Russian, keep the person as the subject of the sentence, not "мир", "момент", or "эмоция."
+
+---
+
+## 11. Special Cases
 
 ### Participant 7475-type (Enduring dominant, severe)
 When Enduring exceeds 50% of entries AND sleep consistently under 5h AND energy consistently under 3:
@@ -393,7 +421,7 @@ Then connect to the dominant trajectory: "From there, you usually moved toward [
 
 ---
 
-## 11. Future Tiers — Placeholder
+## 12. Future Tiers — Placeholder
 
 **Lite tier** (current): 5-entry insight + 14-entry report. Covered by this document.
 
@@ -403,7 +431,7 @@ Then connect to the dominant trajectory: "From there, you usually moved toward [
 
 ---
 
-## 12. Output Format
+## 13. Output Format
 
 Claude must return all report content as structured JSON. The AI does not format the UI — it generates the text that the app displays.
 
