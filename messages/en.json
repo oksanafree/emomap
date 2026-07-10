@@ -50,6 +50,9 @@
     "navTitle": "Emomapp",
     "category": "SITUATION",
     "question": "How is your life treating you now?",
+    "liveWord": {
+      "ambiguous": "Ambiguous"
+    },
     "endLabels": {
       "leftMain": "Pressing",
       "leftSub": "Creating friction<br></br>Pushing back",

@@ -32,7 +32,7 @@ export default function WorldPage() {
   const isAmbiguous = dist < 6;
   const fontSize = isAmbiguous ? 15 : calcFont(value);
   const opacity = isAmbiguous ? 0.5 : Number((0.4 + (dist / 50) * 0.6).toFixed(2));
-  const liveWordKey = value >= 50 ? "rightMain" : "leftMain";
+  const liveWordKey = isAmbiguous ? "ambiguous" : value > 50 ? "rightMain" : "leftMain";
 
   return (
     <AuthGuard>
@@ -60,7 +60,7 @@ export default function WorldPage() {
               className={`${styles.liveWord} ${styles.lwS}`}
               style={{ fontSize, opacity }}
             >
-              {t(`endLabels.${liveWordKey}`)}
+              {isAmbiguous ? t("liveWord.ambiguous") : t(`endLabels.${liveWordKey}`)}
             </div>
             <input
               type="range"
