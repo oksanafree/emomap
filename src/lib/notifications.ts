@@ -1,5 +1,5 @@
 import { getMessaging, getToken } from "firebase/messaging";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { arrayUnion, doc, getDoc, setDoc } from "firebase/firestore";
 import { firebaseApp, db, getFirebaseAuth } from "./firebase";
 
 export async function subscribeUserToPush() {
@@ -34,8 +34,12 @@ export async function subscribeUserToPush() {
       user.uid,
     );
 
-    await setDoc(userRef, { fcm_token: token, notifications_enabled: true }, { merge: true });
-    console.log("[subscribeUserToPush] setDoc() complete — fcm_token written for uid:", user.uid);
+    await setDoc(
+      userRef,
+      { fcm_tokens: arrayUnion(token), notifications_enabled: true },
+      { merge: true },
+    );
+    console.log("[subscribeUserToPush] setDoc() complete — token added to fcm_tokens for uid:", user.uid);
   } catch (err) {
     console.error("[subscribeUserToPush] failed:", err);
   }

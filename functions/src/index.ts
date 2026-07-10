@@ -1,6 +1,6 @@
 import { onSchedule } from "firebase-functions/v2/scheduler";
 import { initializeApp } from "firebase-admin/app";
-import { getFirestore, Timestamp } from "firebase-admin/firestore";
+import { FieldValue, getFirestore, Timestamp } from "firebase-admin/firestore";
 import { getMessaging } from "firebase-admin/messaging";
 import * as logger from "firebase-functions/logger";
 
@@ -33,8 +33,8 @@ async function sendReminders(variant: ReminderVariant) {
 
   await Promise.all(
     usersSnapshot.docs.map(async (userDoc) => {
-      const fcmToken = userDoc.data().fcm_token as string | undefined;
-      if (!fcmToken) return;
+      const fcmTokens = (userDoc.data().fcm_tokens as string[] | undefined) ?? [];
+      if (fcmTokens.length === 0) return;
 
       const recentEntries = await db
         .collection("users")
@@ -46,14 +46,28 @@ async function sendReminders(variant: ReminderVariant) {
 
       if (!recentEntries.empty) return;
 
-      try {
-        await messaging.send({
-          token: fcmToken,
-          notification: { title: message.title, body: message.body },
-          data: { url: "/history" },
-        });
-      } catch (error) {
-        logger.error(`Failed to send reminder to ${userDoc.id}`, error);
+      const staleTokens: string[] = [];
+
+      await Promise.all(
+        fcmTokens.map(async (token) => {
+          try {
+            await messaging.send({
+              token,
+              notification: { title: message.title, body: message.body },
+              data: { url: "/history" },
+            });
+          } catch (error) {
+            if ((error as { code?: string }).code === "messaging/registration-token-not-registered") {
+              staleTokens.push(token);
+            } else {
+              logger.error(`Failed to send reminder to ${userDoc.id}`, error);
+            }
+          }
+        }),
+      );
+
+      if (staleTokens.length > 0) {
+        await userDoc.ref.update({ fcm_tokens: FieldValue.arrayRemove(...staleTokens) });
       }
     }),
   );

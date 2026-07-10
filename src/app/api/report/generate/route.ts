@@ -107,18 +107,40 @@ export async function POST(request: NextRequest) {
   try {
     const userSnap = await db.collection("users").doc(userId).get();
     const userData = userSnap.data();
-    const fcmToken = userData?.fcm_token as string | undefined;
+    const fcmTokens = (userData?.fcm_tokens as string[] | undefined) ?? [];
     const notificationsEnabled = userData?.notifications_enabled === true;
 
-    if (fcmToken && notificationsEnabled) {
-      await getMessaging(getAdminApp()).send({
-        token: fcmToken,
-        notification: {
-          title: "Your report is ready",
-          body: "Your trail has been read. Tap to see your patterns.",
-        },
-        data: { url: `/${locale ?? "en"}/report` },
-      });
+    if (fcmTokens.length > 0 && notificationsEnabled) {
+      const messaging = getMessaging(getAdminApp());
+      const staleTokens: string[] = [];
+
+      await Promise.all(
+        fcmTokens.map(async (token) => {
+          try {
+            await messaging.send({
+              token,
+              notification: {
+                title: "Your report is ready",
+                body: "Your trail has been read. Tap to see your patterns.",
+              },
+              data: { url: `/${locale ?? "en"}/report` },
+            });
+          } catch (error) {
+            if ((error as { code?: string }).code === "messaging/registration-token-not-registered") {
+              staleTokens.push(token);
+            } else {
+              console.error(`Failed to send report-ready notification to a token for ${userId}`, error);
+            }
+          }
+        }),
+      );
+
+      if (staleTokens.length > 0) {
+        await db
+          .collection("users")
+          .doc(userId)
+          .update({ fcm_tokens: FieldValue.arrayRemove(...staleTokens) });
+      }
     }
   } catch (error) {
     console.error("Failed to send report-ready notification", error);
