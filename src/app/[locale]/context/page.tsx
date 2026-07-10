@@ -187,7 +187,9 @@ function ContextPageInner() {
 
     try {
       const count = (await getCountFromServer(entriesRef)).data().count;
-      if (count % 5 === 0) {
+      const shouldTrigger = count % 5 === 0;
+      console.log("[context] report generation trigger check", { entryCount: count, triggered: shouldTrigger });
+      if (shouldTrigger) {
         fetch("/api/report/generate", {
           method: "POST",
           headers: { "Content-Type": "application/json" },

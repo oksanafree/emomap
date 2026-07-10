@@ -217,6 +217,7 @@
     "checkinsCount": "{count, plural, one {# check-in} other {# check-ins}}",
     "reveal": "See what this reveals →",
     "loading": "Loading…",
+    "generating": "Generating your report…",
     "empty": "No entries yet.",
     "notEnoughEntries": "Your report will be ready after 5 check-ins.",
     "reportError": "Could not prepare your report. Try again.",

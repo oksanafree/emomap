@@ -2,7 +2,17 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { collection, doc, getDoc, getDocs, orderBy, query, Timestamp } from "firebase/firestore";
+import {
+  collection,
+  deleteField,
+  doc,
+  getDoc,
+  getDocs,
+  orderBy,
+  query,
+  Timestamp,
+  updateDoc,
+} from "firebase/firestore";
 import { Link } from "@/i18n/navigation";
 import { useAnonymousAuth } from "@/lib/use-anonymous-auth";
 import { db } from "@/lib/firebase";
@@ -11,6 +21,8 @@ import mapStyles from "@/styles/map-visual.module.css";
 import styles from "./report.module.css";
 
 const TICK_MS = 1400;
+const POLL_MS = 5000;
+const MIN_ENTRIES_FOR_REPORT = 5;
 
 type Step = { left: number; top: number };
 type CacheStatus = "loading" | "found" | "empty" | "generating" | "error";
@@ -56,10 +68,14 @@ export default function ReportPage() {
   }, [user]);
 
   useEffect(() => {
-    if (!user) return;
+    // Wait for the entries fetch above to resolve so we know the real entry
+    // count before deciding between "not enough entries" and "generating".
+    if (!user || timestamps === null) return;
     let cancelled = false;
+    let pollTimeout: ReturnType<typeof setTimeout> | null = null;
+    let triggeredGeneration = false;
 
-    async function loadReport() {
+    async function checkReport() {
       try {
         const userRef = doc(db, "users", user!.uid);
         const snap = await getDoc(userRef);
@@ -73,45 +89,51 @@ export default function ReportPage() {
           return;
         }
 
-        // A report exists in the other language but not this one — the person
-        // clearly has enough entries, so generate fresh in the current locale
-        // instead of showing the "not enough entries" message or the wrong
-        // language.
-        const otherLocale = locale === "ru" ? "en" : "ru";
-        const otherText = data?.[`report_${otherLocale}`]?.text;
-        if (typeof otherText !== "string" || !otherText) {
+        // Legacy single-language report field from before per-locale caching —
+        // migrate it onto the current locale's path so the user isn't blocked
+        // behind a fresh (~2min) generation for a report that already exists.
+        const legacyReport = data?.report;
+        if (legacyReport && typeof legacyReport.text === "string" && legacyReport.text) {
+          try {
+            await updateDoc(userRef, {
+              [`report_${locale}`]: legacyReport,
+              report: deleteField(),
+            });
+          } catch (error) {
+            console.error("Failed to migrate legacy report field", error);
+          }
+          if (cancelled) return;
+          setReportText(legacyReport.text);
+          setCacheStatus("found");
+          return;
+        }
+
+        if (timestamps!.length < MIN_ENTRIES_FOR_REPORT) {
           setCacheStatus("empty");
           return;
         }
 
         setCacheStatus("generating");
-        const res = await fetch("/api/report/generate", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ userId: user!.uid, locale }),
-        });
-        if (cancelled) return;
-        if (!res.ok) throw new Error("Report generation failed");
-
-        const freshSnap = await getDoc(userRef);
-        if (cancelled) return;
-        const freshText = freshSnap.data()?.[`report_${locale}`]?.text;
-        if (typeof freshText === "string" && freshText) {
-          setReportText(freshText);
-          setCacheStatus("found");
-        } else {
-          throw new Error("No report text after generation");
+        if (!triggeredGeneration) {
+          triggeredGeneration = true;
+          fetch("/api/report/generate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userId: user!.uid, locale }),
+          }).catch(() => {});
         }
+        pollTimeout = setTimeout(checkReport, POLL_MS);
       } catch {
         if (!cancelled) setCacheStatus("error");
       }
     }
 
-    loadReport();
+    checkReport();
     return () => {
       cancelled = true;
+      if (pollTimeout) clearTimeout(pollTimeout);
     };
-  }, [user, locale]);
+  }, [user, locale, timestamps]);
 
   useEffect(() => {
     if (steps.length === 0) return;
@@ -251,9 +273,8 @@ export default function ReportPage() {
         </div>
 
         <div ref={part2Ref} className={styles.lightSection} style={{ opacity: revealed ? 1 : 0 }}>
-          {(cacheStatus === "loading" || cacheStatus === "generating") && (
-            <p className={styles.placeholder}>{t("loading")}</p>
-          )}
+          {cacheStatus === "loading" && <p className={styles.placeholder}>{t("loading")}</p>}
+          {cacheStatus === "generating" && <p className={styles.placeholder}>{t("generating")}</p>}
           {cacheStatus === "empty" && (
             <>
               <p className={styles.placeholder}>{t("notEnoughEntries")}</p>
