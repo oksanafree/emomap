@@ -48,14 +48,22 @@ export default function OnboardingPage() {
   useEffect(() => {
     if (!showLanding || !authUser) return;
     let cancelled = false;
-    // The report is a field on the users/{userId} document itself (written by
-    // /api/report/generate via `.set({ report: {...} }, { merge: true })`),
-    // not a users/{userId}/report subcollection document.
+    // The report is stored per-language as report_en / report_ru fields on the
+    // users/{userId} document itself (written by /api/report/generate via
+    // `.set({ [`report_${locale}`]: {...} }, { merge: true })`), not a
+    // users/{userId}/report subcollection document. The landing button just
+    // checks whether a report exists in either language — /report itself
+    // handles generating a fresh one in the current locale if only the other
+    // language's report exists.
     getDoc(doc(db, "users", authUser.uid))
       .then((snap) => {
         if (cancelled) return;
-        const reportText = snap.data()?.report?.text;
-        const found = typeof reportText === "string" && reportText.length > 0;
+        const data = snap.data();
+        const enText = data?.report_en?.text;
+        const ruText = data?.report_ru?.text;
+        const found =
+          (typeof enText === "string" && enText.length > 0) ||
+          (typeof ruText === "string" && ruText.length > 0);
         console.log("[landing] report check", { uid: authUser.uid, docExists: snap.exists(), found });
         setReportCheckStatus(found ? "found" : "none");
       })

@@ -13,7 +13,7 @@ import styles from "./report.module.css";
 const TICK_MS = 1400;
 
 type Step = { left: number; top: number };
-type CacheStatus = "loading" | "found" | "empty";
+type CacheStatus = "loading" | "found" | "empty" | "generating" | "error";
 
 function lineOpacityAtDraw(i: number) {
   return Math.min(0.1 + i * 0.045, 0.75);
@@ -58,24 +58,60 @@ export default function ReportPage() {
   useEffect(() => {
     if (!user) return;
     let cancelled = false;
-    getDoc(doc(db, "users", user.uid))
-      .then((snap) => {
+
+    async function loadReport() {
+      try {
+        const userRef = doc(db, "users", user!.uid);
+        const snap = await getDoc(userRef);
         if (cancelled) return;
-        const text = snap.data()?.report?.text;
-        if (typeof text === "string" && text) {
-          setReportText(text);
+
+        const data = snap.data();
+        const localeText = data?.[`report_${locale}`]?.text;
+        if (typeof localeText === "string" && localeText) {
+          setReportText(localeText);
+          setCacheStatus("found");
+          return;
+        }
+
+        // A report exists in the other language but not this one — the person
+        // clearly has enough entries, so generate fresh in the current locale
+        // instead of showing the "not enough entries" message or the wrong
+        // language.
+        const otherLocale = locale === "ru" ? "en" : "ru";
+        const otherText = data?.[`report_${otherLocale}`]?.text;
+        if (typeof otherText !== "string" || !otherText) {
+          setCacheStatus("empty");
+          return;
+        }
+
+        setCacheStatus("generating");
+        const res = await fetch("/api/report/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userId: user!.uid, locale }),
+        });
+        if (cancelled) return;
+        if (!res.ok) throw new Error("Report generation failed");
+
+        const freshSnap = await getDoc(userRef);
+        if (cancelled) return;
+        const freshText = freshSnap.data()?.[`report_${locale}`]?.text;
+        if (typeof freshText === "string" && freshText) {
+          setReportText(freshText);
           setCacheStatus("found");
         } else {
-          setCacheStatus("empty");
+          throw new Error("No report text after generation");
         }
-      })
-      .catch(() => {
-        if (!cancelled) setCacheStatus("empty");
-      });
+      } catch {
+        if (!cancelled) setCacheStatus("error");
+      }
+    }
+
+    loadReport();
     return () => {
       cancelled = true;
     };
-  }, [user]);
+  }, [user, locale]);
 
   useEffect(() => {
     if (steps.length === 0) return;
@@ -215,10 +251,20 @@ export default function ReportPage() {
         </div>
 
         <div ref={part2Ref} className={styles.lightSection} style={{ opacity: revealed ? 1 : 0 }}>
-          {cacheStatus === "loading" && <p className={styles.placeholder}>{t("loading")}</p>}
+          {(cacheStatus === "loading" || cacheStatus === "generating") && (
+            <p className={styles.placeholder}>{t("loading")}</p>
+          )}
           {cacheStatus === "empty" && (
             <>
               <p className={styles.placeholder}>{t("notEnoughEntries")}</p>
+              <Link href="/history" className={styles.revealBtn}>
+                {t("back")}
+              </Link>
+            </>
+          )}
+          {cacheStatus === "error" && (
+            <>
+              <p className={styles.placeholder}>{t("reportError")}</p>
               <Link href="/history" className={styles.revealBtn}>
                 {t("back")}
               </Link>

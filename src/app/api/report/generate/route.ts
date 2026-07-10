@@ -54,8 +54,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Could not load entries." }, { status: 500 });
   }
 
+  const reportLocale = locale === "ru" ? "ru" : "en";
   const patterns = computePatternVariables(entriesChronological);
-  const userMessage = buildReportUserMessage(patterns, entriesChronological, locale ?? "en");
+  const userMessage = buildReportUserMessage(patterns, entriesChronological, reportLocale);
 
   let reportText: string;
   try {
@@ -91,7 +92,7 @@ export async function POST(request: NextRequest) {
   try {
     await db.collection("users").doc(userId).set(
       {
-        report: {
+        [`report_${reportLocale}`]: {
           text: reportText,
           generated_at: FieldValue.serverTimestamp(),
           entry_count: entriesChronological.length,
@@ -123,7 +124,7 @@ export async function POST(request: NextRequest) {
                 title: "Your report is ready",
                 body: "Your trail has been read. Tap to see your patterns.",
               },
-              data: { url: `/${locale ?? "en"}/report` },
+              data: { url: `/${reportLocale}/report` },
             });
           } catch (error) {
             if ((error as { code?: string }).code === "messaging/registration-token-not-registered") {

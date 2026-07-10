@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
+import { FieldValue } from "firebase-admin/firestore";
 import { getAdminDb } from "@/lib/firebase-admin";
 import { computePatternVariables, type ReportEntry } from "@/lib/report-patterns";
 import { formatCustomTokens } from "@/lib/context-labels";
@@ -20,9 +21,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "userId is required." }, { status: 400 });
   }
 
+  const db = getAdminDb();
+  const reportLocale = locale === "ru" ? "ru" : "en";
+
   let entriesChronological: ReportEntry[];
   try {
-    const db = getAdminDb();
     const snapshot = await db
       .collection("users")
       .doc(userId)
@@ -51,8 +54,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Could not load entries." }, { status: 500 });
   }
 
+  const entryCount = entriesChronological.length;
   const patterns = computePatternVariables(entriesChronological);
-  const userMessage = buildReportUserMessage(patterns, entriesChronological, locale ?? "en");
+  const userMessage = buildReportUserMessage(patterns, entriesChronological, reportLocale);
 
   const anthropic = new Anthropic();
   const stream = anthropic.messages.stream({
@@ -66,6 +70,7 @@ export async function POST(request: NextRequest) {
 
   const encoder = new TextEncoder();
   let sentAny = false;
+  let fullText = "";
 
   const readable = new ReadableStream({
     async start(controller) {
@@ -73,6 +78,7 @@ export async function POST(request: NextRequest) {
         for await (const event of stream) {
           if (event.type === "content_block_delta" && event.delta.type === "text_delta") {
             sentAny = true;
+            fullText += event.delta.text;
             controller.enqueue(encoder.encode(event.delta.text));
           }
         }
@@ -86,6 +92,21 @@ export async function POST(request: NextRequest) {
             finalMessage.content.map((b) => b.type),
           );
           controller.enqueue(encoder.encode("Could not generate a report. Try again."));
+        } else {
+          try {
+            await db.collection("users").doc(userId).set(
+              {
+                [`report_${reportLocale}`]: {
+                  text: fullText,
+                  generated_at: FieldValue.serverTimestamp(),
+                  entry_count: entryCount,
+                },
+              },
+              { merge: true },
+            );
+          } catch (error) {
+            console.error("Failed to save streamed report to cache", error);
+          }
         }
       } catch (error) {
         console.error("Report generation via Claude failed", error);

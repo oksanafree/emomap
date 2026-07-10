@@ -187,7 +187,7 @@ function ContextPageInner() {
 
     try {
       const count = (await getCountFromServer(entriesRef)).data().count;
-      if (count >= 5) {
+      if (count % 5 === 0) {
         fetch("/api/report/generate", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
