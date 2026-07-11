@@ -55,8 +55,9 @@ export async function POST(request: NextRequest) {
   }
 
   const entryCount = entriesChronological.length;
+  const reportType: "short" | "full" = entryCount >= 20 ? "full" : "short";
   const patterns = computePatternVariables(entriesChronological);
-  const userMessage = buildReportUserMessage(patterns, entriesChronological, reportLocale);
+  const userMessage = buildReportUserMessage(patterns, entriesChronological, reportLocale, reportType);
 
   const anthropic = new Anthropic();
   const stream = anthropic.messages.stream({

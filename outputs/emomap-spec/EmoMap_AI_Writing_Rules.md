@@ -235,6 +235,20 @@ Appears as an additional observation, after the three cards.
 *Enduring dominant:*
 "Seeing the world as consistently against you and yourself as consistently without the resources to meet it is worth noticing. If this reading reflects how life has been feeling more broadly — not just these specific moments — it may be time to talk to someone."
 
+### Closing Encouragement Line
+
+Every five-entry insight (shown between 5 and 19 check-ins, before the full report unlocks) ends with one additional sentence after Card 3 — inviting the person to come back for a fresh read any time, and noting that checking in often builds the fuller picture.
+
+Rules:
+- One sentence only, its own short paragraph
+- Never repeat the same wording twice — write a fresh variant every time
+- Warm and inviting, not a nudge or a growth-hack CTA
+
+Example variants (write a new one each time, do not reuse verbatim):
+- "You can ask for a new read any time — the more you check in, the fuller the pattern becomes."
+- "Come back whenever you like for an updated look — every new check-in sharpens the picture."
+- "This will keep evolving as you check in more — return any time for a fresh take."
+
 ---
 
 ## 7. The Fourteen-Entry Report Structure
@@ -275,6 +289,8 @@ Rules:
 - For Enduring dominant: not a question — a quiet pointer toward support
 - Should feel like something worth sitting with for a day
 - Never starts with "A useful question" or teacher language
+
+This is the final line of the report. Unlike the five-entry insight, the fourteen-entry/full report never adds a closing encouragement line after it — by 20+ check-ins the habit is already built, so no invitation to return is needed.
 
 ---
 

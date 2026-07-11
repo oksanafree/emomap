@@ -182,7 +182,7 @@
     "newMoment": "+ New moment",
     "entriesCount": "{count, plural, one {# entry} other {# entries}}",
     "daysCount": "{count, plural, one {# day} other {# days}}",
-    "progressToInsight": "{count} of 5 · {remaining} more to your first insight",
+    "progressToFullReport": "{count, plural, one {# check-in} other {# check-ins}} · {remaining} more to your full report",
     "recent": "RECENT",
     "loading": "Loading…",
     "empty": "No entries yet.",
@@ -221,7 +221,11 @@
     "empty": "No entries yet.",
     "notEnoughEntries": "Your report will be ready after 5 check-ins.",
     "reportError": "Could not prepare your report. Try again.",
-    "back": "Back to my trail →"
+    "back": "Back to my trail →",
+    "refresh": "Refresh report",
+    "refreshing": "Refreshing…",
+    "refreshRateLimited": "You can refresh again in 24 hours.",
+    "refreshError": "Could not refresh your report. Try again."
   },
   "ReportPending": {
     "headline": "Your report is being prepared.",

@@ -10,10 +10,12 @@ import { SYSTEM_PROMPT, buildReportUserMessage } from "@/lib/report-prompt";
 export async function POST(request: NextRequest) {
   let userId: string | undefined;
   let locale: string | undefined;
+  let type: unknown;
   try {
     const body = await request.json();
     userId = body.userId;
     locale = body.locale;
+    type = body.type;
   } catch {
     return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
   }
@@ -55,17 +57,20 @@ export async function POST(request: NextRequest) {
   }
 
   const reportLocale = locale === "ru" ? "ru" : "en";
+  const reportType: "short" | "full" =
+    type === "short" || type === "full" ? type : entriesChronological.length >= 20 ? "full" : "short";
+  const maxTokens = reportType === "short" ? 1500 : 4000;
   const patterns = computePatternVariables(entriesChronological);
-  const userMessage = buildReportUserMessage(patterns, entriesChronological, reportLocale);
+  const userMessage = buildReportUserMessage(patterns, entriesChronological, reportLocale, reportType);
 
   let reportText: string;
   try {
     const anthropic = new Anthropic();
     const stream = anthropic.messages.stream({
       model: "claude-sonnet-4-6",
-      max_tokens: 14000,
+      max_tokens: maxTokens,
       thinking: { type: "adaptive" },
-      output_config: { effort: "medium" },
+      output_config: { effort: "low" },
       system: SYSTEM_PROMPT,
       messages: [{ role: "user", content: userMessage }],
     });
@@ -94,7 +99,8 @@ export async function POST(request: NextRequest) {
       {
         [`report_${reportLocale}`]: {
           text: reportText,
-          generated_at: FieldValue.serverTimestamp(),
+          type: reportType,
+          last_generated_at: FieldValue.serverTimestamp(),
           entry_count: entriesChronological.length,
         },
       },

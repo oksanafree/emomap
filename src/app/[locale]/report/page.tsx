@@ -23,9 +23,12 @@ import styles from "./report.module.css";
 const TICK_MS = 1400;
 const POLL_MS = 5000;
 const MIN_ENTRIES_FOR_REPORT = 5;
+const FULL_REPORT_ENTRIES = 20;
+const REFRESH_COOLDOWN_MS = 24 * 60 * 60 * 1000;
 
 type Step = { left: number; top: number };
 type CacheStatus = "loading" | "found" | "empty" | "generating" | "error";
+type RefreshState = "idle" | "loading" | "rate-limited" | "error";
 
 function lineOpacityAtDraw(i: number) {
   return Math.min(0.1 + i * 0.045, 0.75);
@@ -43,6 +46,8 @@ export default function ReportPage() {
   const [revealed, setRevealed] = useState(false);
   const [cacheStatus, setCacheStatus] = useState<CacheStatus>("loading");
   const [reportText, setReportText] = useState<string | null>(null);
+  const [lastGeneratedAt, setLastGeneratedAt] = useState<Date | null>(null);
+  const [refreshState, setRefreshState] = useState<RefreshState>("idle");
   const part2Ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -73,7 +78,6 @@ export default function ReportPage() {
     if (!user || timestamps === null) return;
     let cancelled = false;
     let pollTimeout: ReturnType<typeof setTimeout> | null = null;
-    let triggeredGeneration = false;
 
     async function checkReport() {
       try {
@@ -82,9 +86,10 @@ export default function ReportPage() {
         if (cancelled) return;
 
         const data = snap.data();
-        const localeText = data?.[`report_${locale}`]?.text;
-        if (typeof localeText === "string" && localeText) {
-          setReportText(localeText);
+        const localeReport = data?.[`report_${locale}`];
+        if (typeof localeReport?.text === "string" && localeReport.text) {
+          setReportText(localeReport.text);
+          setLastGeneratedAt(localeReport.last_generated_at?.toDate?.() ?? null);
           setCacheStatus("found");
           return;
         }
@@ -104,6 +109,7 @@ export default function ReportPage() {
           }
           if (cancelled) return;
           setReportText(legacyReport.text);
+          setLastGeneratedAt(legacyReport.last_generated_at?.toDate?.() ?? null);
           setCacheStatus("found");
           return;
         }
@@ -113,15 +119,11 @@ export default function ReportPage() {
           return;
         }
 
+        // Generation for this milestone is triggered from the check-in flow
+        // (src/app/[locale]/context/page.tsx) or the manual "Refresh report"
+        // link below — viewing this page never kicks off a new generation on
+        // its own. Poll in case one is already in flight.
         setCacheStatus("generating");
-        if (!triggeredGeneration) {
-          triggeredGeneration = true;
-          fetch("/api/report/generate", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ userId: user!.uid, locale }),
-          }).catch(() => {});
-        }
         pollTimeout = setTimeout(checkReport, POLL_MS);
       } catch {
         if (!cancelled) setCacheStatus("error");
@@ -134,6 +136,37 @@ export default function ReportPage() {
       if (pollTimeout) clearTimeout(pollTimeout);
     };
   }, [user, locale, timestamps]);
+
+  async function handleRefresh() {
+    if (!user || refreshState === "loading") return;
+    if (lastGeneratedAt && Date.now() - lastGeneratedAt.getTime() < REFRESH_COOLDOWN_MS) {
+      setRefreshState("rate-limited");
+      return;
+    }
+
+    setRefreshState("loading");
+    const type = (timestamps?.length ?? 0) >= FULL_REPORT_ENTRIES ? "full" : "short";
+    try {
+      const res = await fetch("/api/report/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: user.uid, locale, type }),
+      });
+      if (!res.ok) throw new Error("Refresh failed");
+
+      const snap = await getDoc(doc(db, "users", user.uid));
+      const freshReport = snap.data()?.[`report_${locale}`];
+      if (typeof freshReport?.text !== "string" || !freshReport.text) {
+        throw new Error("No report text after refresh");
+      }
+      setReportText(freshReport.text);
+      setLastGeneratedAt(freshReport.last_generated_at?.toDate?.() ?? new Date());
+      setCacheStatus("found");
+      setRefreshState("idle");
+    } catch {
+      setRefreshState("error");
+    }
+  }
 
   useEffect(() => {
     if (steps.length === 0) return;
@@ -291,7 +324,23 @@ export default function ReportPage() {
               </Link>
             </>
           )}
-          {cacheStatus === "found" && reportText && <p className={styles.reportText}>{reportText}</p>}
+          {cacheStatus === "found" && reportText && (
+            <>
+              <p className={styles.reportText}>{reportText}</p>
+              {(timestamps?.length ?? 0) >= MIN_ENTRIES_FOR_REPORT && (
+                <button
+                  type="button"
+                  className={styles.refreshLink}
+                  onClick={handleRefresh}
+                  disabled={refreshState === "loading"}
+                >
+                  {refreshState === "loading" ? t("refreshing") : t("refresh")}
+                </button>
+              )}
+              {refreshState === "rate-limited" && <p className={styles.refreshNote}>{t("refreshRateLimited")}</p>}
+              {refreshState === "error" && <p className={styles.refreshNote}>{t("refreshError")}</p>}
+            </>
+          )}
         </div>
       </div>
     </AuthGuard>

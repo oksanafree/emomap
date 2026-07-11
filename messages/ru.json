@@ -178,7 +178,7 @@
     "newMoment": "+ Новый момент",
     "entriesCount": "{count, plural, one {# запись} few {# записи} many {# записей} other {# записей}}",
     "daysCount": "{count, plural, one {# день} few {# дня} many {# дней} other {# дней}}",
-    "progressToInsight": "{count} из 5 · ещё {remaining} до первого отчёта",
+    "progressToFullReport": "{count, plural, one {# отметка} few {# отметки} many {# отметок} other {# отметок}} · ещё {remaining} до полного отчёта",
     "recent": "НЕДАВНИЕ",
     "loading": "Загрузка…",
     "empty": "Пока нет записей.",
@@ -217,7 +217,11 @@
     "empty": "Пока нет записей.",
     "notEnoughEntries": "Твой отчёт будет готов после 5 отметок.",
     "reportError": "Не удалось подготовить отчёт. Попробуйте снова.",
-    "back": "Вернуться к своему пути →"
+    "back": "Вернуться к своему пути →",
+    "refresh": "Обновить отчёт",
+    "refreshing": "Обновляем…",
+    "refreshRateLimited": "Обновить можно будет через 24 часа.",
+    "refreshError": "Не удалось обновить отчёт. Попробуйте снова."
   },
   "ReportPending": {
     "headline": "Твой отчёт готовится.",

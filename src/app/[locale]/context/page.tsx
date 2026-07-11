@@ -187,13 +187,14 @@ function ContextPageInner() {
 
     try {
       const count = (await getCountFromServer(entriesRef)).data().count;
-      const shouldTrigger = count % 5 === 0;
-      console.log("[context] report generation trigger check", { entryCount: count, triggered: shouldTrigger });
-      if (shouldTrigger) {
+      const generationType: "short" | "full" | null =
+        count === 5 ? "short" : count >= 20 && count % 20 === 0 ? "full" : null;
+      console.log("[context] report generation trigger check", { entryCount: count, triggered: generationType });
+      if (generationType) {
         fetch("/api/report/generate", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ userId: user.uid, locale }),
+          body: JSON.stringify({ userId: user.uid, locale, type: generationType }),
         }).catch(() => {});
       }
     } catch {

@@ -176,9 +176,9 @@ export default function HistoryPage() {
               ? `${t("entriesCount", { count: entries.length })} · ${t("daysCount", { count: dayCount })}`
               : " "}
           </div>
-          {entries && entries.length > 0 && entries.length < 5 && (
+          {entries && entries.length > 0 && entries.length < 20 && (
             <div className={styles.histSub}>
-              {t("progressToInsight", { count: entries.length, remaining: 5 - entries.length })}
+              {t("progressToFullReport", { count: entries.length, remaining: 20 - entries.length })}
             </div>
           )}
           {entries && entries.length >= 5 && (
