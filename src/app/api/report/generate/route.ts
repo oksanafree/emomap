@@ -67,10 +67,8 @@ export async function POST(request: NextRequest) {
   try {
     const anthropic = new Anthropic();
     const stream = anthropic.messages.stream({
-      model: "claude-sonnet-4-6",
+      model: "claude-opus-4-6",
       max_tokens: maxTokens,
-      thinking: { type: "adaptive" },
-      output_config: { effort: "low" },
       system: SYSTEM_PROMPT,
       messages: [{ role: "user", content: userMessage }],
     });
