@@ -178,15 +178,15 @@
     "saveError": "Could not save. Try again."
   },
   "History": {
-    "title": "Your trail",
     "newMoment": "+ New moment",
     "entriesCount": "{count, plural, one {# check-in} other {# check-ins}}",
     "daysCount": "{count, plural, one {# day} other {# days}}",
     "fullReportRemaining": "{remaining} more to your full report",
+    "mapLabel": "Your inner world trail",
     "loading": "Loading…",
     "empty": "No entries yet.",
     "error": "Could not load your entries.",
-    "seeReport": "See your report →",
+    "seeReport": "See report →",
     "logOut": "Log out"
   },
   "Insight": {

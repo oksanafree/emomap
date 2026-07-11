@@ -174,15 +174,15 @@
     "saveError": "Не удалось сохранить. Попробуйте ещё раз."
   },
   "History": {
-    "title": "Твой путь",
     "newMoment": "+ Новый момент",
     "entriesCount": "{count, plural, one {# отметка} few {# отметки} many {# отметок} other {# отметок}}",
     "daysCount": "{count, plural, one {# день} few {# дня} many {# дней} other {# дней}}",
     "fullReportRemaining": "ещё {remaining} до полного отчёта",
+    "mapLabel": "Твой внутренний путь",
     "loading": "Загрузка…",
     "empty": "Пока нет записей.",
     "error": "Не удалось загрузить записи.",
-    "seeReport": "Смотреть свой отчёт →",
+    "seeReport": "Смотреть отчёт →",
     "logOut": "Выйти"
   },
   "Insight": {

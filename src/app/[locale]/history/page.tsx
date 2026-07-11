@@ -129,29 +129,14 @@ export default function HistoryPage() {
     <AuthGuard>
       {showNotifPrompt && <NotificationPrompt onClose={() => setShowNotifPrompt(false)} />}
       <div className="flex min-h-screen flex-col bg-[#f7f6f4]">
-        <div className={styles.histHdr}>
-          <div className={styles.histTop}>
-            <div className={styles.histTitle}>{t("title")}</div>
-            <div className={styles.histTopActions}>
-              <button type="button" className={styles.histNew} onClick={handleNewMoment}>
-                {t("newMoment")}
-              </button>
-            </div>
-          </div>
-          <div className={styles.histSub}>{statsLine}</div>
-          <div className={styles.histLinks}>
-            {entries && entries.length >= 5 && (
-              <Link href="/report" className={styles.histLink}>
-                {t("seeReport")}
-              </Link>
-            )}
-            <button type="button" className={styles.histLink} onClick={handleLogout}>
-              {t("logOut")}
-            </button>
-          </div>
+        <div className={styles.topBar}>
+          <div className={styles.statsLine}>{statsLine}</div>
+          <button type="button" className={styles.logoutLink} onClick={handleLogout}>
+            {t("logOut")}
+          </button>
         </div>
 
-        <div className={styles.histScroll}>
+        <div className={styles.mapArea}>
           {showIOSBanner && (
             <div className={styles.iosBanner}>
               <p className={styles.iosBannerText}>{tInstall("iosText")}</p>
@@ -160,7 +145,7 @@ export default function HistoryPage() {
               </button>
             </div>
           )}
-          <div className={mapStyles.mapWrap}>
+          <div className={mapStyles.mapWrap} style={{ maxWidth: "min(90vw, 440px)" }}>
             <div className={mapStyles.axH} />
             <div className={mapStyles.axV} />
             <div className={mapStyles.ring} style={{ width: "23%", height: "23%" }} />
@@ -216,7 +201,18 @@ export default function HistoryPage() {
             <p className={styles.secLbl}>{t("error")}</p>
           ) : entries.length === 0 ? (
             <p className={styles.secLbl}>{t("empty")}</p>
-          ) : null}
+          ) : (
+            <div className={styles.mapLabel}>{t("mapLabel")}</div>
+          )}
+        </div>
+
+        <div className={styles.bottomBar}>
+          <Link href="/report" className={styles.ghostBtn}>
+            {t("seeReport")}
+          </Link>
+          <button type="button" className={styles.solidBtn} onClick={handleNewMoment}>
+            {t("newMoment")}
+          </button>
         </div>
       </div>
     </AuthGuard>

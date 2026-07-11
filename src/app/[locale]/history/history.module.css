@@ -1,52 +1,19 @@
-.histHdr {
-  padding: calc(env(safe-area-inset-top, 0px) + 18px) 22px 14px;
-  border-bottom: 1px solid #e8e5e0;
-  flex-shrink: 0;
-}
-
-.histTop {
+.topBar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 4px;
+  gap: 12px;
+  padding: calc(env(safe-area-inset-top, 0px) + 16px) 22px 4px;
+  flex-shrink: 0;
 }
 
-.histTitle {
-  font-size: 24px;
-  font-weight: 500;
-  color: #1a1815;
-}
-
-.histNew {
-  padding: 9px 18px;
-  background: #2a2825;
-  border: none;
-  border-radius: 22px;
-  color: #f0eeec;
-  font-size: 14px;
-  cursor: pointer;
-  min-height: 46px;
-}
-
-.histTopActions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.histSub {
-  font-size: 14px;
+.statsLine {
+  font-size: 13px;
   color: #b0adb8;
 }
 
-.histLinks {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-top: 6px;
-}
-
-.histLink {
+.logoutLink {
+  flex-shrink: 0;
   padding: 0;
   background: none;
   border: none;
@@ -56,19 +23,29 @@
   cursor: pointer;
 }
 
-.histScroll {
+.mapArea {
   flex: 1;
-  overflow-y: auto;
-  padding: 16px 20px calc(env(safe-area-inset-bottom, 0px) + 20px);
-  -webkit-overflow-scrolling: touch;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 22px;
+}
+
+.mapLabel {
+  margin-top: 16px;
+  font-size: 13px;
+  color: #b0adb8;
+  text-align: center;
+  letter-spacing: 0.02em;
 }
 
 .secLbl {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  color: #c0bdb8;
-  margin-bottom: 12px;
+  margin-top: 16px;
+  font-size: 13px;
+  color: #b0adb8;
+  text-align: center;
 }
 
 .dotRecent {
@@ -86,7 +63,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
   padding: 14px 16px;
   background: #fff;
   border: 1px solid #e8e5e0;
@@ -108,5 +85,35 @@
   border-radius: 18px;
   color: #f0eeec;
   font-size: 13px;
+  cursor: pointer;
+}
+
+.bottomBar {
+  display: flex;
+  gap: 10px;
+  padding: 12px 20px calc(env(safe-area-inset-bottom, 0px) + 18px);
+  flex-shrink: 0;
+}
+
+.ghostBtn {
+  flex: 1;
+  padding: 14px;
+  background: transparent;
+  border: 1.5px solid #2a2825;
+  border-radius: 22px;
+  color: #2a2825;
+  font-size: 15px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.solidBtn {
+  flex: 1;
+  padding: 14px;
+  background: #2a2825;
+  border: none;
+  border-radius: 22px;
+  color: #f0eeec;
+  font-size: 15px;
   cursor: pointer;
 }
