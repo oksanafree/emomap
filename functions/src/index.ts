@@ -11,11 +11,18 @@ type ReminderVariant = "morning" | "evening";
 const MORNING_MESSAGES = [
   { title: "How's your morning?", body: "Take 10 seconds to check in on Emomapp." },
   { title: "Start the day with a check-in", body: "Where are you right now — in the world, and in yourself?" },
+  { title: "How are you showing up today?", body: "Take a moment to check in." },
+  {
+    title: "A new day, a new point on your trail.",
+    body: "How does the world feel this morning?",
+  },
 ];
 
 const EVENING_MESSAGES = [
   { title: "How was today?", body: "Log tonight's check-in before you wind down." },
   { title: "End-of-day check-in", body: "A quick moment to notice how today landed." },
+  { title: "How did the day treat you?", body: "Log your last state before it slips away." },
+  { title: "Your trail is waiting.", body: "A quick check-in takes 30 seconds." },
 ];
 
 function pickMessage(variant: ReminderVariant) {
