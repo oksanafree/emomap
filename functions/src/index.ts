@@ -33,7 +33,11 @@ async function sendReminders(variant: ReminderVariant) {
 
   await Promise.all(
     usersSnapshot.docs.map(async (userDoc) => {
-      const fcmTokens = (userDoc.data().fcm_tokens as string[] | undefined) ?? [];
+      const data = userDoc.data();
+      const tokensArray = (data.fcm_tokens as string[] | undefined) ?? [];
+      const legacyToken = data.fcm_token as string | undefined;
+      const usingLegacyTokenOnly = tokensArray.length === 0 && !!legacyToken;
+      const fcmTokens = tokensArray.length > 0 ? tokensArray : legacyToken ? [legacyToken] : [];
       if (fcmTokens.length === 0) return;
 
       const recentEntries = await db
@@ -67,7 +71,11 @@ async function sendReminders(variant: ReminderVariant) {
       );
 
       if (staleTokens.length > 0) {
-        await userDoc.ref.update({ fcm_tokens: FieldValue.arrayRemove(...staleTokens) });
+        if (usingLegacyTokenOnly) {
+          await userDoc.ref.update({ fcm_token: FieldValue.delete() });
+        } else {
+          await userDoc.ref.update({ fcm_tokens: FieldValue.arrayRemove(...staleTokens) });
+        }
       }
     }),
   );

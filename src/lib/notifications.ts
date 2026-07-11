@@ -36,10 +36,13 @@ export async function subscribeUserToPush() {
 
     await setDoc(
       userRef,
-      { fcm_tokens: arrayUnion(token), notifications_enabled: true },
+      { fcm_tokens: arrayUnion(token), fcm_token: token, notifications_enabled: true },
       { merge: true },
     );
-    console.log("[subscribeUserToPush] setDoc() complete — token added to fcm_tokens for uid:", user.uid);
+    console.log(
+      "[subscribeUserToPush] setDoc() complete — token added to fcm_tokens and set as fcm_token for uid:",
+      user.uid,
+    );
   } catch (err) {
     console.error("[subscribeUserToPush] failed:", err);
   }
