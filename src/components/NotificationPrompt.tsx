@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { subscribeUserToPush } from "@/lib/notifications";
 import styles from "./notification-prompt.module.css";
@@ -12,11 +13,20 @@ type NotificationPromptProps = {
 
 export function NotificationPrompt({ onClose }: NotificationPromptProps) {
   const t = useTranslations("Notifications");
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState(false);
 
-  function handleTurnOn() {
-    subscribeUserToPush();
+  async function handleTurnOn() {
+    setSubmitting(true);
+    setError(false);
+    const ok = await subscribeUserToPush();
+    setSubmitting(false);
     localStorage.setItem(NOTIF_ASKED_KEY, "true");
-    onClose();
+    if (ok) {
+      onClose();
+    } else {
+      setError(true);
+    }
   }
 
   function handleSkip() {
@@ -39,7 +49,8 @@ export function NotificationPrompt({ onClose }: NotificationPromptProps) {
         </div>
       </div>
       <div className={styles.actions}>
-        <button type="button" className={styles.turnOn} onClick={handleTurnOn}>
+        {error && <p className={styles.error}>{t("setupError")}</p>}
+        <button type="button" className={styles.turnOn} onClick={handleTurnOn} disabled={submitting}>
           {t("turnOn")}
         </button>
         <button type="button" className={styles.skip} onClick={handleSkip}>

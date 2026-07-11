@@ -61,6 +61,13 @@
   padding: 0 24px calc(env(safe-area-inset-bottom, 0px) + 32px);
 }
 
+.error {
+  font-size: 13px;
+  color: #e07070;
+  text-align: center;
+  margin: 0 0 12px;
+}
+
 .turnOn {
   width: 100%;
   padding: 17px;
@@ -71,6 +78,11 @@
   font-size: 16px;
   cursor: pointer;
   margin-bottom: 12px;
+}
+
+.turnOn:disabled {
+  opacity: 0.6;
+  cursor: default;
 }
 
 .skip {
