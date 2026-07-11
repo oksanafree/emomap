@@ -180,19 +180,14 @@
   "History": {
     "title": "Your trail",
     "newMoment": "+ New moment",
-    "entriesCount": "{count, plural, one {# entry} other {# entries}}",
+    "entriesCount": "{count, plural, one {# check-in} other {# check-ins}}",
     "daysCount": "{count, plural, one {# day} other {# days}}",
-    "progressToFullReport": "{count, plural, one {# check-in} other {# check-ins}} · {remaining} more to your full report",
-    "recent": "RECENT",
+    "fullReportRemaining": "{remaining} more to your full report",
     "loading": "Loading…",
     "empty": "No entries yet.",
     "error": "Could not load your entries.",
     "seeReport": "See your report →",
-    "logOut": "Log out",
-    "editContext": "Edit context",
-    "delete": "Delete",
-    "confirmDelete": "Delete this entry?",
-    "deleteError": "Could not delete. Try again."
+    "logOut": "Log out"
   },
   "Insight": {
     "headline": "A pattern is starting to form",

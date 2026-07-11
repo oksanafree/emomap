@@ -1,14 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useLocale, useTranslations } from "next-intl";
-import { collection, deleteDoc, doc, getDocs, orderBy, query, Timestamp } from "firebase/firestore";
+import { useTranslations } from "next-intl";
+import { collection, getDocs, orderBy, query, Timestamp } from "firebase/firestore";
 import { signOut } from "firebase/auth";
 import { Link, useRouter } from "@/i18n/navigation";
 import { useAnonymousAuth } from "@/lib/use-anonymous-auth";
 import { useSliderSound } from "@/lib/use-slider-sound";
 import { db, getFirebaseAuth } from "@/lib/firebase";
-import type { StateKey } from "@/lib/state-detection";
 import { AuthGuard } from "@/components/AuthGuard";
 import { NotificationPrompt } from "@/components/NotificationPrompt";
 import mapStyles from "@/styles/map-visual.module.css";
@@ -16,6 +15,7 @@ import styles from "./history.module.css";
 
 const NOTIF_ASKED_KEY = "notif_asked";
 const INSTALL_PROMPT_SEEN_KEY = "install_prompt_seen";
+const FULL_REPORT_ENTRIES = 20;
 
 type HistoryEntry = {
   id: string;
@@ -24,14 +24,12 @@ type HistoryEntry = {
   self_value: number;
   x: number;
   y: number;
-  state: StateKey;
 };
 
 export default function HistoryPage() {
   const t = useTranslations("History");
   const tMap = useTranslations("Map");
   const tInstall = useTranslations("Install");
-  const locale = useLocale();
   const router = useRouter();
   const { user, loading: authLoading } = useAnonymousAuth();
   const { sndNav } = useSliderSound();
@@ -39,9 +37,6 @@ export default function HistoryPage() {
   const [error, setError] = useState(false);
   const [showNotifPrompt, setShowNotifPrompt] = useState(false);
   const [showIOSBanner, setShowIOSBanner] = useState(false);
-  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
-  const [deleteError, setDeleteError] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
 
   useEffect(() => {
     if ("serviceWorker" in navigator) {
@@ -88,7 +83,6 @@ export default function HistoryPage() {
               self_value: data.self_value,
               x: data.x,
               y: data.y,
-              state: data.state,
             };
           }),
         );
@@ -107,52 +101,33 @@ export default function HistoryPage() {
   }
 
   async function handleLogout() {
-    setShowSettings(false);
     await signOut(getFirebaseAuth());
     router.push("/auth");
-  }
-
-  function handleEditContext(entryId: string) {
-    setOpenMenuId(null);
-    router.push(`/context?entryId=${entryId}`);
-  }
-
-  async function handleDelete(entryId: string) {
-    setOpenMenuId(null);
-    if (!user) return;
-    if (!window.confirm(t("confirmDelete"))) return;
-
-    setDeleteError(false);
-    try {
-      await deleteDoc(doc(db, "users", user.uid, "entries", entryId));
-      setEntries((prev) => (prev ? prev.filter((e) => e.id !== entryId) : prev));
-    } catch {
-      setDeleteError(true);
-    }
   }
 
   const dayCount = entries
     ? new Set(entries.filter((e) => e.timestamp).map((e) => e.timestamp!.toDateString())).size
     : 0;
 
-  const dateFormatter = new Intl.DateTimeFormat(locale, {
-    dateStyle: "medium",
-    timeStyle: "short",
-  });
+  // entries is fetched newest-first; the trail line on the map should connect
+  // moments in the order they happened, so reverse it to oldest-first here.
+  const chronological = entries ? [...entries].reverse() : [];
+  const mostRecentId = entries && entries.length > 0 ? entries[0].id : null;
+
+  const statsLine =
+    entries && entries.length > 0
+      ? [
+          t("entriesCount", { count: entries.length }),
+          t("daysCount", { count: dayCount }),
+          ...(entries.length < FULL_REPORT_ENTRIES
+            ? [t("fullReportRemaining", { remaining: FULL_REPORT_ENTRIES - entries.length })]
+            : []),
+        ].join(" · ")
+      : " ";
 
   return (
     <AuthGuard>
       {showNotifPrompt && <NotificationPrompt onClose={() => setShowNotifPrompt(false)} />}
-      {showSettings && (
-        <>
-          <div className={styles.settingsBackdrop} onClick={() => setShowSettings(false)} />
-          <div className={styles.settingsSheet}>
-            <button type="button" className={styles.settingsLogout} onClick={handleLogout}>
-              {t("logOut")}
-            </button>
-          </div>
-        </>
-      )}
       <div className="flex min-h-screen flex-col bg-[#f7f6f4]">
         <div className={styles.histHdr}>
           <div className={styles.histTop}>
@@ -161,31 +136,19 @@ export default function HistoryPage() {
               <button type="button" className={styles.histNew} onClick={handleNewMoment}>
                 {t("newMoment")}
               </button>
-              <button
-                type="button"
-                className={styles.settingsBtn}
-                aria-label="Settings"
-                onClick={() => setShowSettings(true)}
-              >
-                ⚙
-              </button>
             </div>
           </div>
-          <div className={styles.histSub}>
-            {entries && entries.length > 0
-              ? `${t("entriesCount", { count: entries.length })} · ${t("daysCount", { count: dayCount })}`
-              : " "}
+          <div className={styles.histSub}>{statsLine}</div>
+          <div className={styles.histLinks}>
+            {entries && entries.length >= 5 && (
+              <Link href="/report" className={styles.histLink}>
+                {t("seeReport")}
+              </Link>
+            )}
+            <button type="button" className={styles.histLink} onClick={handleLogout}>
+              {t("logOut")}
+            </button>
           </div>
-          {entries && entries.length > 0 && entries.length < 20 && (
-            <div className={styles.histSub}>
-              {t("progressToFullReport", { count: entries.length, remaining: 20 - entries.length })}
-            </div>
-          )}
-          {entries && entries.length >= 5 && (
-            <Link href="/report" className={styles.histNew}>
-              {t("seeReport")}
-            </Link>
-          )}
         </div>
 
         <div className={styles.histScroll}>
@@ -215,10 +178,30 @@ export default function HistoryPage() {
             <div className={mapStyles.ql} style={{ bottom: 8, right: 10 }}>
               {tMap("quadrants.receiving")}
             </div>
+            {chronological.length > 1 && (
+              <svg className={mapStyles.mapSvg}>
+                {chronological.slice(1).map((entry, i) => {
+                  const from = chronological[i];
+                  return (
+                    <line
+                      key={entry.id}
+                      x1={`${50 + from.x * 42}%`}
+                      y1={`${50 - from.y * 42}%`}
+                      x2={`${50 + entry.x * 42}%`}
+                      y2={`${50 - entry.y * 42}%`}
+                      stroke="rgba(124, 108, 240, 0.3)"
+                      strokeWidth="1"
+                    />
+                  );
+                })}
+              </svg>
+            )}
             {entries?.map((entry) => (
               <div
                 key={entry.id}
-                className={mapStyles.constellationDot}
+                className={`${mapStyles.constellationDot} ${
+                  entry.id === mostRecentId ? styles.dotRecent : styles.dotFaded
+                }`}
                 style={{
                   left: `${50 + entry.x * 42}%`,
                   top: `${50 - entry.y * 42}%`,
@@ -233,54 +216,7 @@ export default function HistoryPage() {
             <p className={styles.secLbl}>{t("error")}</p>
           ) : entries.length === 0 ? (
             <p className={styles.secLbl}>{t("empty")}</p>
-          ) : (
-            <>
-              <div className={styles.secLbl}>{t("recent")}</div>
-              {deleteError && <p className={styles.secLbl}>{t("deleteError")}</p>}
-              {entries.map((entry) => (
-                <div key={entry.id} className={styles.entryRow}>
-                  <div className={styles.entryDot} />
-                  <div className={styles.entryBody}>
-                    <div className={styles.entryState}>
-                      {tMap(`states.${entry.state}.name`).toUpperCase()}
-                    </div>
-                    <div className={styles.entryMeta}>
-                      {entry.timestamp ? dateFormatter.format(entry.timestamp) : "—"}
-                    </div>
-                  </div>
-                  <div className={styles.entryMenuWrap}>
-                    <button
-                      type="button"
-                      className={styles.entryMenuBtn}
-                      aria-label="More"
-                      onClick={() => setOpenMenuId((id) => (id === entry.id ? null : entry.id))}
-                    >
-                      ···
-                    </button>
-                    {openMenuId === entry.id && (
-                      <>
-                        <div className={styles.entryMenuBackdrop} onClick={() => setOpenMenuId(null)} />
-                        <div className={styles.entryMenu}>
-                          <div
-                            className={styles.entryMenuItem}
-                            onClick={() => handleEditContext(entry.id)}
-                          >
-                            {t("editContext")}
-                          </div>
-                          <div
-                            className={`${styles.entryMenuItem} ${styles.entryMenuItemDanger}`}
-                            onClick={() => handleDelete(entry.id)}
-                          >
-                            {t("delete")}
-                          </div>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </>
-          )}
+          ) : null}
         </div>
       </div>
     </AuthGuard>

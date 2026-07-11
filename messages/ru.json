@@ -176,19 +176,14 @@
   "History": {
     "title": "Твой путь",
     "newMoment": "+ Новый момент",
-    "entriesCount": "{count, plural, one {# запись} few {# записи} many {# записей} other {# записей}}",
+    "entriesCount": "{count, plural, one {# отметка} few {# отметки} many {# отметок} other {# отметок}}",
     "daysCount": "{count, plural, one {# день} few {# дня} many {# дней} other {# дней}}",
-    "progressToFullReport": "{count, plural, one {# отметка} few {# отметки} many {# отметок} other {# отметок}} · ещё {remaining} до полного отчёта",
-    "recent": "НЕДАВНИЕ",
+    "fullReportRemaining": "ещё {remaining} до полного отчёта",
     "loading": "Загрузка…",
     "empty": "Пока нет записей.",
     "error": "Не удалось загрузить записи.",
     "seeReport": "Смотреть свой отчёт →",
-    "logOut": "Выйти",
-    "editContext": "Изменить контекст",
-    "delete": "Удалить",
-    "confirmDelete": "Удалить эту запись?",
-    "deleteError": "Не удалось удалить. Попробуйте снова."
+    "logOut": "Выйти"
   },
   "Insight": {
     "headline": "Начинает формироваться закономерность",
