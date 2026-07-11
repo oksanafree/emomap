@@ -207,10 +207,8 @@
   },
   "Report": {
     "navTitle": "Отчёт",
-    "headline": "Это твоё личное путешествие.",
-    "body": "Твои отметки показывают, как ты видел(а) мир и себя с {firstDate} по {lastDate}.",
-    "bodySameDay": "Твои отметки от {date} показывают, как ты видел(а) мир и себя.",
-    "checkinsCount": "{count, plural, one {# чек-ин} few {# чек-ина} many {# чек-инов} other {# чек-инов}}",
+    "mapTitle": "Твой внутренний мир.",
+    "mapSubtitle": "{dateRange} · {count, plural, one {# чек-ин} few {# чек-ина} many {# чек-инов} other {# чек-инов}}",
     "reveal": "Посмотреть что это значит →",
     "loading": "Загрузка…",
     "generating": "Готовим твой отчёт…",

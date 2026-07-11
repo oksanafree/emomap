@@ -211,17 +211,16 @@ export default function ReportPage() {
   const mover = visibleCount > 0 ? steps[visibleCount - 1] : null;
 
   const dateFormatter = new Intl.DateTimeFormat(locale, { month: "long", day: "numeric" });
-  const bodyText =
+  const mapSubtitle =
     timestamps && timestamps.length > 0
       ? (() => {
           const first = timestamps[0];
           const last = timestamps[timestamps.length - 1];
-          return first.toDateString() === last.toDateString()
-            ? t("bodySameDay", { date: dateFormatter.format(first) })
-            : t("body", {
-                firstDate: dateFormatter.format(first),
-                lastDate: dateFormatter.format(last),
-              });
+          const dateRange =
+            first.toDateString() === last.toDateString()
+              ? dateFormatter.format(first)
+              : `${dateFormatter.format(first)} – ${dateFormatter.format(last)}`;
+          return t("mapSubtitle", { dateRange, count: timestamps.length });
         })()
       : "";
 
@@ -295,9 +294,8 @@ export default function ReportPage() {
             <p className={styles.status}>{t("empty")}</p>
           ) : (
             <>
-              <div className={styles.headline}>{t("headline")}</div>
-              <div className={styles.subtext}>{bodyText}</div>
-              <div className={styles.checkinsCount}>{t("checkinsCount", { count: timestamps.length })}</div>
+              <div className={styles.headline}>{t("mapTitle")}</div>
+              <div className={styles.subtext}>{mapSubtitle}</div>
               <button type="button" className={styles.revealBtn} onClick={handleReveal}>
                 {t("reveal")}
               </button>

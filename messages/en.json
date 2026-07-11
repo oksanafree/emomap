@@ -211,10 +211,8 @@
   },
   "Report": {
     "navTitle": "Emomapp",
-    "headline": "This is your personal journey.",
-    "body": "Your check-ins are showing how you've seen the world and yourself from {firstDate} to {lastDate}.",
-    "bodySameDay": "Your check-ins from {date} are showing how you've seen the world and yourself.",
-    "checkinsCount": "{count, plural, one {# check-in} other {# check-ins}}",
+    "mapTitle": "Your inner world.",
+    "mapSubtitle": "{dateRange} · {count, plural, one {# check-in} other {# check-ins}}",
     "reveal": "See what this reveals →",
     "loading": "Loading…",
     "generating": "Generating your report…",
