@@ -215,15 +215,18 @@
     "mapSubtitle": "{dateRange} · {count, plural, one {# check-in} other {# check-ins}}",
     "reveal": "See what this reveals →",
     "loading": "Loading…",
-    "generating": "Generating your report…",
+    "generatingMessages": [
+      "Reading your trail...",
+      "Finding the patterns...",
+      "Putting it into words...",
+      "Almost there..."
+    ],
     "empty": "No entries yet.",
     "notEnoughEntries": "Your report will be ready after 5 check-ins.",
     "reportError": "Could not prepare your report. Try again.",
     "back": "Back to my trail →",
     "refresh": "Refresh report",
-    "refreshing": "Refreshing…",
-    "refreshRateLimited": "You can refresh again in 24 hours.",
-    "refreshError": "Could not refresh your report. Try again."
+    "refreshRateLimited": "You can refresh again in 24 hours."
   },
   "ReportPending": {
     "headline": "Your report is being prepared.",

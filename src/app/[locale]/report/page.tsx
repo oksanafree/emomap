@@ -13,7 +13,7 @@ import {
   Timestamp,
   updateDoc,
 } from "firebase/firestore";
-import { Link } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { useAnonymousAuth } from "@/lib/use-anonymous-auth";
 import { db } from "@/lib/firebase";
 import { AuthGuard } from "@/components/AuthGuard";
@@ -22,13 +22,15 @@ import styles from "./report.module.css";
 
 const TICK_MS = 1400;
 const POLL_MS = 5000;
+const MESSAGE_ROTATE_MS = 3000;
 const MIN_ENTRIES_FOR_REPORT = 5;
 const FULL_REPORT_ENTRIES = 20;
 const REFRESH_COOLDOWN_MS = 24 * 60 * 60 * 1000;
+const GENERATING_MESSAGE_COUNT = 4;
 
 type Step = { left: number; top: number };
 type CacheStatus = "loading" | "found" | "empty" | "generating" | "error";
-type RefreshState = "idle" | "loading" | "rate-limited" | "error";
+type RefreshState = "idle" | "rate-limited";
 
 function lineOpacityAtDraw(i: number) {
   return Math.min(0.1 + i * 0.045, 0.75);
@@ -38,6 +40,7 @@ export default function ReportPage() {
   const t = useTranslations("Report");
   const tMap = useTranslations("Map");
   const locale = useLocale();
+  const router = useRouter();
   const { user } = useAnonymousAuth();
   const [timestamps, setTimestamps] = useState<Date[] | null>(null);
   const [steps, setSteps] = useState<Step[]>([]);
@@ -48,6 +51,7 @@ export default function ReportPage() {
   const [reportText, setReportText] = useState<string | null>(null);
   const [lastGeneratedAt, setLastGeneratedAt] = useState<Date | null>(null);
   const [refreshState, setRefreshState] = useState<RefreshState>("idle");
+  const [messageIndex, setMessageIndex] = useState(0);
   const part2Ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -119,10 +123,10 @@ export default function ReportPage() {
           return;
         }
 
-        // Generation for this milestone is triggered from the check-in flow
-        // (src/app/[locale]/context/page.tsx) or the manual "Refresh report"
-        // link below — viewing this page never kicks off a new generation on
-        // its own. Poll in case one is already in flight.
+        // Generation may already be in flight from the check-in milestone
+        // trigger (src/app/[locale]/context/page.tsx). Just viewing this page
+        // never kicks off a new generation — only an explicit tap on "reveal"
+        // or "Refresh report" does that. Poll in case one is already running.
         setCacheStatus("generating");
         pollTimeout = setTimeout(checkReport, POLL_MS);
       } catch {
@@ -137,36 +141,34 @@ export default function ReportPage() {
     };
   }, [user, locale, timestamps]);
 
-  async function handleRefresh() {
-    if (!user || refreshState === "loading") return;
+  function handleRefresh() {
+    if (!user) return;
     if (lastGeneratedAt && Date.now() - lastGeneratedAt.getTime() < REFRESH_COOLDOWN_MS) {
       setRefreshState("rate-limited");
       return;
     }
 
-    setRefreshState("loading");
+    // Fire the regeneration in the background and move on immediately — the
+    // report-pending screen (and its notification when ready) takes over from
+    // here instead of making the user wait on this page.
     const type = (timestamps?.length ?? 0) >= FULL_REPORT_ENTRIES ? "full" : "short";
-    try {
-      const res = await fetch("/api/report/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: user.uid, locale, type }),
-      });
-      if (!res.ok) throw new Error("Refresh failed");
-
-      const snap = await getDoc(doc(db, "users", user.uid));
-      const freshReport = snap.data()?.[`report_${locale}`];
-      if (typeof freshReport?.text !== "string" || !freshReport.text) {
-        throw new Error("No report text after refresh");
-      }
-      setReportText(freshReport.text);
-      setLastGeneratedAt(freshReport.last_generated_at?.toDate?.() ?? new Date());
-      setCacheStatus("found");
-      setRefreshState("idle");
-    } catch {
-      setRefreshState("error");
-    }
+    fetch("/api/report/generate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId: user.uid, locale, type }),
+    }).catch(() => {});
+    router.push("/report-pending");
   }
+
+  useEffect(() => {
+    if (cacheStatus !== "generating") return;
+    setMessageIndex(0);
+    const interval = setInterval(
+      () => setMessageIndex((i) => (i + 1) % GENERATING_MESSAGE_COUNT),
+      MESSAGE_ROTATE_MS,
+    );
+    return () => clearInterval(interval);
+  }, [cacheStatus]);
 
   useEffect(() => {
     if (steps.length === 0) return;
@@ -225,6 +227,21 @@ export default function ReportPage() {
       : "";
 
   function handleReveal() {
+    if (cacheStatus === "generating") {
+      // Report isn't cached yet — kick off generation in the background and
+      // send the user to the report-pending screen instead of making them
+      // wait here. They get a notification when it's ready.
+      if (user) {
+        const type = (timestamps?.length ?? 0) >= FULL_REPORT_ENTRIES ? "full" : "short";
+        fetch("/api/report/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userId: user.uid, locale, type }),
+        }).catch(() => {});
+      }
+      router.push("/report-pending");
+      return;
+    }
     setRevealed(true);
     part2Ref.current?.scrollIntoView({ behavior: "smooth" });
   }
@@ -303,9 +320,17 @@ export default function ReportPage() {
           )}
         </div>
 
-        <div ref={part2Ref} className={styles.lightSection} style={{ opacity: revealed ? 1 : 0 }}>
+        <div
+          ref={part2Ref}
+          className={`${styles.lightSection} ${cacheStatus === "generating" ? styles.lightSectionGenerating : ""}`}
+          style={{ opacity: revealed ? 1 : 0 }}
+        >
           {cacheStatus === "loading" && <p className={styles.placeholder}>{t("loading")}</p>}
-          {cacheStatus === "generating" && <p className={styles.placeholder}>{t("generating")}</p>}
+          {cacheStatus === "generating" && (
+            <p key={messageIndex} className={styles.generatingMessage}>
+              {t(`generatingMessages.${messageIndex}`)}
+            </p>
+          )}
           {cacheStatus === "empty" && (
             <>
               <p className={styles.placeholder}>{t("notEnoughEntries")}</p>
@@ -326,17 +351,11 @@ export default function ReportPage() {
             <>
               <p className={styles.reportText}>{reportText}</p>
               {(timestamps?.length ?? 0) >= MIN_ENTRIES_FOR_REPORT && (
-                <button
-                  type="button"
-                  className={styles.refreshLink}
-                  onClick={handleRefresh}
-                  disabled={refreshState === "loading"}
-                >
-                  {refreshState === "loading" ? t("refreshing") : t("refresh")}
+                <button type="button" className={styles.refreshLink} onClick={handleRefresh}>
+                  {t("refresh")}
                 </button>
               )}
               {refreshState === "rate-limited" && <p className={styles.refreshNote}>{t("refreshRateLimited")}</p>}
-              {refreshState === "error" && <p className={styles.refreshNote}>{t("refreshError")}</p>}
             </>
           )}
         </div>

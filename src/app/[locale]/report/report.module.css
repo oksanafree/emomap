@@ -101,10 +101,26 @@
   white-space: pre-line;
 }
 
-.generating {
-  font-size: 14px;
-  color: #9a9890;
+.lightSectionGenerating {
+  background: #080914;
+}
+
+.generatingMessage {
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.6);
   text-align: center;
+  letter-spacing: 0.02em;
+  animation: reportGeneratingPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes reportGeneratingPulse {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.9;
+  }
 }
 
 .refreshLink {
@@ -117,11 +133,6 @@
   color: #8b87a0;
   text-decoration: underline;
   cursor: pointer;
-}
-
-.refreshLink:disabled {
-  opacity: 0.5;
-  cursor: default;
 }
 
 .refreshNote {
