@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 import { useCheckin } from "@/lib/checkin-context";
 import { useSliderSound } from "@/lib/use-slider-sound";
@@ -12,7 +12,6 @@ import styles from "@/styles/checkin-screen.module.css";
 
 export default function WorldPage() {
   const t = useTranslations("World");
-  const locale = useLocale();
   const router = useRouter();
   const { setWorldValue } = useCheckin();
   const [value, setValue] = useState(50);
@@ -78,13 +77,11 @@ export default function WorldPage() {
 
           <div className={styles.endLabels}>
             <div className={styles.el}>
-              {locale !== "ru" && <div className={styles.elMain}>{t("endLabels.leftMain")}</div>}
               <div className={styles.elSub}>
                 {t.rich("endLabels.leftSub", { br: () => <br /> })}
               </div>
             </div>
             <div className={`${styles.el} ${styles.r}`}>
-              {locale !== "ru" && <div className={styles.elMain}>{t("endLabels.rightMain")}</div>}
               <div className={styles.elSub}>
                 {t.rich("endLabels.rightSub", { br: () => <br /> })}
               </div>
