@@ -121,6 +121,18 @@ The app tracks how people perceive themselves and the world — not what they do
 ❌ "67% of your entries landed here." "Your average sleep was 6.88 hours."
 ✅ "Most of your moments..." "The night before averaged over 7 hours." Use natural language.
 
+### Forbidden: absent-state commentary and capacity claims
+Do not comment on states, emotions, or capacities that did not appear in the data. Do not make claims about what the person is "capable of" based on what didn't happen. This rule applies at all entry counts.
+
+Examples of forbidden patterns:
+❌ "That capacity is there." (claiming an untested ability)
+❌ "You have the ability to handle X, it just wasn't needed."
+❌ "The part of you that does X was barely called on."
+❌ "You didn't show X, but it's part of you."
+❌ Any sentence that begins with a state or capacity the user did NOT demonstrate and then reassures them it exists.
+
+✅ If a state is absent, do not mention it. The report reflects what appeared — not what didn't.
+
 ---
 
 ## 5. What Always Appears
@@ -377,7 +389,7 @@ Every pair below is drawn from real corrections made during pilot report review.
 | Chip | [Never use in reports — internal term] |
 | Pattern engine | [Never use — internal term] |
 | Running on fuel | Burning something / spending something that needs refilling |
-| Absent state commentary | Never mention which of the 9 states did NOT appear in a report. With fewer than 30 entries, absence of a state is not a pattern. Remove any sentence like "Your day moved through every part except..." or "This capacity exists in everyone; these hours didn't bring it out." |
+| Absent state commentary | Never mention which of the 9 states did NOT appear in a report, and never claim a capacity the data didn't demonstrate. Applies at all entry counts. Remove any sentence like "Your day moved through every part except..." or "This capacity exists in everyone; these hours didn't bring it out." See "Forbidden: absent-state commentary and capacity claims" (Section 4). |
 | Physical location from activity | Never infer physical setting from activity tokens. "Work / Study" → write "working" or "at work". Never write "at the desk", "at the computer", "in the office", "at the table". The system does not know where the person was. |
 | Duration/timing between entries | Never write "just minutes apart", "lasted only a few minutes", or any time gap claim between entries. Only use the timestamp to establish sequence (morning, afternoon, evening), not spacing. |
 | Abstract filler sentences | Remove sentences like "Both were the space the day moved through on the way somewhere else" — if a sentence doesn't communicate a concrete observation, cut it. |
@@ -401,6 +413,8 @@ The last two rows are the literal Russian translation of the English disclaimer 
 ### Structural Rules (apply to both EN and RU)
 
 After the thematic sections, go directly to the closing question. No summary paragraph re-narrating what the sections already showed. No generic disclaimer about patterns vs. causes. If an observation about a single moment was already covered in a section, do not repeat it in a standalone paragraph afterward.
+
+If the arc of the period has already been described in a dedicated paragraph, do not restate it in a "one thing stayed consistent" or "throughout all of this" paragraph immediately before the closing question. Each paragraph should add new information, not repackage what was already said.
 
 Never comment on emotion-state mismatch ("the emotion didn't match the quadrant") in any report with fewer than 20 entries. This feels like a diagnosis. If the data shows it, describe what was there — don't analyze the contradiction.
 
