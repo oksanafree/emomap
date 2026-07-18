@@ -1,6 +1,5 @@
 import type {
   ActivityKey,
-  EnergyKey,
   HungerKey,
   LocationKey,
   SleepKey,
@@ -31,12 +30,6 @@ const SLEEP_LABELS: Record<SleepKey, string> = {
   over8: "8h+",
 };
 
-const ENERGY_LABELS: Record<EnergyKey, string> = {
-  low: "Low",
-  medium: "Medium",
-  high: "High",
-};
-
 const HUNGER_LABELS: Record<HungerKey, string> = {
   notHungry: "Not hungry",
   justAte: "Just ate",
@@ -57,7 +50,7 @@ export type CustomTokens = {
   social?: string[] | string;
   location?: string;
   sleep?: string;
-  energy?: string;
+  energy?: number;
   hunger?: string;
   note?: string;
   body_note?: string;
@@ -79,8 +72,8 @@ export function formatCustomTokens(tokens: CustomTokens | undefined | null): str
   if (tokens.sleep && tokens.sleep in SLEEP_LABELS) {
     parts.push(`Sleep: ${SLEEP_LABELS[tokens.sleep as SleepKey]}`);
   }
-  if (tokens.energy && tokens.energy in ENERGY_LABELS) {
-    parts.push(`Energy: ${ENERGY_LABELS[tokens.energy as EnergyKey]}`);
+  if (typeof tokens.energy === "number") {
+    parts.push(`Energy: ${tokens.energy}/10`);
   }
   if (tokens.hunger && tokens.hunger in HUNGER_LABELS) {
     parts.push(`Hunger: ${HUNGER_LABELS[tokens.hunger as HungerKey]}`);

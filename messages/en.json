@@ -153,11 +153,6 @@
       "over8": "8h+"
     },
     "energyQuestion": "Energy right now?",
-    "energy": {
-      "low": "Low",
-      "medium": "Medium",
-      "high": "High"
-    },
     "hungerQuestion": "Hunger?",
     "hunger": {
       "notHungry": "Not hungry",

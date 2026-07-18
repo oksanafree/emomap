@@ -18,13 +18,11 @@ import { useSliderSound } from "@/lib/use-slider-sound";
 import { db } from "@/lib/firebase";
 import {
   ACTIVITY_KEYS,
-  ENERGY_KEYS,
   HUNGER_KEYS,
   LOCATION_KEYS,
   SLEEP_KEYS,
   SOCIAL_KEYS,
   type ActivityKey,
-  type EnergyKey,
   type HungerKey,
   type LocationKey,
   type SleepKey,
@@ -42,7 +40,7 @@ function ContextPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user } = useAnonymousAuth();
-  const { sndChip, sndSave } = useSliderSound();
+  const { startSlide, sndChip, sndSave } = useSliderSound();
 
   const worldValue = Number(searchParams.get("world_value")) || 50;
   const selfValue = Number(searchParams.get("self_value")) || 50;
@@ -57,7 +55,7 @@ function ContextPageInner() {
   const [social, setSocial] = useState<Set<SocialKey>>(new Set());
   const [location, setLocation] = useState<LocationKey | null>(null);
   const [sleep, setSleep] = useState<SleepKey | null>(null);
-  const [energy, setEnergy] = useState<EnergyKey | null>(null);
+  const [energy, setEnergy] = useState<number | null>(null);
   const [hunger, setHunger] = useState<HungerKey | null>(null);
   const [bodyNote, setBodyNote] = useState("");
   const [note, setNote] = useState("");
@@ -95,7 +93,7 @@ function ContextPageInner() {
         setSocial(new Set(toArray(tokens.social) as SocialKey[]));
         setLocation((tokens.location as LocationKey) ?? null);
         setSleep((tokens.sleep as SleepKey) ?? null);
-        setEnergy((tokens.energy as EnergyKey) ?? null);
+        setEnergy(typeof tokens.energy === "number" ? tokens.energy : null);
         setHunger((tokens.hunger as HungerKey) ?? null);
         if (typeof tokens.note === "string") setNote(tokens.note);
         if (typeof tokens.body_note === "string") setBodyNote(tokens.body_note);
@@ -138,8 +136,8 @@ function ContextPageInner() {
     sndChip();
   }
 
-  function selectEnergy(key: EnergyKey) {
-    setEnergy(key);
+  function selectEnergy(value: number) {
+    setEnergy(value);
     sndChip();
   }
 
@@ -160,7 +158,7 @@ function ContextPageInner() {
     if (social.size > 0) customTokens.social = Array.from(social);
     if (location) customTokens.location = location;
     if (sleep) customTokens.sleep = sleep;
-    if (energy) customTokens.energy = energy;
+    if (energy !== null) customTokens.energy = energy;
     if (hunger) customTokens.hunger = hunger;
     if (bodyNote.trim()) customTokens.body_note = bodyNote.trim();
     if (note.trim()) customTokens.note = note.trim();
@@ -297,18 +295,21 @@ function ContextPageInner() {
               </div>
 
               <div className={styles.ctxGap} />
-              <div className={styles.ctxQ}>{t("energyQuestion")}</div>
-              <div className={styles.ctxChips}>
-                {ENERGY_KEYS.map((key) => (
-                  <div
-                    key={key}
-                    className={`${styles.cc} ${energy === key ? styles.ccSelected : ""}`}
-                    onClick={() => selectEnergy(key)}
-                  >
-                    {t(`energy.${key}`)}
-                  </div>
-                ))}
+              <div className={styles.ctxSliderRow}>
+                <div className={styles.ctxQ}>{t("energyQuestion")}</div>
+                {energy !== null && <div className={styles.ctxSliderValue}>{energy}</div>}
               </div>
+              <input
+                type="range"
+                min={1}
+                max={10}
+                step={1}
+                value={energy ?? 5}
+                onChange={(e) => selectEnergy(Number(e.target.value))}
+                onTouchStart={startSlide}
+                onMouseDown={startSlide}
+                className={styles.ctxRange}
+              />
 
               <div className={styles.ctxGap} />
               <div className={styles.ctxQ}>{t("hungerQuestion")}</div>

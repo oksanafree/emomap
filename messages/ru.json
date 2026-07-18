@@ -152,12 +152,7 @@
       "from7to8": "7–8ч",
       "over8": "8ч+"
     },
-    "energyQuestion": "Уровень энергии прямо сейчас?",
-    "energy": {
-      "low": "Низкий",
-      "medium": "Средний",
-      "high": "Высокий"
-    },
+    "energyQuestion": "Энергия сейчас?",
     "hungerQuestion": "Голод?",
     "hunger": {
       "notHungry": "Не голоден",
