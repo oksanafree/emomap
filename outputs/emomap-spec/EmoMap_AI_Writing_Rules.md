@@ -386,9 +386,18 @@ Every pair below is drawn from real corrections made during pilot report review.
 
 ### Forbidden Phrases (Russian)
 
-_Pending — the source table's row/column structure was lost in transit (no delimiters between cells) and needs to be resent before it can be added accurately to a document that directly shapes live report generation._
+| ❌ Forbidden | ✅ Use instead |
+|---|---|
+| на твоей стороне | мир ощущался поддерживающим / ты чувствовал поддержку мира / мир был за тебя |
+| без направления | ты ещё не выбрал свой путь / ощущение себя ещё не оформилось / не было ясности в себе |
+| это всё были закономерности, не причины | (cut entirely — too generic, adds nothing) |
+| они показывают, что было правдой для тебя | (cut entirely — same reason) |
+
+The last two rows are the literal Russian translation of the English disclaimer "These are patterns, not causes. They show what's been true for you." (Addendum 2). Do not translate that disclaimer into Russian reports — cut it entirely.
 
 ### Structural Rules (apply to both EN and RU)
+
+After the thematic sections, go directly to the closing question. No summary paragraph re-narrating what the sections already showed. No generic disclaimer about patterns vs. causes. If an observation about a single moment was already covered in a section, do not repeat it in a standalone paragraph afterward.
 
 Never comment on emotion-state mismatch ("the emotion didn't match the quadrant") in any report with fewer than 20 entries. This feels like a diagnosis. If the data shows it, describe what was there — don't analyze the contradiction.
 
