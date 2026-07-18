@@ -253,6 +253,26 @@
       "generic": "Something went wrong. Try again."
     }
   },
+  "Profile": {
+    "genderQuestion": "How should we refer to you?",
+    "gender": {
+      "male": "Male",
+      "female": "Female",
+      "non-binary": "Non-binary",
+      "unspecified": "Prefer not to say"
+    },
+    "ageQuestion": "Your age?",
+    "age": {
+      "under18": "Under 18",
+      "18-24": "18–24",
+      "25-34": "25–34",
+      "35-44": "35–44",
+      "45-54": "45–54",
+      "55+": "55+"
+    },
+    "continue": "Continue →",
+    "skip": "Skip →"
+  },
   "Notifications": {
     "headline": "Patterns need<br></br>input to appear.",
     "body": "People who notice meaningful patterns in their map check in <em>at least twice a day</em> — and when something happens.<br></br><br></br>Turn on reminders and we'll nudge you to check in.",

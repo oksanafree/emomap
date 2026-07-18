@@ -7,6 +7,16 @@ export const SYSTEM_PROMPT = fs.readFileSync(
   "utf-8",
 );
 
+export function buildGenderInstruction(gender: string | undefined): string {
+  if (gender === "female") {
+    return "The user is female. In Russian, use feminine grammatical forms throughout (чувствовала, была, уверена, etc.)";
+  }
+  if (gender === "male") {
+    return "The user is male. Use masculine forms (чувствовал, был, уверен, etc.)";
+  }
+  return "Use gender-neutral or plural forms where possible in Russian.";
+}
+
 export function buildReportUserMessage(
   patterns: PatternVariables,
   entries: ReportEntry[],

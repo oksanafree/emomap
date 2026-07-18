@@ -129,3 +129,39 @@
   text-align: center;
   cursor: pointer;
 }
+
+.profileQ {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.profileLabel {
+  font-size: 16px;
+  color: #e8e4ff;
+  text-align: center;
+  font-weight: 300;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.chip {
+  padding: 10px 16px;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.04);
+  color: #b8b4e0;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.chipSelected {
+  background: #4a3fa0;
+  border-color: #6b5fd0;
+  color: #e0d8ff;
+}

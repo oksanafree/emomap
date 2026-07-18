@@ -9,23 +9,31 @@ import {
   linkWithCredential,
   signInWithEmailAndPassword,
 } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
 import { useRouter } from "@/i18n/navigation";
-import { getFirebaseAuth } from "@/lib/firebase";
+import { getFirebaseAuth, db } from "@/lib/firebase";
+import { AGE_RANGE_KEYS, GENDER_KEYS, type AgeRangeKey, type GenderKey } from "@/lib/profile-options";
 import styles from "./auth.module.css";
 
 type Mode = "signup" | "login";
+type Step = "form" | "profile";
 
 function AuthPageInner() {
   const t = useTranslations("Auth");
+  const tProfile = useTranslations("Profile");
   const router = useRouter();
   const searchParams = useSearchParams();
   const [mode, setMode] = useState<Mode>(searchParams.get("mode") === "login" ? "login" : "signup");
+  const [step, setStep] = useState<Step>("form");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [showBack, setShowBack] = useState(false);
+  const [gender, setGender] = useState<GenderKey | null>(null);
+  const [ageRange, setAgeRange] = useState<AgeRangeKey | null>(null);
+  const [profileSaving, setProfileSaving] = useState(false);
 
   useEffect(() => {
     if (searchParams.get("from") === "onboarding" && localStorage.getItem("em_onboarded")) {
@@ -70,9 +78,11 @@ function AuthPageInner() {
         } else {
           await createUserWithEmailAndPassword(auth, email, password);
         }
-      } else {
-        await signInWithEmailAndPassword(auth, email, password);
+        setSubmitting(false);
+        setStep("profile");
+        return;
       }
+      await signInWithEmailAndPassword(auth, email, password);
       router.push("/");
     } catch (err) {
       setError(mapError((err as { code?: string }).code));
@@ -85,6 +95,28 @@ function AuthPageInner() {
     setError(null);
   }
 
+  async function handleProfileContinue() {
+    setProfileSaving(true);
+    const uid = getFirebaseAuth().currentUser?.uid;
+    if (uid) {
+      const profile: Record<string, string> = {};
+      if (gender) profile.gender = gender;
+      if (ageRange) profile.age_range = ageRange;
+      if (Object.keys(profile).length > 0) {
+        try {
+          await setDoc(doc(db, "users", uid), profile, { merge: true });
+        } catch {
+          // Non-fatal — profile fields are optional, proceed regardless.
+        }
+      }
+    }
+    router.push("/world");
+  }
+
+  function handleProfileSkip() {
+    router.push("/world");
+  }
+
   return (
     <div className={styles.screen}>
       {showBack && (
@@ -93,51 +125,98 @@ function AuthPageInner() {
         </button>
       )}
       <div className={styles.wordmark}>EMOMAP</div>
-      <div className={styles.content}>
-        <h1 className={styles.headline}>
-          {mode === "signup" ? t("signupHeadline") : t("loginHeadline")}
-        </h1>
+      {step === "form" ? (
+        <div className={styles.content}>
+          <h1 className={styles.headline}>
+            {mode === "signup" ? t("signupHeadline") : t("loginHeadline")}
+          </h1>
 
-        <form className={styles.form} onSubmit={handleSubmit}>
-          <input
-            type="email"
-            required
-            autoComplete="email"
-            placeholder={t("emailPlaceholder")}
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className={styles.input}
-          />
-          <div className={styles.passwordWrap}>
+          <form className={styles.form} onSubmit={handleSubmit}>
             <input
-              type={showPassword ? "text" : "password"}
+              type="email"
               required
-              autoComplete={mode === "signup" ? "new-password" : "current-password"}
-              placeholder={t("passwordPlaceholder")}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="email"
+              placeholder={t("emailPlaceholder")}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className={styles.input}
             />
-            <button
-              type="button"
-              className={styles.togglePassword}
-              onClick={() => setShowPassword((s) => !s)}
-            >
-              {showPassword ? t("hidePassword") : t("showPassword")}
+            <div className={styles.passwordWrap}>
+              <input
+                type={showPassword ? "text" : "password"}
+                required
+                autoComplete={mode === "signup" ? "new-password" : "current-password"}
+                placeholder={t("passwordPlaceholder")}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className={styles.input}
+              />
+              <button
+                type="button"
+                className={styles.togglePassword}
+                onClick={() => setShowPassword((s) => !s)}
+              >
+                {showPassword ? t("hidePassword") : t("showPassword")}
+              </button>
+            </div>
+
+            {error && <p className={styles.error}>{error}</p>}
+
+            <button type="submit" className={styles.submit} disabled={submitting}>
+              {submitting ? t("submitting") : mode === "signup" ? t("createAccount") : t("logIn")}
             </button>
+          </form>
+
+          <button type="button" className={styles.toggle} onClick={toggleMode}>
+            {mode === "signup" ? t("toggleToLogin") : t("toggleToSignup")}
+          </button>
+        </div>
+      ) : (
+        <div className={styles.content}>
+          <div className={styles.profileQ}>
+            <div className={styles.profileLabel}>{tProfile("genderQuestion")}</div>
+            <div className={styles.chips}>
+              {GENDER_KEYS.map((key) => (
+                <div
+                  key={key}
+                  className={`${styles.chip} ${gender === key ? styles.chipSelected : ""}`}
+                  onClick={() => setGender(key)}
+                >
+                  {tProfile(`gender.${key}`)}
+                </div>
+              ))}
+            </div>
           </div>
 
-          {error && <p className={styles.error}>{error}</p>}
+          <div className={styles.profileQ}>
+            <div className={styles.profileLabel}>{tProfile("ageQuestion")}</div>
+            <div className={styles.chips}>
+              {AGE_RANGE_KEYS.map((key) => (
+                <div
+                  key={key}
+                  className={`${styles.chip} ${ageRange === key ? styles.chipSelected : ""}`}
+                  onClick={() => setAgeRange(key)}
+                >
+                  {tProfile(`age.${key}`)}
+                </div>
+              ))}
+            </div>
+          </div>
 
-          <button type="submit" className={styles.submit} disabled={submitting}>
-            {submitting ? t("submitting") : mode === "signup" ? t("createAccount") : t("logIn")}
+          <button
+            type="button"
+            className={styles.submit}
+            onClick={handleProfileContinue}
+            disabled={profileSaving}
+          >
+            {tProfile("continue")}
           </button>
-        </form>
 
-        <button type="button" className={styles.toggle} onClick={toggleMode}>
-          {mode === "signup" ? t("toggleToLogin") : t("toggleToSignup")}
-        </button>
-      </div>
+          <button type="button" className={styles.toggle} onClick={handleProfileSkip}>
+            {tProfile("skip")}
+          </button>
+        </div>
+      )}
     </div>
   );
 }

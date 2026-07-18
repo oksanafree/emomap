@@ -5,7 +5,7 @@ import { getMessaging } from "firebase-admin/messaging";
 import { getAdminApp, getAdminDb } from "@/lib/firebase-admin";
 import { computePatternVariables, type ReportEntry } from "@/lib/report-patterns";
 import { formatCustomTokens } from "@/lib/context-labels";
-import { SYSTEM_PROMPT, buildReportUserMessage } from "@/lib/report-prompt";
+import { SYSTEM_PROMPT, buildGenderInstruction, buildReportUserMessage } from "@/lib/report-prompt";
 
 export async function POST(request: NextRequest) {
   let userId: string | undefined;
@@ -25,6 +25,14 @@ export async function POST(request: NextRequest) {
   }
 
   const db = getAdminDb();
+
+  let userData: FirebaseFirestore.DocumentData | undefined;
+  try {
+    const userSnap = await db.collection("users").doc(userId).get();
+    userData = userSnap.data();
+  } catch (error) {
+    console.error("Failed to fetch user profile for report generation", error);
+  }
 
   let entriesChronological: ReportEntry[];
   try {
@@ -62,6 +70,7 @@ export async function POST(request: NextRequest) {
   const maxTokens = reportType === "short" ? 1500 : 4000;
   const patterns = computePatternVariables(entriesChronological);
   const userMessage = buildReportUserMessage(patterns, entriesChronological, reportLocale, reportType);
+  const systemPrompt = `${SYSTEM_PROMPT}\n\n${buildGenderInstruction(userData?.gender)}`;
 
   let reportText: string;
   try {
@@ -69,7 +78,7 @@ export async function POST(request: NextRequest) {
     const stream = anthropic.messages.stream({
       model: "claude-opus-4-6",
       max_tokens: maxTokens,
-      system: SYSTEM_PROMPT,
+      system: systemPrompt,
       messages: [{ role: "user", content: userMessage }],
     });
     const finalMessage = await stream.finalMessage();
