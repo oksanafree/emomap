@@ -164,3 +164,16 @@
   cursor: pointer;
   text-align: center;
 }
+
+.discardLink {
+  display: block;
+  width: 100%;
+  margin-top: 14px;
+  padding: 0;
+  background: none;
+  border: none;
+  font-size: 13px;
+  color: #b0adb8;
+  text-align: center;
+  cursor: pointer;
+}

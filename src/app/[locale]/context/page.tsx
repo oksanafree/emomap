@@ -217,6 +217,10 @@ function ContextPageInner() {
     router.push("/history");
   }
 
+  function handleDiscard() {
+    router.push("/history");
+  }
+
   return (
     <>
       <HomeNavIcon />
@@ -360,6 +364,9 @@ function ContextPageInner() {
               disabled={!user || saving || loadingEntry}
             >
               {t("save")}
+            </button>
+            <button type="button" className={styles.discardLink} onClick={handleDiscard}>
+              {t("discard")}
             </button>
           </div>
         </div>

@@ -181,8 +181,9 @@
       "Drifting": ["Where is your mind?", "What feels unclear?", "What are you floating through?"],
       "Still": ["What's hard to name right now?", "What are you sitting with?", "What's in the middle?"]
     },
-    "save": "Save entry →",
-    "saveError": "Could not save. Try again."
+    "save": "Log this moment",
+    "saveError": "Could not save. Try again.",
+    "discard": "Discard · don't save"
   },
   "CheckinDone": {
     "under5": {
