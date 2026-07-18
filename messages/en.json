@@ -184,6 +184,21 @@
     "save": "Save entry →",
     "saveError": "Could not save. Try again."
   },
+  "CheckinDone": {
+    "under5": {
+      "headline": "Good.",
+      "subtext": "Come back when something shifts. Each check-in adds a point to your map — you need 5 to see your first patterns."
+    },
+    "midRange": {
+      "headline": "Logged.",
+      "subtext": "Come back when something shifts. The more moments you capture, the clearer the picture becomes. Your full report unlocks at 20 check-ins."
+    },
+    "full": {
+      "headline": "Logged.",
+      "subtext": "Every check-in makes your self-portrait sharper. The pattern keeps forming."
+    },
+    "cta": "Go to my trail →"
+  },
   "History": {
     "newMoment": "+ New moment",
     "entriesCount": "{count, plural, one {# check-in} other {# check-ins}}",

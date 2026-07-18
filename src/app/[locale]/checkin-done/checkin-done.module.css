@@ -1,0 +1,78 @@
+.screen {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: #080914;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  cursor: pointer;
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 0 32px;
+  text-align: center;
+}
+
+.headline {
+  font-size: 34px;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  color: #e8e4ff;
+}
+
+.subtext {
+  max-width: 320px;
+  font-size: 16px;
+  line-height: 1.7;
+  color: #6868b0;
+}
+
+.ctaWrap {
+  width: 100%;
+  padding: 0 22px calc(env(safe-area-inset-bottom, 0px) + 20px);
+}
+
+.cta {
+  display: block;
+  width: 100%;
+  border-radius: 16px;
+  border: 1px solid #6b5fd0;
+  background: #4a3fa0;
+  color: #e0d8ff;
+  font-size: 17px;
+  padding: 18px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.progressTrack {
+  width: 100%;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.progressFill {
+  height: 100%;
+  background: #7c6cf0;
+  width: 100%;
+  animation: drain 4s linear forwards;
+}
+
+@keyframes drain {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}

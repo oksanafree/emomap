@@ -208,6 +208,8 @@ function ContextPageInner() {
           body: JSON.stringify({ userId: user.uid, locale, type: generationType }),
         }).catch(() => {});
       }
+      router.push(`/checkin-done?count=${count}`);
+      return;
     } catch {
       // Non-fatal: the entry is already saved, report regeneration is best-effort.
     }
