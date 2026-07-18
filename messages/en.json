@@ -1,4 +1,7 @@
 {
+  "Common": {
+    "logOut": "Log out"
+  },
   "HomePage": {
     "title": "Welcome to Emomapp",
     "description": "Track and understand your emotions.",
@@ -190,8 +193,7 @@
     "loading": "Loading…",
     "empty": "No entries yet.",
     "error": "Could not load your entries.",
-    "seeReport": "See report →",
-    "logOut": "Log out"
+    "seeReport": "See report →"
   },
   "Insight": {
     "headline": "A pattern is starting to form",

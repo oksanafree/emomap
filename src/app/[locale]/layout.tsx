@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import localFont from "next/font/local";
 import { routing } from "@/i18n/routing";
 import { CheckinProvider } from "@/lib/checkin-context";
+import { LogoutButton } from "@/components/LogoutButton";
 import "./globals.css";
 
 const geistSans = localFont({
@@ -51,7 +52,10 @@ export default async function LocaleLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <NextIntlClientProvider locale={locale}>
-          <CheckinProvider>{children}</CheckinProvider>
+          <CheckinProvider>
+            {children}
+            <LogoutButton />
+          </CheckinProvider>
         </NextIntlClientProvider>
       </body>
     </html>

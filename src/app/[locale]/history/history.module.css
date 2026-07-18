@@ -12,17 +12,6 @@
   color: #b0adb8;
 }
 
-.logoutLink {
-  flex-shrink: 0;
-  padding: 0;
-  background: none;
-  border: none;
-  font-size: 13px;
-  color: #8b87a0;
-  text-decoration: underline;
-  cursor: pointer;
-}
-
 .mapArea {
   flex: 1;
   min-height: 0;

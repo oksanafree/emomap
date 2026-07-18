@@ -3,11 +3,10 @@
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { collection, getDocs, orderBy, query, Timestamp } from "firebase/firestore";
-import { signOut } from "firebase/auth";
 import { Link, useRouter } from "@/i18n/navigation";
 import { useAnonymousAuth } from "@/lib/use-anonymous-auth";
 import { useSliderSound } from "@/lib/use-slider-sound";
-import { db, getFirebaseAuth } from "@/lib/firebase";
+import { db } from "@/lib/firebase";
 import { AuthGuard } from "@/components/AuthGuard";
 import { NotificationPrompt } from "@/components/NotificationPrompt";
 import mapStyles from "@/styles/map-visual.module.css";
@@ -100,11 +99,6 @@ export default function HistoryPage() {
     router.push("/world");
   }
 
-  async function handleLogout() {
-    await signOut(getFirebaseAuth());
-    router.push("/auth");
-  }
-
   const dayCount = entries
     ? new Set(entries.filter((e) => e.timestamp).map((e) => e.timestamp!.toDateString())).size
     : 0;
@@ -131,9 +125,6 @@ export default function HistoryPage() {
       <div className="flex min-h-screen flex-col bg-[#f7f6f4]">
         <div className={styles.topBar}>
           <div className={styles.statsLine}>{statsLine}</div>
-          <button type="button" className={styles.logoutLink} onClick={handleLogout}>
-            {t("logOut")}
-          </button>
         </div>
 
         <div className={styles.mapArea}>
