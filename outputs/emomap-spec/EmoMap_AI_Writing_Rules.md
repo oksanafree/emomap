@@ -336,6 +336,9 @@ Never judge which is more accurate — both perceptions are real.
 When specific activities appear in notes 3+ times and correlate with a state — include.
 Treat as any other activity correlation.
 
+### Time span
+When stating the time span in the report, always count the calendar range from the date of the first entry to the date of the most recent entry (e.g. "ten days", "two weeks"). Do NOT count the number of days that have at least one entry — some days will be empty, and that is expected. The calendar span is what matters.
+
 ---
 
 ## 9. Bad / Good Language Pairs

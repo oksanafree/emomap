@@ -30,7 +30,6 @@ const GENERATING_MESSAGE_COUNT = 4;
 
 type Step = { left: number; top: number };
 type CacheStatus = "loading" | "found" | "empty" | "generating" | "error";
-type RefreshState = "idle" | "rate-limited";
 
 function lineOpacityAtDraw(i: number) {
   return Math.min(0.1 + i * 0.045, 0.75);
@@ -50,7 +49,6 @@ export default function ReportPage() {
   const [cacheStatus, setCacheStatus] = useState<CacheStatus>("loading");
   const [reportText, setReportText] = useState<string | null>(null);
   const [lastGeneratedAt, setLastGeneratedAt] = useState<Date | null>(null);
-  const [refreshState, setRefreshState] = useState<RefreshState>("idle");
   const [messageIndex, setMessageIndex] = useState(0);
   const part2Ref = useRef<HTMLDivElement>(null);
 
@@ -143,10 +141,7 @@ export default function ReportPage() {
 
   function handleRefresh() {
     if (!user) return;
-    if (lastGeneratedAt && Date.now() - lastGeneratedAt.getTime() < REFRESH_COOLDOWN_MS) {
-      setRefreshState("rate-limited");
-      return;
-    }
+    if (lastGeneratedAt && Date.now() - lastGeneratedAt.getTime() < REFRESH_COOLDOWN_MS) return;
 
     // Fire the regeneration in the background and move on immediately — the
     // report-pending screen (and its notification when ready) takes over from
@@ -211,6 +206,7 @@ export default function ReportPage() {
   }, [steps, visibleCount]);
 
   const mover = visibleCount > 0 ? steps[visibleCount - 1] : null;
+  const isCoolingDown = Boolean(lastGeneratedAt && Date.now() - lastGeneratedAt.getTime() < REFRESH_COOLDOWN_MS);
 
   const dateFormatter = new Intl.DateTimeFormat(locale, { month: "long", day: "numeric" });
   const mapSubtitle =
@@ -349,13 +345,17 @@ export default function ReportPage() {
           )}
           {cacheStatus === "found" && reportText && (
             <>
-              <p className={styles.reportText}>{reportText}</p>
               {(timestamps?.length ?? 0) >= MIN_ENTRIES_FOR_REPORT && (
-                <button type="button" className={styles.refreshLink} onClick={handleRefresh}>
-                  {t("refresh")}
+                <button
+                  type="button"
+                  className={`${styles.refreshBtn} ${isCoolingDown ? styles.refreshBtnDisabled : ""}`}
+                  onClick={handleRefresh}
+                  disabled={isCoolingDown}
+                >
+                  {isCoolingDown ? t("refreshedRecently") : t("refresh")}
                 </button>
               )}
-              {refreshState === "rate-limited" && <p className={styles.refreshNote}>{t("refreshRateLimited")}</p>}
+              <p className={styles.reportText}>{reportText}</p>
             </>
           )}
         </div>
