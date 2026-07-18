@@ -20,11 +20,13 @@ import {
   ACTIVITY_KEYS,
   ENERGY_KEYS,
   HUNGER_KEYS,
+  LOCATION_KEYS,
   SLEEP_KEYS,
   SOCIAL_KEYS,
   type ActivityKey,
   type EnergyKey,
   type HungerKey,
+  type LocationKey,
   type SleepKey,
   type SocialKey,
 } from "@/lib/context-options";
@@ -53,9 +55,11 @@ function ContextPageInner() {
   const [emotion, setEmotion] = useState(searchParams.get("emotion") ?? "");
   const [activities, setActivities] = useState<Set<ActivityKey>>(new Set());
   const [social, setSocial] = useState<Set<SocialKey>>(new Set());
+  const [location, setLocation] = useState<LocationKey | null>(null);
   const [sleep, setSleep] = useState<SleepKey | null>(null);
   const [energy, setEnergy] = useState<EnergyKey | null>(null);
   const [hunger, setHunger] = useState<HungerKey | null>(null);
+  const [bodyNote, setBodyNote] = useState("");
   const [note, setNote] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -89,10 +93,12 @@ function ContextPageInner() {
         if (tokens.emotion) setEmotion(tokens.emotion);
         setActivities(new Set(toArray(tokens.activity) as ActivityKey[]));
         setSocial(new Set(toArray(tokens.social) as SocialKey[]));
+        setLocation((tokens.location as LocationKey) ?? null);
         setSleep((tokens.sleep as SleepKey) ?? null);
         setEnergy((tokens.energy as EnergyKey) ?? null);
         setHunger((tokens.hunger as HungerKey) ?? null);
         if (typeof tokens.note === "string") setNote(tokens.note);
+        if (typeof tokens.body_note === "string") setBodyNote(tokens.body_note);
       })
       .finally(() => {
         if (!cancelled) setLoadingEntry(false);
@@ -122,6 +128,11 @@ function ContextPageInner() {
     sndChip();
   }
 
+  function selectLocation(key: LocationKey) {
+    setLocation(key);
+    sndChip();
+  }
+
   function selectSleep(key: SleepKey) {
     setSleep(key);
     sndChip();
@@ -147,9 +158,11 @@ function ContextPageInner() {
     if (emotion) customTokens.emotion = emotion;
     if (activities.size > 0) customTokens.activity = Array.from(activities);
     if (social.size > 0) customTokens.social = Array.from(social);
+    if (location) customTokens.location = location;
     if (sleep) customTokens.sleep = sleep;
     if (energy) customTokens.energy = energy;
     if (hunger) customTokens.hunger = hunger;
+    if (bodyNote.trim()) customTokens.body_note = bodyNote.trim();
     if (note.trim()) customTokens.note = note.trim();
 
     const entriesRef = collection(db, "users", user.uid, "entries");
@@ -250,6 +263,20 @@ function ContextPageInner() {
                   </div>
                 ))}
               </div>
+
+              <div className={styles.ctxGap} />
+              <div className={styles.ctxQ}>{t("locationQuestion")}</div>
+              <div className={styles.ctxChips}>
+                {LOCATION_KEYS.map((key) => (
+                  <div
+                    key={key}
+                    className={`${styles.cc} ${location === key ? styles.ccSelected : ""}`}
+                    onClick={() => selectLocation(key)}
+                  >
+                    {t(`location.${key}`)}
+                  </div>
+                ))}
+              </div>
             </div>
 
             <div className={styles.ctxDiv} />
@@ -296,6 +323,17 @@ function ContextPageInner() {
                   </div>
                 ))}
               </div>
+            </div>
+
+            <div className={styles.noteSection}>
+              <p className={styles.noteQuestion}>{t("physicalPrompt")}</p>
+              <textarea
+                className={styles.noteTextarea}
+                placeholder={t("physicalPlaceholder")}
+                value={bodyNote}
+                onChange={(e) => setBodyNote(e.target.value)}
+                rows={2}
+              />
             </div>
 
             <div className={styles.noteSection}>

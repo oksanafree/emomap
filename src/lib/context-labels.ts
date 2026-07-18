@@ -1,4 +1,11 @@
-import type { ActivityKey, EnergyKey, HungerKey, SleepKey, SocialKey } from "@/lib/context-options";
+import type {
+  ActivityKey,
+  EnergyKey,
+  HungerKey,
+  LocationKey,
+  SleepKey,
+  SocialKey,
+} from "@/lib/context-options";
 
 const ACTIVITY_LABELS: Record<ActivityKey, string> = {
   work: "Work/Study",
@@ -37,14 +44,23 @@ const HUNGER_LABELS: Record<HungerKey, string> = {
   veryHungry: "Very hungry",
 };
 
+const LOCATION_LABELS: Record<LocationKey, string> = {
+  home: "Home",
+  work: "Work",
+  outside: "Outside",
+  onTheRoad: "On the road",
+};
+
 export type CustomTokens = {
   emotion?: string;
   activity?: string[] | string;
   social?: string[] | string;
+  location?: string;
   sleep?: string;
   energy?: string;
   hunger?: string;
   note?: string;
+  body_note?: string;
 };
 
 // Older entries stored `activity`/`social` as a single string before those
@@ -83,11 +99,18 @@ export function formatCustomTokens(tokens: CustomTokens | undefined | null): str
     .map((s) => SOCIAL_LABELS[s]);
   if (socialLabels.length > 0) parts.push(`With: ${socialLabels.join(", ")}`);
 
+  if (tokens.location && tokens.location in LOCATION_LABELS) {
+    parts.push(`Location: ${LOCATION_LABELS[tokens.location as LocationKey]}`);
+  }
+
   const tokenLine = parts.length > 0 ? parts.join(" · ") : null;
 
   const note = typeof tokens.note === "string" ? tokens.note.trim() : "";
   const noteLine = note ? `Note: "${note}"` : null;
 
-  if (!tokenLine && !noteLine) return null;
-  return [tokenLine, noteLine].filter((line): line is string => Boolean(line)).join("\n");
+  const bodyNote = typeof tokens.body_note === "string" ? tokens.body_note.trim() : "";
+  const bodyLine = bodyNote ? `Body: "${bodyNote}"` : null;
+
+  if (!tokenLine && !noteLine && !bodyLine) return null;
+  return [tokenLine, bodyLine, noteLine].filter((line): line is string => Boolean(line)).join("\n");
 }

@@ -137,6 +137,13 @@
       "withOthers": "With others",
       "online": "Online"
     },
+    "locationQuestion": "Where are you?",
+    "location": {
+      "home": "Home",
+      "work": "Work",
+      "outside": "Outside",
+      "onTheRoad": "On the road"
+    },
     "bodyState": "BODY STATE",
     "sleepQuestion": "Sleep last night?",
     "sleep": {
@@ -158,6 +165,8 @@
       "hungry": "Hungry",
       "veryHungry": "Very hungry"
     },
+    "physicalPrompt": "Anything in your body?",
+    "physicalPlaceholder": "Headache, tension, tired eyes...",
     "notePlaceholder": "Add a note...",
     "stateQuestions": {
       "Building": ["What's driving this?", "What feels possible right now?", "What are you building?"],

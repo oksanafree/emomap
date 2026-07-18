@@ -21,3 +21,6 @@ export type EnergyKey = (typeof ENERGY_KEYS)[number];
 
 export const HUNGER_KEYS = ["notHungry", "justAte", "hungry", "veryHungry"] as const;
 export type HungerKey = (typeof HUNGER_KEYS)[number];
+
+export const LOCATION_KEYS = ["home", "work", "outside", "onTheRoad"] as const;
+export type LocationKey = (typeof LOCATION_KEYS)[number];

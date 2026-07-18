@@ -137,6 +137,13 @@
       "withOthers": "С другими",
       "online": "Онлайн"
     },
+    "locationQuestion": "Где ты сейчас?",
+    "location": {
+      "home": "Дома",
+      "work": "Работа",
+      "outside": "На улице",
+      "onTheRoad": "В дороге"
+    },
     "bodyState": "СОСТОЯНИЕ ТЕЛА",
     "sleepQuestion": "Сколько ты спал прошлой ночью?",
     "sleep": {
@@ -158,6 +165,8 @@
       "hungry": "Голоден",
       "veryHungry": "Очень голоден"
     },
+    "physicalPrompt": "Что чувствует тело?",
+    "physicalPlaceholder": "Головная боль, напряжение, усталость...",
     "notePlaceholder": "Добавить заметку...",
     "stateQuestions": {
       "Building": ["Что тобой движет?", "Что кажется возможным?", "Над чем ты работаешь?"],
