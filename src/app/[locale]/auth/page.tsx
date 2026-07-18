@@ -110,11 +110,11 @@ function AuthPageInner() {
         }
       }
     }
-    router.push("/world");
+    router.push("/");
   }
 
   function handleProfileSkip() {
-    router.push("/world");
+    router.push("/");
   }
 
   return (
