@@ -58,9 +58,9 @@
     },
     "endLabels": {
       "leftMain": "Pressing",
-      "leftSub": "Draining · Opposing · Hindering",
+      "leftSub": ["Draining", "Opposing", "Hindering"],
       "rightMain": "Giving",
-      "rightSub": "Easing · Protecting · Providing"
+      "rightSub": ["Easing", "Protecting", "Providing"]
     },
     "next": "Next →"
   },

@@ -78,12 +78,16 @@ export default function WorldPage() {
           <div className={styles.endLabels}>
             <div className={`${styles.el} ${styles.elBig}`}>
               <div className={`${styles.elSub} ${styles.elSubBig}`}>
-                {t.rich("endLabels.leftSub", { br: () => <br /> })}
+                {(t.raw("endLabels.leftSub") as string[]).map((word) => (
+                  <div key={word}>{word}</div>
+                ))}
               </div>
             </div>
             <div className={`${styles.el} ${styles.r} ${styles.elBig}`}>
               <div className={`${styles.elSub} ${styles.elSubBig}`}>
-                {t.rich("endLabels.rightSub", { br: () => <br /> })}
+                {(t.raw("endLabels.rightSub") as string[]).map((word) => (
+                  <div key={word}>{word}</div>
+                ))}
               </div>
             </div>
           </div>
