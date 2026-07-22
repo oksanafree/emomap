@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import type { TouchEvent } from "react";
 import { useTranslations } from "next-intl";
 import { onAuthStateChanged, type User } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useRouter } from "@/i18n/navigation";
 import { getFirebaseAuth, db } from "@/lib/firebase";
 import { OnboardingMap } from "@/components/onboarding-map";
@@ -23,7 +23,7 @@ export default function OnboardingPage() {
   const [step, setStep] = useState(0);
   const [authUser, setAuthUser] = useState<User | null>(null);
   const [authResolved, setAuthResolved] = useState(false);
-  const [showLanding, setShowLanding] = useState(false);
+  const [onboardingComplete, setOnboardingComplete] = useState<boolean | null>(null);
   const [reportCheckStatus, setReportCheckStatus] = useState<"checking" | "found" | "none">("checking");
   const touchStartX = useRef<number | null>(null);
 
@@ -37,13 +37,30 @@ export default function OnboardingPage() {
   }, []);
 
   useEffect(() => {
-    if (!authResolved || !localStorage.getItem(ONBOARDED_KEY)) return;
+    if (!authResolved) return;
+
     if (authUser && !authUser.isAnonymous) {
-      setShowLanding(true);
-    } else {
+      // Onboarding completion lives on the account in Firestore, not this
+      // browser's localStorage, so a returning user never sees the intro
+      // carousel again even on a new device.
+      let cancelled = false;
+      getDoc(doc(db, "users", authUser.uid)).then((snap) => {
+        if (cancelled) return;
+        setOnboardingComplete(snap.data()?.onboarding_complete === true);
+      });
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    setOnboardingComplete(null);
+    if (localStorage.getItem(ONBOARDED_KEY)) {
       router.replace("/auth");
     }
   }, [authResolved, authUser, router]);
+
+  const showLanding = authUser !== null && !authUser.isAnonymous && onboardingComplete === true;
+  const awaitingOnboardingStatus = authUser !== null && !authUser.isAnonymous && onboardingComplete === null;
 
   useEffect(() => {
     if (!showLanding || !authUser) return;
@@ -87,10 +104,13 @@ export default function OnboardingPage() {
   function handleStart() {
     localStorage.setItem(ONBOARDED_KEY, "1");
     if (authUser && !authUser.isAnonymous) {
-      router.push("/world");
-    } else {
-      router.push("/auth?from=onboarding");
+      setDoc(doc(db, "users", authUser.uid), { onboarding_complete: true }, { merge: true }).catch((err) => {
+        console.error("Failed to mark onboarding complete", err);
+      });
+      setOnboardingComplete(true);
+      return;
     }
+    router.push("/auth?from=onboarding");
   }
 
   function handleLogin() {
@@ -116,6 +136,10 @@ export default function OnboardingPage() {
     enduringLabel: t("quadrants.enduring"),
     receivingLabel: t("quadrants.receiving"),
   };
+
+  if (awaitingOnboardingStatus) {
+    return <div className="min-h-screen bg-[#080914]" />;
+  }
 
   if (showLanding) {
     return (
