@@ -52,15 +52,15 @@
   "World": {
     "navTitle": "Emomapp",
     "category": "SITUATION",
-    "question": "How is your life treating you now?",
+    "question": "How is this particular moment treating you?",
     "liveWord": {
       "ambiguous": "Ambiguous"
     },
     "endLabels": {
       "leftMain": "Pressing",
-      "leftSub": "Creating friction · Pushing back",
+      "leftSub": "Draining · Opposing · Hindering",
       "rightMain": "Giving",
-      "rightSub": "Easing things · Opening doors"
+      "rightSub": "Easing · Protecting · Providing"
     },
     "next": "Next →"
   },

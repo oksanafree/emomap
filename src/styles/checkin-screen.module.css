@@ -153,6 +153,17 @@
   line-height: 1.55;
 }
 
+.elBig {
+  max-width: 170px;
+}
+
+.elSubBig {
+  font-size: 17px;
+  font-weight: 700;
+  color: #4a4750;
+  line-height: 1.4;
+}
+
 .progDots {
   display: flex;
   gap: 7px;
