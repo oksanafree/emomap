@@ -123,14 +123,15 @@
     "activityQuestion": "What were you doing recently?",
     "activityHint": "select all that apply",
     "activities": {
-      "work": "Work / Study",
-      "family": "Family",
-      "socializing": "Socializing",
-      "resting": "Resting",
+      "work": "Work",
+      "study": "Study",
       "exercise": "Exercise",
-      "leisure": "Leisure",
-      "scrolling": "Scrolling",
-      "other": "Other"
+      "resting": "Resting",
+      "creative": "Creative",
+      "chores": "Chores",
+      "eating": "Eating",
+      "caregiving": "Caregiving",
+      "commuting": "Commuting"
     },
     "socialQuestion": "Who were you with?",
     "social": {
@@ -143,42 +144,23 @@
       "home": "Home",
       "work": "Work",
       "outside": "Outside",
-      "onTheRoad": "On the road"
+      "commuting": "Commuting",
+      "traveling": "Traveling",
+      "elsewhere": "Somewhere else"
     },
     "bodyState": "BODY STATE",
     "sleepQuestion": "Sleep last night?",
-    "sleep": {
-      "under6": "Under 6h",
-      "from6to7": "6–7h",
-      "from7to8": "7–8h",
-      "over8": "8h+"
-    },
+    "sleepValue": "{hours}h",
+    "sleepMinLabel": "0h",
+    "sleepMaxLabel": "10h+",
     "energyQuestion": "Energy right now?",
     "hungerQuestion": "Hunger?",
-    "hunger": {
-      "notHungry": "Not hungry",
-      "justAte": "Just ate",
-      "hungry": "Hungry",
-      "veryHungry": "Very hungry"
-    },
+    "hungerMinLabel": "Starving",
+    "hungerMaxLabel": "Full",
     "physicalPrompt": "Anything in your body?",
     "physicalPlaceholder": "Headache, tension, tired eyes...",
+    "noteQuestion": "Anything to add?",
     "notePlaceholder": "Add a note...",
-    "stateQuestions": {
-      "Building": ["What's driving this?", "What feels possible right now?", "What are you building?"],
-      "Protecting": [
-        "What are you holding your ground on?",
-        "What's pushing back at you?",
-        "What are you protecting?"
-      ],
-      "Receiving": ["What are you letting in?", "What feels easy right now?", "What's flowing toward you?"],
-      "Enduring": ["What's weighing on you?", "What are you getting through?", "What feels heavy right now?"],
-      "Opening": ["What feels new?", "What are you curious about?", "What are you moving toward?"],
-      "Bracing": ["What are you bracing for?", "What feels uncertain?", "What's making you tense?"],
-      "Seeking": ["What are you looking for?", "What's pulling your attention?", "What are you driven toward?"],
-      "Drifting": ["Where is your mind?", "What feels unclear?", "What are you floating through?"],
-      "Still": ["What's hard to name right now?", "What are you sitting with?", "What's in the middle?"]
-    },
     "save": "Log this moment",
     "saveError": "Could not save. Try again.",
     "discard": "Discard · don't save"

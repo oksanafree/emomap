@@ -18,14 +18,10 @@ import { useSliderSound } from "@/lib/use-slider-sound";
 import { db } from "@/lib/firebase";
 import {
   ACTIVITY_KEYS,
-  HUNGER_KEYS,
   LOCATION_KEYS,
-  SLEEP_KEYS,
   SOCIAL_KEYS,
   type ActivityKey,
-  type HungerKey,
   type LocationKey,
-  type SleepKey,
   type SocialKey,
 } from "@/lib/context-options";
 import type { StateKey } from "@/lib/state-detection";
@@ -54,29 +50,14 @@ function ContextPageInner() {
   const [activities, setActivities] = useState<Set<ActivityKey>>(new Set());
   const [social, setSocial] = useState<Set<SocialKey>>(new Set());
   const [location, setLocation] = useState<LocationKey | null>(null);
-  const [sleep, setSleep] = useState<SleepKey | null>(null);
+  const [sleep, setSleep] = useState<number | null>(null);
   const [energy, setEnergy] = useState<number | null>(null);
-  const [hunger, setHunger] = useState<HungerKey | null>(null);
+  const [hunger, setHunger] = useState<number | null>(null);
   const [bodyNote, setBodyNote] = useState("");
   const [note, setNote] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loadingEntry, setLoadingEntry] = useState(isEditing);
-
-  const stateQuestions = t.raw(`stateQuestions.${state}`) as string[];
-  const [questionIndex] = useState(() => Math.floor(Math.random() * stateQuestions.length));
-  const noteQuestion = stateQuestions[questionIndex] ?? "";
-
-  useEffect(() => {
-    console.log("[context] state question check", {
-      stateFromUrl: searchParams.get("state"),
-      resolvedState: state,
-      stateQuestions,
-      questionIndex,
-      noteQuestion,
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   useEffect(() => {
     if (!entryId || !user) return;
@@ -92,9 +73,9 @@ function ContextPageInner() {
         setActivities(new Set(toArray(tokens.activity) as ActivityKey[]));
         setSocial(new Set(toArray(tokens.social) as SocialKey[]));
         setLocation((tokens.location as LocationKey) ?? null);
-        setSleep((tokens.sleep as SleepKey) ?? null);
+        setSleep(typeof tokens.sleep === "number" ? tokens.sleep : null);
         setEnergy(typeof tokens.energy === "number" ? tokens.energy : null);
-        setHunger((tokens.hunger as HungerKey) ?? null);
+        setHunger(typeof tokens.hunger === "number" ? tokens.hunger : null);
         if (typeof tokens.note === "string") setNote(tokens.note);
         if (typeof tokens.body_note === "string") setBodyNote(tokens.body_note);
       })
@@ -131,8 +112,8 @@ function ContextPageInner() {
     sndChip();
   }
 
-  function selectSleep(key: SleepKey) {
-    setSleep(key);
+  function selectSleep(value: number) {
+    setSleep(value);
     sndChip();
   }
 
@@ -141,8 +122,8 @@ function ContextPageInner() {
     sndChip();
   }
 
-  function selectHunger(key: HungerKey) {
-    setHunger(key);
+  function selectHunger(value: number) {
+    setHunger(value);
     sndChip();
   }
 
@@ -157,9 +138,9 @@ function ContextPageInner() {
     if (activities.size > 0) customTokens.activity = Array.from(activities);
     if (social.size > 0) customTokens.social = Array.from(social);
     if (location) customTokens.location = location;
-    if (sleep) customTokens.sleep = sleep;
+    if (sleep !== null) customTokens.sleep = sleep;
     if (energy !== null) customTokens.energy = energy;
-    if (hunger) customTokens.hunger = hunger;
+    if (hunger !== null) customTokens.hunger = hunger;
     if (bodyNote.trim()) customTokens.body_note = bodyNote.trim();
     if (note.trim()) customTokens.note = note.trim();
 
@@ -287,17 +268,27 @@ function ContextPageInner() {
 
             <div className={styles.ctxSec}>
               <div className={styles.ctxLbl}>{t("bodyState")}</div>
-              <div className={styles.ctxQ}>{t("sleepQuestion")}</div>
-              <div className={styles.ctxChips}>
-                {SLEEP_KEYS.map((key) => (
-                  <div
-                    key={key}
-                    className={`${styles.cc} ${sleep === key ? styles.ccSelected : ""}`}
-                    onClick={() => selectSleep(key)}
-                  >
-                    {t(`sleep.${key}`)}
-                  </div>
-                ))}
+
+              <div className={styles.ctxSliderRow}>
+                <div className={styles.ctxQ}>{t("sleepQuestion")}</div>
+                {sleep !== null && (
+                  <div className={styles.ctxSliderValue}>{t("sleepValue", { hours: sleep })}</div>
+                )}
+              </div>
+              <input
+                type="range"
+                min={0}
+                max={10}
+                step={1}
+                value={sleep ?? 5}
+                onChange={(e) => selectSleep(Number(e.target.value))}
+                onTouchStart={startSlide}
+                onMouseDown={startSlide}
+                className={styles.ctxRange}
+              />
+              <div className={styles.ctxSliderEdges}>
+                <span>{t("sleepMinLabel")}</span>
+                <span>{t("sleepMaxLabel")}</span>
               </div>
 
               <div className={styles.ctxGap} />
@@ -318,17 +309,24 @@ function ContextPageInner() {
               />
 
               <div className={styles.ctxGap} />
-              <div className={styles.ctxQ}>{t("hungerQuestion")}</div>
-              <div className={styles.ctxChips}>
-                {HUNGER_KEYS.map((key) => (
-                  <div
-                    key={key}
-                    className={`${styles.cc} ${hunger === key ? styles.ccSelected : ""}`}
-                    onClick={() => selectHunger(key)}
-                  >
-                    {t(`hunger.${key}`)}
-                  </div>
-                ))}
+              <div className={styles.ctxSliderRow}>
+                <div className={styles.ctxQ}>{t("hungerQuestion")}</div>
+                {hunger !== null && <div className={styles.ctxSliderValue}>{hunger}</div>}
+              </div>
+              <input
+                type="range"
+                min={1}
+                max={10}
+                step={1}
+                value={hunger ?? 5}
+                onChange={(e) => selectHunger(Number(e.target.value))}
+                onTouchStart={startSlide}
+                onMouseDown={startSlide}
+                className={styles.ctxRange}
+              />
+              <div className={styles.ctxSliderEdges}>
+                <span>{t("hungerMinLabel")}</span>
+                <span>{t("hungerMaxLabel")}</span>
               </div>
             </div>
 
@@ -344,7 +342,7 @@ function ContextPageInner() {
             </div>
 
             <div className={styles.noteSection}>
-              <p className={styles.noteQuestion}>{noteQuestion}</p>
+              <p className={styles.noteQuestion}>{t("noteQuestion")}</p>
               <textarea
                 className={styles.noteTextarea}
                 placeholder={t("notePlaceholder")}

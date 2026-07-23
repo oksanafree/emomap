@@ -1,20 +1,15 @@
-import type {
-  ActivityKey,
-  HungerKey,
-  LocationKey,
-  SleepKey,
-  SocialKey,
-} from "@/lib/context-options";
+import type { ActivityKey, LocationKey, SocialKey } from "@/lib/context-options";
 
 const ACTIVITY_LABELS: Record<ActivityKey, string> = {
-  work: "Work/Study",
-  family: "Family",
-  socializing: "Socializing",
-  resting: "Resting",
+  work: "Work",
+  study: "Study",
   exercise: "Exercise",
-  leisure: "Leisure",
-  scrolling: "Scrolling",
-  other: "Other",
+  resting: "Resting",
+  creative: "Creative",
+  chores: "Chores",
+  eating: "Eating",
+  caregiving: "Caregiving",
+  commuting: "Commuting",
 };
 
 const SOCIAL_LABELS: Record<SocialKey, string> = {
@@ -23,25 +18,13 @@ const SOCIAL_LABELS: Record<SocialKey, string> = {
   online: "Online",
 };
 
-const SLEEP_LABELS: Record<SleepKey, string> = {
-  under6: "Under 6h",
-  from6to7: "6–7h",
-  from7to8: "7–8h",
-  over8: "8h+",
-};
-
-const HUNGER_LABELS: Record<HungerKey, string> = {
-  notHungry: "Not hungry",
-  justAte: "Just ate",
-  hungry: "Hungry",
-  veryHungry: "Very hungry",
-};
-
 const LOCATION_LABELS: Record<LocationKey, string> = {
   home: "Home",
   work: "Work",
   outside: "Outside",
-  onTheRoad: "On the road",
+  commuting: "Commuting",
+  traveling: "Traveling",
+  elsewhere: "Somewhere else",
 };
 
 export type CustomTokens = {
@@ -49,9 +32,9 @@ export type CustomTokens = {
   activity?: string[] | string;
   social?: string[] | string;
   location?: string;
-  sleep?: string;
+  sleep?: number;
   energy?: number;
-  hunger?: string;
+  hunger?: number;
   note?: string;
   body_note?: string;
 };
@@ -69,14 +52,14 @@ export function formatCustomTokens(tokens: CustomTokens | undefined | null): str
   if (!tokens) return null;
   const parts: string[] = [];
 
-  if (tokens.sleep && tokens.sleep in SLEEP_LABELS) {
-    parts.push(`Sleep: ${SLEEP_LABELS[tokens.sleep as SleepKey]}`);
+  if (typeof tokens.sleep === "number") {
+    parts.push(`Sleep: ${tokens.sleep}h`);
   }
   if (typeof tokens.energy === "number") {
     parts.push(`Energy: ${tokens.energy}/10`);
   }
-  if (tokens.hunger && tokens.hunger in HUNGER_LABELS) {
-    parts.push(`Hunger: ${HUNGER_LABELS[tokens.hunger as HungerKey]}`);
+  if (typeof tokens.hunger === "number") {
+    parts.push(`Hunger: ${tokens.hunger}/10`);
   }
   if (tokens.emotion) {
     parts.push(`Feeling: ${tokens.emotion}`);
