@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 import { useCheckin } from "@/lib/checkin-context";
 import { useSliderSound } from "@/lib/use-slider-sound";
@@ -12,7 +12,6 @@ import styles from "@/styles/checkin-screen.module.css";
 
 export default function SelfPage() {
   const t = useTranslations("Self");
-  const locale = useLocale();
   const router = useRouter();
   const { setSelfValue } = useCheckin();
   const [value, setValue] = useState(50);
@@ -81,7 +80,6 @@ export default function SelfPage() {
 
           <div className={styles.endLabels}>
             <div className={`${styles.el} ${styles.elBig}`}>
-              {locale !== "ru" && <div className={styles.elMain}>{t("endLabels.leftMain")}</div>}
               <div className={`${styles.elSub} ${styles.elSubBig}`}>
                 {(t.raw("endLabels.leftSub") as string[]).map((word) => (
                   <div key={word}>{word}</div>
@@ -89,7 +87,6 @@ export default function SelfPage() {
               </div>
             </div>
             <div className={`${styles.el} ${styles.r} ${styles.elBig}`}>
-              {locale !== "ru" && <div className={styles.elMain}>{t("endLabels.rightMain")}</div>}
               <div className={`${styles.elSub} ${styles.elSubBig}`}>
                 {(t.raw("endLabels.rightSub") as string[]).map((word) => (
                   <div key={word}>{word}</div>
