@@ -80,16 +80,20 @@ export default function SelfPage() {
           </div>
 
           <div className={styles.endLabels}>
-            <div className={styles.el}>
+            <div className={`${styles.el} ${styles.elBig}`}>
               {locale !== "ru" && <div className={styles.elMain}>{t("endLabels.leftMain")}</div>}
-              <div className={styles.elSub}>
-                {t.rich("endLabels.leftSub", { br: () => <br /> })}
+              <div className={`${styles.elSub} ${styles.elSubBig}`}>
+                {(t.raw("endLabels.leftSub") as string[]).map((word) => (
+                  <div key={word}>{word}</div>
+                ))}
               </div>
             </div>
-            <div className={`${styles.el} ${styles.r}`}>
+            <div className={`${styles.el} ${styles.r} ${styles.elBig}`}>
               {locale !== "ru" && <div className={styles.elMain}>{t("endLabels.rightMain")}</div>}
-              <div className={styles.elSub}>
-                {t.rich("endLabels.rightSub", { br: () => <br /> })}
+              <div className={`${styles.elSub} ${styles.elSubBig}`}>
+                {(t.raw("endLabels.rightSub") as string[]).map((word) => (
+                  <div key={word}>{word}</div>
+                ))}
               </div>
             </div>
           </div>

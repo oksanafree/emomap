@@ -75,9 +75,9 @@
     },
     "endLabels": {
       "leftMain": "Going along",
-      "leftSub": "Watching things unfold<br></br>Receiving",
+      "leftSub": ["Yielding", "Drifting", "Adapting"],
       "rightMain": "Taking initiative",
-      "rightSub": "Steering things<br></br>Shaping what happens"
+      "rightSub": ["Steering", "Shaping", "Making"]
     },
     "cta": "See my map →"
   },
