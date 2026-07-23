@@ -14,31 +14,26 @@ const resendApiKey = defineSecret("RESEND_API_KEY");
 // Requires a domain (or subdomain, e.g. mail.emomapp.app) verified in the
 // Resend dashboard — until that's done, sends from this address will fail.
 const EMAIL_FROM = "Emomapp <reminders@emomapp.app>";
-const EMAIL_SUBJECT = "How are you right now?";
-const APP_URL = "https://emomapp.app";
 
-type ReminderVariant = "morning" | "evening";
+type Locale = "en" | "ru";
 
-const MORNING_MESSAGES = [
-  { title: "How's your morning?", body: "Take 10 seconds to check in on Emomapp." },
-  { title: "Start the day with a check-in", body: "Where are you right now — in the world, and in yourself?" },
-  { title: "How are you showing up today?", body: "Take a moment to check in." },
-  {
-    title: "A new day, a new point on your trail.",
-    body: "How does the world feel this morning?",
+const REMINDER_CONTENT: Record<Locale, { subject: string; body: string; cta: string; url: string }> = {
+  en: {
+    subject: "Mark yourself on Emomapp",
+    body: "Hey! This is a reminder to log your mood on Emomapp. The best time to check in is right after something shifts — a difficult conversation, a burst of energy or a moment of calm. Open Emomapp when you feel it and add a note. The more you check in, the more detailed your report becomes.",
+    cta: "Check in now →",
+    url: "https://emomapp.app/en",
   },
-];
+  ru: {
+    subject: "Отметься на Эмокарте",
+    body: "Здравствуйте. Это напоминание зайти на Эмокарту и отметить ваше состояние. Лучший момент для отметки — сразу после того, как что-то изменилось. Тяжёлый разговор, прилив энергии или неожиданное спокойствие. Откройте Emomapp когда ощущаете, что пора. Чем чаще вы отмечаетесь на Эмокарте, тем подробнее будет отчёт о ваших скрытых тенденциях.",
+    cta: "Отметиться →",
+    url: "https://emomapp.app/ru",
+  },
+};
 
-const EVENING_MESSAGES = [
-  { title: "How was today?", body: "Log tonight's check-in before you wind down." },
-  { title: "End-of-day check-in", body: "A quick moment to notice how today landed." },
-  { title: "How did the day treat you?", body: "Log your last state before it slips away." },
-  { title: "Your trail is waiting.", body: "A quick check-in takes 30 seconds." },
-];
-
-function pickMessage(variant: ReminderVariant) {
-  const pool = variant === "morning" ? MORNING_MESSAGES : EVENING_MESSAGES;
-  return pool[Math.floor(Math.random() * pool.length)];
+function resolveLocale(value: unknown): Locale {
+  return value === "ru" ? "ru" : "en";
 }
 
 // The UTC instant corresponding to 00:00:00 today in `timeZone`. Used to
@@ -54,21 +49,19 @@ function startOfTodayUtc(timeZone: string): Date {
   return new Date(midnightUtcGuess.getTime() + offsetMs);
 }
 
-function buildEmailContent(message: { title: string; body: string }) {
-  const text = `${message.title}\n\n${message.body}\n\nCheck in: ${APP_URL}`;
-  const html = `<p>${message.title}</p><p>${message.body}</p><p><a href="${APP_URL}">Check in on Emomapp</a></p>`;
+function buildEmailContent(content: (typeof REMINDER_CONTENT)[Locale]) {
+  const text = `${content.subject}\n\n${content.body}\n\n${content.cta} ${content.url}`;
+  const html = `<p>${content.body}</p><p><a href="${content.url}">${content.cta}</a></p>`;
   return { text, html };
 }
 
-async function sendReminders(variant: ReminderVariant) {
+async function sendReminders() {
   const db = getFirestore();
   const messaging = getMessaging();
   const resend = new Resend(resendApiKey.value());
   const fourHoursAgo = Timestamp.fromMillis(Date.now() - 4 * 60 * 60 * 1000);
   const sevenDaysAgo = Timestamp.fromMillis(Date.now() - 7 * 24 * 60 * 60 * 1000);
   const todayStart = Timestamp.fromDate(startOfTodayUtc("America/New_York"));
-  const message = pickMessage(variant);
-  const { text: emailText, html: emailHtml } = buildEmailContent(message);
 
   // Not filtered by notifications_enabled here — that flag only gates push.
   // Email eligibility is judged purely on check-in activity below, so it can
@@ -78,6 +71,7 @@ async function sendReminders(variant: ReminderVariant) {
   await Promise.all(
     usersSnapshot.docs.map(async (userDoc) => {
       const data = userDoc.data();
+      const content = REMINDER_CONTENT[resolveLocale(data.locale)];
 
       const latestEntrySnap = await db
         .collection("users")
@@ -113,7 +107,7 @@ async function sendReminders(variant: ReminderVariant) {
               try {
                 await messaging.send({
                   token,
-                  notification: { title: message.title, body: message.body },
+                  notification: { title: content.subject, body: content.body },
                   data: { url: "/history" },
                 });
               } catch (error) {
@@ -143,10 +137,11 @@ async function sendReminders(variant: ReminderVariant) {
           const userRecord = await getAuth().getUser(userDoc.id);
           if (!userRecord.email) return;
 
+          const { text: emailText, html: emailHtml } = buildEmailContent(content);
           const { error } = await resend.emails.send({
             from: EMAIL_FROM,
             to: userRecord.email,
-            subject: EMAIL_SUBJECT,
+            subject: content.subject,
             text: emailText,
             html: emailHtml,
           });
@@ -161,16 +156,9 @@ async function sendReminders(variant: ReminderVariant) {
   );
 }
 
-export const morningReminder = onSchedule(
-  { schedule: "0 9 * * *", timeZone: "America/New_York", secrets: [resendApiKey] },
+export const dailyReminder = onSchedule(
+  { schedule: "0 12 * * *", timeZone: "America/New_York", secrets: [resendApiKey] },
   async () => {
-    await sendReminders("morning");
-  },
-);
-
-export const eveningReminder = onSchedule(
-  { schedule: "0 20 * * *", timeZone: "America/New_York", secrets: [resendApiKey] },
-  async () => {
-    await sendReminders("evening");
+    await sendReminders();
   },
 );
