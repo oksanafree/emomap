@@ -51,10 +51,7 @@ export default function SelfPage() {
 
           <div className={styles.qWrap}>
             <div className={styles.question}>
-              {t.rich("question", {
-                b: (chunks) => <b>{chunks}</b>,
-                br: () => <br />,
-              })}
+              {t.rich("question", { b: (chunks) => <b>{chunks}</b> })}
             </div>
           </div>
 

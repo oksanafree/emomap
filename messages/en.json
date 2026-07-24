@@ -52,7 +52,7 @@
   "World": {
     "navTitle": "Emomapp",
     "category": "SITUATION",
-    "question": "How is this particular moment treating you?",
+    "question": "At this moment — how does the <b>SITUATION</b> impact you?",
     "liveWord": {
       "ambiguous": "Ambiguous"
     },
@@ -67,15 +67,15 @@
   "Self": {
     "navTitle": "Emomapp",
     "category": "YOU",
-    "question": "How are you experiencing YOURSELF right now?",
+    "question": "At this moment — how do <b>YOU</b> impact the situation?",
     "liveWord": {
       "ambiguous": "Ambiguous",
       "active": "I direct",
       "passive": "I follow"
     },
     "endLabels": {
-      "leftSub": ["Yielding", "Drifting", "Adapting"],
-      "rightSub": ["Steering", "Shaping", "Making"]
+      "leftSub": ["I yield", "I watch", "I drift"],
+      "rightSub": ["I steer", "I shape", "I make"]
     },
     "cta": "See my map →"
   },
