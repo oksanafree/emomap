@@ -229,7 +229,8 @@ function ContextPageInner() {
             <div className={styles.ctxSec}>
               <div className={styles.ctxLbl}>{t("whatWho")}</div>
               <div className={styles.ctxQ}>
-                {t("activityQuestion")} <span className={styles.ctxQHint}>{t("activityHint")}</span>
+                {t("activityQuestion")}
+                {t("activityHint") && <span className={styles.ctxQHint}> {t("activityHint")}</span>}
               </div>
               <div className={styles.ctxChips}>
                 {ACTIVITY_KEYS.map((key) => (

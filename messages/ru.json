@@ -118,10 +118,10 @@
   },
   "Context": {
     "navTitle": "Добавить контекст",
-    "hint": "Необязательно — пропусти любой вопрос",
+    "hint": "По желанию",
     "whatWho": "ЧТО И С КЕМ",
-    "activityQuestion": "Чем ты занимался?",
-    "activityHint": "можно несколько",
+    "activityQuestion": "Чем ты только что занимался?",
+    "activityHint": "",
     "activities": {
       "work": "Работа",
       "study": "Учёба",
@@ -139,12 +139,12 @@
       "online": "Онлайн"
     },
     "engagementLabel": "ВОВЛЕЧЁННОСТЬ",
-    "mentalEngagementLabel": "Умственно",
-    "physicalEngagementLabel": "Физически",
+    "mentalEngagementLabel": "Умственная",
+    "physicalEngagementLabel": "Физическая",
     "engagement": {
-      "low": "Низко",
-      "medium": "Средне",
-      "high": "Высоко"
+      "low": "Низкая",
+      "medium": "Средняя",
+      "high": "Высокая"
     },
     "bodyState": "СОСТОЯНИЕ ТЕЛА",
     "sleepQuestion": "Сколько часов сна?",
@@ -155,9 +155,9 @@
     "hungerQuestion": "Голод сейчас?",
     "hungerMinLabel": "Голодный",
     "hungerMaxLabel": "Сытый",
-    "physicalPrompt": "Что в теле?",
+    "physicalPrompt": "Особенные ощущения в теле?",
     "physicalPlaceholder": "Головная боль, напряжение, усталость...",
-    "noteQuestion": "Что добавить?",
+    "noteQuestion": "Добавь всё, что считаешь важным",
     "notePlaceholder": "Добавить заметку...",
     "save": "Записать",
     "saveError": "Не удалось сохранить. Попробуйте ещё раз.",
