@@ -4,15 +4,14 @@ export const ACTIVITY_KEYS = [
   "exercise",
   "resting",
   "creative",
-  "chores",
-  "eating",
   "caregiving",
-  "commuting",
+  "outside",
+  "traveling",
 ] as const;
 export type ActivityKey = (typeof ACTIVITY_KEYS)[number];
 
 export const SOCIAL_KEYS = ["alone", "withOthers", "online"] as const;
 export type SocialKey = (typeof SOCIAL_KEYS)[number];
 
-export const LOCATION_KEYS = ["home", "work", "outside", "commuting", "traveling", "elsewhere"] as const;
-export type LocationKey = (typeof LOCATION_KEYS)[number];
+export const ENGAGEMENT_KEYS = ["low", "medium", "high"] as const;
+export type EngagementLevel = (typeof ENGAGEMENT_KEYS)[number];

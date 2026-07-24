@@ -1,4 +1,4 @@
-import type { ActivityKey, LocationKey, SocialKey } from "@/lib/context-options";
+import type { ActivityKey, EngagementLevel, SocialKey } from "@/lib/context-options";
 
 const ACTIVITY_LABELS: Record<ActivityKey, string> = {
   work: "Work",
@@ -6,10 +6,9 @@ const ACTIVITY_LABELS: Record<ActivityKey, string> = {
   exercise: "Exercise",
   resting: "Resting",
   creative: "Creative",
-  chores: "Chores",
-  eating: "Eating",
   caregiving: "Caregiving",
-  commuting: "Commuting",
+  outside: "Outside",
+  traveling: "Traveling",
 };
 
 const SOCIAL_LABELS: Record<SocialKey, string> = {
@@ -18,20 +17,18 @@ const SOCIAL_LABELS: Record<SocialKey, string> = {
   online: "Online",
 };
 
-const LOCATION_LABELS: Record<LocationKey, string> = {
-  home: "Home",
-  work: "Work",
-  outside: "Outside",
-  commuting: "Commuting",
-  traveling: "Traveling",
-  elsewhere: "Somewhere else",
+const ENGAGEMENT_LABELS: Record<EngagementLevel, string> = {
+  low: "Low",
+  medium: "Medium",
+  high: "High",
 };
 
 export type CustomTokens = {
   emotion?: string;
   activity?: string[] | string;
   social?: string[] | string;
-  location?: string;
+  mental_engagement?: string;
+  physical_engagement?: string;
   sleep?: number;
   energy?: number;
   hunger?: number;
@@ -75,8 +72,11 @@ export function formatCustomTokens(tokens: CustomTokens | undefined | null): str
     .map((s) => SOCIAL_LABELS[s]);
   if (socialLabels.length > 0) parts.push(`With: ${socialLabels.join(", ")}`);
 
-  if (tokens.location && tokens.location in LOCATION_LABELS) {
-    parts.push(`Location: ${LOCATION_LABELS[tokens.location as LocationKey]}`);
+  if (tokens.mental_engagement && tokens.mental_engagement in ENGAGEMENT_LABELS) {
+    parts.push(`Mental engagement: ${ENGAGEMENT_LABELS[tokens.mental_engagement as EngagementLevel]}`);
+  }
+  if (tokens.physical_engagement && tokens.physical_engagement in ENGAGEMENT_LABELS) {
+    parts.push(`Physical engagement: ${ENGAGEMENT_LABELS[tokens.physical_engagement as EngagementLevel]}`);
   }
 
   const tokenLine = parts.length > 0 ? parts.join(" · ") : null;

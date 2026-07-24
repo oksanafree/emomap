@@ -128,10 +128,9 @@
       "exercise": "Exercise",
       "resting": "Resting",
       "creative": "Creative",
-      "chores": "Chores",
-      "eating": "Eating",
       "caregiving": "Caregiving",
-      "commuting": "Commuting"
+      "outside": "Outside",
+      "traveling": "Traveling"
     },
     "socialQuestion": "Who were you with?",
     "social": {
@@ -139,14 +138,13 @@
       "withOthers": "With others",
       "online": "Online"
     },
-    "locationQuestion": "Where are you?",
-    "location": {
-      "home": "Home",
-      "work": "Work",
-      "outside": "Outside",
-      "commuting": "Commuting",
-      "traveling": "Traveling",
-      "elsewhere": "Somewhere else"
+    "engagementLabel": "How engaged were you?",
+    "mentalEngagementLabel": "Mental",
+    "physicalEngagementLabel": "Physical",
+    "engagement": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High"
     },
     "bodyState": "BODY STATE",
     "sleepQuestion": "Sleep last night?",

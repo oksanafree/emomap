@@ -18,10 +18,10 @@ import { useSliderSound } from "@/lib/use-slider-sound";
 import { db } from "@/lib/firebase";
 import {
   ACTIVITY_KEYS,
-  LOCATION_KEYS,
+  ENGAGEMENT_KEYS,
   SOCIAL_KEYS,
   type ActivityKey,
-  type LocationKey,
+  type EngagementLevel,
   type SocialKey,
 } from "@/lib/context-options";
 import type { StateKey } from "@/lib/state-detection";
@@ -49,7 +49,8 @@ function ContextPageInner() {
   const [emotion, setEmotion] = useState(searchParams.get("emotion") ?? "");
   const [activities, setActivities] = useState<Set<ActivityKey>>(new Set());
   const [social, setSocial] = useState<Set<SocialKey>>(new Set());
-  const [location, setLocation] = useState<LocationKey | null>(null);
+  const [mentalEngagement, setMentalEngagement] = useState<EngagementLevel | null>(null);
+  const [physicalEngagement, setPhysicalEngagement] = useState<EngagementLevel | null>(null);
   const [sleep, setSleep] = useState<number | null>(null);
   const [energy, setEnergy] = useState<number | null>(null);
   const [hunger, setHunger] = useState<number | null>(null);
@@ -72,7 +73,8 @@ function ContextPageInner() {
         if (tokens.emotion) setEmotion(tokens.emotion);
         setActivities(new Set(toArray(tokens.activity) as ActivityKey[]));
         setSocial(new Set(toArray(tokens.social) as SocialKey[]));
-        setLocation((tokens.location as LocationKey) ?? null);
+        setMentalEngagement((tokens.mental_engagement as EngagementLevel) ?? null);
+        setPhysicalEngagement((tokens.physical_engagement as EngagementLevel) ?? null);
         setSleep(typeof tokens.sleep === "number" ? tokens.sleep : null);
         setEnergy(typeof tokens.energy === "number" ? tokens.energy : null);
         setHunger(typeof tokens.hunger === "number" ? tokens.hunger : null);
@@ -107,8 +109,13 @@ function ContextPageInner() {
     sndChip();
   }
 
-  function selectLocation(key: LocationKey) {
-    setLocation(key);
+  function selectMentalEngagement(key: EngagementLevel) {
+    setMentalEngagement(key);
+    sndChip();
+  }
+
+  function selectPhysicalEngagement(key: EngagementLevel) {
+    setPhysicalEngagement(key);
     sndChip();
   }
 
@@ -137,7 +144,8 @@ function ContextPageInner() {
     if (emotion) customTokens.emotion = emotion;
     if (activities.size > 0) customTokens.activity = Array.from(activities);
     if (social.size > 0) customTokens.social = Array.from(social);
-    if (location) customTokens.location = location;
+    if (mentalEngagement) customTokens.mental_engagement = mentalEngagement;
+    if (physicalEngagement) customTokens.physical_engagement = physicalEngagement;
     if (sleep !== null) customTokens.sleep = sleep;
     if (energy !== null) customTokens.energy = energy;
     if (hunger !== null) customTokens.hunger = hunger;
@@ -248,17 +256,35 @@ function ContextPageInner() {
                   </div>
                 ))}
               </div>
+            </div>
 
-              <div className={styles.ctxGap} />
-              <div className={styles.ctxQ}>{t("locationQuestion")}</div>
+            <div className={styles.ctxDiv} />
+
+            <div className={styles.ctxSec}>
+              <div className={styles.ctxLbl}>{t("engagementLabel")}</div>
+              <div className={styles.ctxQ}>{t("mentalEngagementLabel")}</div>
               <div className={styles.ctxChips}>
-                {LOCATION_KEYS.map((key) => (
+                {ENGAGEMENT_KEYS.map((key) => (
                   <div
                     key={key}
-                    className={`${styles.cc} ${location === key ? styles.ccSelected : ""}`}
-                    onClick={() => selectLocation(key)}
+                    className={`${styles.cc} ${mentalEngagement === key ? styles.ccSelected : ""}`}
+                    onClick={() => selectMentalEngagement(key)}
                   >
-                    {t(`location.${key}`)}
+                    {t(`engagement.${key}`)}
+                  </div>
+                ))}
+              </div>
+
+              <div className={styles.ctxGap} />
+              <div className={styles.ctxQ}>{t("physicalEngagementLabel")}</div>
+              <div className={styles.ctxChips}>
+                {ENGAGEMENT_KEYS.map((key) => (
+                  <div
+                    key={key}
+                    className={`${styles.cc} ${physicalEngagement === key ? styles.ccSelected : ""}`}
+                    onClick={() => selectPhysicalEngagement(key)}
+                  >
+                    {t(`engagement.${key}`)}
                   </div>
                 ))}
               </div>

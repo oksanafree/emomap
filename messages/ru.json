@@ -128,10 +128,9 @@
       "exercise": "Спорт",
       "resting": "Отдых",
       "creative": "Творчество",
-      "chores": "Быт",
-      "eating": "Еда",
       "caregiving": "Забота",
-      "commuting": "Дорога"
+      "outside": "На улице",
+      "traveling": "Путешествие"
     },
     "socialQuestion": "С кем ты был?",
     "social": {
@@ -139,14 +138,13 @@
       "withOthers": "С другими",
       "online": "Онлайн"
     },
-    "locationQuestion": "Где ты сейчас?",
-    "location": {
-      "home": "Дома",
-      "work": "На работе",
-      "outside": "На улице",
-      "commuting": "В дороге",
-      "traveling": "В путешествии",
-      "elsewhere": "Где-то ещё"
+    "engagementLabel": "Насколько вы были вовлечены?",
+    "mentalEngagementLabel": "Умственно",
+    "physicalEngagementLabel": "Физически",
+    "engagement": {
+      "low": "Низко",
+      "medium": "Средне",
+      "high": "Высоко"
     },
     "bodyState": "СОСТОЯНИЕ ТЕЛА",
     "sleepQuestion": "Сколько ты спал прошлой ночью?",
