@@ -53,10 +53,6 @@
   line-height: 1.75;
 }
 
-.emphasis {
-  color: #9090c8;
-}
-
 .actions {
   padding: 0 24px calc(env(safe-area-inset-bottom, 0px) + 32px);
 }
@@ -87,10 +83,12 @@
 
 .skip {
   width: 100%;
-  padding: 12px;
+  padding: 14px;
   background: transparent;
-  border: none;
-  color: #3a3860;
-  font-size: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 14px;
+  color: #b8b4e8;
+  font-size: 15px;
+  font-weight: 500;
   cursor: pointer;
 }

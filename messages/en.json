@@ -273,10 +273,11 @@
   },
   "Notifications": {
     "headline": "Patterns need<br></br>input to appear.",
-    "body": "People who notice meaningful patterns in their map check in <em>at least twice a day</em> — and when something happens.<br></br><br></br>Turn on reminders and we'll nudge you to check in.",
+    "body": "People who notice meaningful patterns check in whenever something shifts — a conversation, a change of mood, a moment worth remembering.<br></br><br></br>Turn on reminders and we'll nudge you to check in.",
     "turnOn": "Turn on reminders",
     "skip": "Skip for now",
-    "setupError": "Notifications couldn't be set up — try again later"
+    "setupError": "Notifications couldn't be set up — try again later",
+    "setupErrorIOS": "To get reminders, add Emomapp to your home screen first. Tap Share → Add to Home Screen, then open from there."
   },
   "Install": {
     "iosText": "To receive reminders on iPhone, add Emomapp to your home screen. Tap the share button → Add to Home Screen.",

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { subscribeUserToPush } from "@/lib/notifications";
+import { isIOS, isStandalonePwa } from "@/lib/platform";
 import styles from "./notification-prompt.module.css";
 
 const NOTIF_ASKED_KEY = "notif_asked";
@@ -11,21 +12,26 @@ type NotificationPromptProps = {
   onClose: () => void;
 };
 
+type ErrorKind = "generic" | "iosBrowser";
+
 export function NotificationPrompt({ onClose }: NotificationPromptProps) {
   const t = useTranslations("Notifications");
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<ErrorKind | null>(null);
 
   async function handleTurnOn() {
     setSubmitting(true);
-    setError(false);
+    setError(null);
     const ok = await subscribeUserToPush();
     setSubmitting(false);
     localStorage.setItem(NOTIF_ASKED_KEY, "true");
     if (ok) {
       onClose();
     } else {
-      setError(true);
+      // Web push requires the app to be installed to the home screen on iOS
+      // Safari — getToken() will always fail in a plain browser tab there,
+      // so point the user at the install step instead of a generic error.
+      setError(isIOS() && !isStandalonePwa() ? "iosBrowser" : "generic");
     }
   }
 
@@ -41,15 +47,10 @@ export function NotificationPrompt({ onClose }: NotificationPromptProps) {
           <div className={styles.badgeDot} />
         </div>
         <div className={styles.headline}>{t.rich("headline", { br: () => <br /> })}</div>
-        <div className={styles.body}>
-          {t.rich("body", {
-            br: () => <br />,
-            em: (chunks) => <span className={styles.emphasis}>{chunks}</span>,
-          })}
-        </div>
+        <div className={styles.body}>{t.rich("body", { br: () => <br /> })}</div>
       </div>
       <div className={styles.actions}>
-        {error && <p className={styles.error}>{t("setupError")}</p>}
+        {error && <p className={styles.error}>{t(error === "iosBrowser" ? "setupErrorIOS" : "setupError")}</p>}
         <button type="button" className={styles.turnOn} onClick={handleTurnOn} disabled={submitting}>
           {t("turnOn")}
         </button>

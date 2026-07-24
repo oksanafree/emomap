@@ -7,6 +7,7 @@ import { Link, useRouter } from "@/i18n/navigation";
 import { useAnonymousAuth } from "@/lib/use-anonymous-auth";
 import { useSliderSound } from "@/lib/use-slider-sound";
 import { db } from "@/lib/firebase";
+import { isIOS, isStandalonePwa } from "@/lib/platform";
 import { AuthGuard } from "@/components/AuthGuard";
 import { NotificationPrompt } from "@/components/NotificationPrompt";
 import mapStyles from "@/styles/map-visual.module.css";
@@ -51,11 +52,7 @@ export default function HistoryPage() {
   }, [entries]);
 
   useEffect(() => {
-    const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
-    const isStandalone =
-      window.matchMedia("(display-mode: standalone)").matches ||
-      (window.navigator as Navigator & { standalone?: boolean }).standalone === true;
-    if (isIOS && !isStandalone && !localStorage.getItem(INSTALL_PROMPT_SEEN_KEY)) {
+    if (isIOS() && !isStandalonePwa() && !localStorage.getItem(INSTALL_PROMPT_SEEN_KEY)) {
       setShowIOSBanner(true);
     }
   }, []);
