@@ -138,7 +138,7 @@
       "withOthers": "С другими",
       "online": "Онлайн"
     },
-    "engagementLabel": "Насколько вы были вовлечены?",
+    "engagementLabel": "ВОВЛЕЧЁННОСТЬ",
     "mentalEngagementLabel": "Умственно",
     "physicalEngagementLabel": "Физически",
     "engagement": {
@@ -147,12 +147,12 @@
       "high": "Высоко"
     },
     "bodyState": "СОСТОЯНИЕ ТЕЛА",
-    "sleepQuestion": "Сколько ты спал прошлой ночью?",
+    "sleepQuestion": "Сколько часов сна?",
     "sleepValue": "{hours}ч",
     "sleepMinLabel": "Не спал",
     "sleepMaxLabel": "10ч+",
     "energyQuestion": "Энергия сейчас?",
-    "hungerQuestion": "Голод?",
+    "hungerQuestion": "Голод сейчас?",
     "hungerMinLabel": "Голодный",
     "hungerMaxLabel": "Сытый",
     "physicalPrompt": "Что в теле?",
