@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import type { TouchEvent } from "react";
 import { useTranslations } from "next-intl";
 import { onAuthStateChanged, type User } from "firebase/auth";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { collection, doc, getCountFromServer, getDoc, setDoc } from "firebase/firestore";
 import { useRouter } from "@/i18n/navigation";
 import { getFirebaseAuth, db } from "@/lib/firebase";
 import { OnboardingMap } from "@/components/onboarding-map";
@@ -44,10 +44,36 @@ export default function OnboardingPage() {
       // browser's localStorage, so a returning user never sees the intro
       // carousel again even on a new device.
       let cancelled = false;
-      getDoc(doc(db, "users", authUser.uid)).then((snap) => {
-        if (cancelled) return;
-        setOnboardingComplete(snap.data()?.onboarding_complete === true);
-      });
+      (async () => {
+        try {
+          const [userSnap, entriesCountSnap] = await Promise.all([
+            getDoc(doc(db, "users", authUser.uid)),
+            getCountFromServer(collection(db, "users", authUser.uid, "entries")),
+          ]);
+          if (cancelled) return;
+
+          const hasOnboardingFlag = userSnap.data()?.onboarding_complete === true;
+          const hasEntries = entriesCountSnap.data().count > 0;
+
+          // Self-heal: a user who already has entries has obviously used the
+          // app before and should never be routed back through the intro
+          // carousel, regardless of whether onboarding_complete was ever set
+          // (e.g. accounts created before that flag existed). Backfill it so
+          // future visits resolve straight from Firestore.
+          if (hasEntries && !hasOnboardingFlag) {
+            setDoc(doc(db, "users", authUser.uid), { onboarding_complete: true }, { merge: true }).catch(
+              (err) => {
+                console.error("Failed to backfill onboarding_complete", err);
+              },
+            );
+          }
+
+          setOnboardingComplete(hasOnboardingFlag || hasEntries);
+        } catch (err) {
+          console.error("Failed to resolve onboarding status", err);
+          if (!cancelled) setOnboardingComplete(false);
+        }
+      })();
       return () => {
         cancelled = true;
       };
