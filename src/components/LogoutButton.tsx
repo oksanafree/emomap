@@ -23,6 +23,7 @@ export function LogoutButton() {
 
   async function handleLogout() {
     await signOut(getFirebaseAuth());
+    await fetch("/api/auth/session", { method: "DELETE" }).catch(() => {});
     router.push("/auth");
   }
 

@@ -8,6 +8,7 @@ import {
   EmailAuthProvider,
   linkWithCredential,
   signInWithEmailAndPassword,
+  type User,
 } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { useRouter } from "@/i18n/navigation";
@@ -64,6 +65,15 @@ function AuthPageInner() {
     }
   }
 
+  async function mintSessionCookie(user: User) {
+    const idToken = await user.getIdToken();
+    await fetch("/api/auth/session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ idToken }),
+    });
+  }
+
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setError(null);
@@ -72,17 +82,20 @@ function AuthPageInner() {
 
     try {
       if (mode === "signup") {
+        let signedUpUser: User;
         if (auth.currentUser && auth.currentUser.isAnonymous) {
           const credential = EmailAuthProvider.credential(email, password);
-          await linkWithCredential(auth.currentUser, credential);
+          signedUpUser = (await linkWithCredential(auth.currentUser, credential)).user;
         } else {
-          await createUserWithEmailAndPassword(auth, email, password);
+          signedUpUser = (await createUserWithEmailAndPassword(auth, email, password)).user;
         }
+        await mintSessionCookie(signedUpUser);
         setSubmitting(false);
         setStep("profile");
         return;
       }
-      await signInWithEmailAndPassword(auth, email, password);
+      const { user } = await signInWithEmailAndPassword(auth, email, password);
+      await mintSessionCookie(user);
       router.push("/");
     } catch (err) {
       setError(mapError((err as { code?: string }).code));
