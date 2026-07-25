@@ -187,7 +187,9 @@
     "loading": "Loading…",
     "empty": "No entries yet.",
     "error": "Could not load your entries.",
-    "seeReport": "See report →"
+    "seeReport": "See report →",
+    "delete": "Delete",
+    "deleteConfirm": "Delete this entry? This can't be undone."
   },
   "Insight": {
     "headline": "A pattern is starting to form",
