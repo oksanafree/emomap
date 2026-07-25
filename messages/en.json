@@ -191,7 +191,9 @@
     "error": "Could not load your entries.",
     "seeReport": "See report →",
     "delete": "Delete",
-    "deleteConfirm": "Delete this entry? This can't be undone."
+    "deleteConfirm": "Delete this entry? This can't be undone.",
+    "showEntries": "Show entries ▾",
+    "hideEntries": "Hide entries ▴"
   },
   "Insight": {
     "headline": "A pattern is starting to form",

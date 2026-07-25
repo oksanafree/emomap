@@ -53,6 +53,32 @@
   opacity: 0.35;
 }
 
+.entriesToggle {
+  display: block;
+  margin: 12px auto 0;
+  padding: 6px 14px;
+  background: none;
+  border: none;
+  color: #6a6870;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.entryListWrap {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.3s ease;
+}
+
+.entryListWrapExpanded {
+  grid-template-rows: 1fr;
+}
+
+.entryListInner {
+  overflow: hidden;
+  min-height: 0;
+}
+
 .entryList {
   padding: 4px 22px 16px;
 }

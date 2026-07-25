@@ -104,6 +104,7 @@ export default function HistoryPage() {
   const [error, setError] = useState(false);
   const [showNotifPrompt, setShowNotifPrompt] = useState(false);
   const [showIOSBanner, setShowIOSBanner] = useState(false);
+  const [entriesExpanded, setEntriesExpanded] = useState(false);
 
   useEffect(() => {
     if ("serviceWorker" in navigator) {
@@ -282,18 +283,33 @@ export default function HistoryPage() {
           </div>
 
           {entries && entries.length > 0 && (
-            <div className={styles.entryList}>
-              {entries.map((entry) => (
-                <EntryRow
-                  key={entry.id}
-                  entry={entry}
-                  dateLabel={entry.timestamp ? dateFormatter.format(entry.timestamp) : ""}
-                  stateLabel={entry.state ? tMap(`states.${entry.state}.name`) : null}
-                  deleteLabel={t("delete")}
-                  onDelete={handleDeleteEntry}
-                />
-              ))}
-            </div>
+            <>
+              <button
+                type="button"
+                className={styles.entriesToggle}
+                onClick={() => setEntriesExpanded((v) => !v)}
+              >
+                {entriesExpanded ? t("hideEntries") : t("showEntries")}
+              </button>
+              <div
+                className={`${styles.entryListWrap} ${entriesExpanded ? styles.entryListWrapExpanded : ""}`}
+              >
+                <div className={styles.entryListInner}>
+                  <div className={styles.entryList}>
+                    {entries.map((entry) => (
+                      <EntryRow
+                        key={entry.id}
+                        entry={entry}
+                        dateLabel={entry.timestamp ? dateFormatter.format(entry.timestamp) : ""}
+                        stateLabel={entry.state ? tMap(`states.${entry.state}.name`) : null}
+                        deleteLabel={t("delete")}
+                        onDelete={handleDeleteEntry}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </>
           )}
         </div>
 
