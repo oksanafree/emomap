@@ -172,7 +172,11 @@ const WELCOME_URL = "https://emomapp.app";
 type WelcomeContent = {
   subject: string;
   paragraphs: string[];
-  ctaLabel: string;
+  ctaText: string;
+  ctaLinkLabel: string;
+  telegramText: string;
+  telegramLinkLabel: string;
+  telegramUrl: string;
   signature: string;
 };
 
@@ -180,27 +184,33 @@ const WELCOME_CONTENT: Record<Locale, WelcomeContent> = {
   en: {
     subject: "Welcome to Emomapp",
     paragraphs: [
-      "Welcome to Emomapp. Most apps ask how you feel. Emomapp asks how is the situation impacting you — and how are you impacting it?",
-      "Instead of labeling emotions, you place yourself on a map. Two axes, a few taps, and you've captured your state in the moment.",
-      "The magic happens over time. Check in a few times a day — morning, after a hard meeting, before bed — and Emomapp begins to calculate your trajectory.",
-      "Patterns you'd never notice on your own start to surface: that your energy drops on Sundays, that tension at work always follows poor sleep, that you're more resilient than you think.",
+      "Welcome to Emomapp — and thank you for being a founding user. Your interest in this project means a great deal to me.",
+      "Most apps ask how you feel. Emomapp asks how is the situation impacting you — and how are you impacting it? Instead of labeling emotions, you place yourself on a map. Two axes, a few taps, and you've captured your state in the moment.",
+      "The magic happens over time. Check in a few times a day — morning, after a hard meeting, before bed — and Emomapp begins to calculate your trajectory. Patterns you'd never notice on your own start to surface: that your energy drops on Sundays, that tension at work always follows poor sleep, that you're more resilient than you think.",
       "No other app does this - because no one asked the right question until now.",
-      "Your first check-in takes 30 seconds.",
     ],
-    ctaLabel: "Open Emomapp",
+    ctaText: "Your first check-in takes 30 seconds.",
+    ctaLinkLabel: "Open Emomapp",
+    telegramText:
+      "Join our founding users community on Telegram — share your experience, ask questions, and help shape what Emomapp becomes:",
+    telegramLinkLabel: "Join the group",
+    telegramUrl: "https://t.me/+gpylW64kg_lkOTUx",
     signature: "Oksana",
   },
   ru: {
     subject: "Добро пожаловать в Эмокарту",
     paragraphs: [
-      "Добро пожаловать в Эмокарту. Большинство приложений спрашивают, как ты себя чувствуешь. Эмокарта спрашивает как обстоятельства влияют на тебя — и как ты влияешь на них?",
-      "Вместо того чтобы называть эмоции, ты отмечаешь себя на карте твоего внутреннего мира. Две шкалы, несколько кликов — и координаты состояния зафиксированы.",
-      "Но главное происходит со временем. Отмечайся несколько раз в день — утром, после сложной встречи, перед сном — и Эмокарта начнёт вычислять твою траекторию.",
-      "Начинают проявляться паттерны, которые сложно заметить самому: что энергия особенно падает по воскресеньям, что напряжение на работе всегда следует за плохим сном, что ты устойчивее, чем думаешь.",
+      "Добро пожаловать в Эмокарту и спасибо за твое участие в проекте!",
+      "Большинство приложений спрашивают, как ты себя чувствуешь. Эмокарта спрашивает как обстоятельства влияют на тебя — и как ты влияешь на них? Вместо того чтобы называть эмоции, мы предлагаем отмечать твое состояние на карте внутреннего мира. Две шкалы, несколько кликов — и координаты настроения зафиксированы.",
+      "Но главное происходит со временем. Отмечайся несколько раз в день — утром, после сложной встречи, перед сном — и Эмокарта начнёт вычислять твою индивидуальную траекторию. Начинают проявляться паттерны поведения, которые сложно заметить самому: например, что энергия особенно падает по воскресеньям, или что напряжение на работе всегда следует за плохим сном, или что ты устойчивее, чем думаешь.",
       "Ни одно другое приложение этого не делает, потому что никто до сих пор не задавал правильного вопроса.",
-      "Первая отметка займёт 30 секунд.",
     ],
-    ctaLabel: "Открыть Эмокарту",
+    ctaText: "Первая отметка займёт 30 секунд.",
+    ctaLinkLabel: "Открыть Эмокарту",
+    telegramText:
+      "Также присоединяйся к сообществу первых пользователей в Telegram — делись опытом, задавай вопросы и участвуй в строительстве Эмокарты:",
+    telegramLinkLabel: "Войти в группу",
+    telegramUrl: "https://t.me/+CNtztWwlF6syODlh",
     signature: "Оксана",
   },
 };
@@ -208,10 +218,16 @@ const WELCOME_CONTENT: Record<Locale, WelcomeContent> = {
 function buildWelcomeEmailContent(content: WelcomeContent) {
   const html = [
     ...content.paragraphs.map((paragraph) => `<p>${paragraph}</p>`),
-    `<p><a href="${WELCOME_URL}">${content.ctaLabel}</a></p>`,
+    `<p>${content.ctaText} <a href="${WELCOME_URL}">${content.ctaLinkLabel}</a></p>`,
+    `<p>${content.telegramText} <a href="${content.telegramUrl}">${content.telegramLinkLabel}</a></p>`,
     `<p>${content.signature}</p>`,
   ].join("");
-  const text = [...content.paragraphs, `${content.ctaLabel}: ${WELCOME_URL}`, content.signature].join("\n\n");
+  const text = [
+    ...content.paragraphs,
+    `${content.ctaText} ${content.ctaLinkLabel}: ${WELCOME_URL}`,
+    `${content.telegramText} ${content.telegramLinkLabel}: ${content.telegramUrl}`,
+    content.signature,
+  ].join("\n\n");
   return { html, text };
 }
 
