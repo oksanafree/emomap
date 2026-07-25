@@ -86,6 +86,15 @@ function AuthPageInner() {
         if (auth.currentUser && auth.currentUser.isAnonymous) {
           const credential = EmailAuthProvider.credential(email, password);
           signedUpUser = (await linkWithCredential(auth.currentUser, credential)).user;
+          // linkWithCredential reuses the existing (anonymous) uid rather than
+          // creating a new Auth user, so it never fires the auth.user().onCreate
+          // trigger that normally sends the welcome email. Flag it here instead
+          // so the sendPendingWelcomeEmail Firestore trigger picks it up.
+          try {
+            await setDoc(doc(db, "users", signedUpUser.uid), { welcome_email_pending: true }, { merge: true });
+          } catch (err) {
+            console.error("Failed to flag pending welcome email", err);
+          }
         } else {
           signedUpUser = (await createUserWithEmailAndPassword(auth, email, password)).user;
         }

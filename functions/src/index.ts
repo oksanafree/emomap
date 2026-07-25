@@ -1,4 +1,5 @@
 import { onSchedule } from "firebase-functions/v2/scheduler";
+import { onDocumentUpdated } from "firebase-functions/v2/firestore";
 import * as functionsV1 from "firebase-functions/v1";
 import { defineSecret } from "firebase-functions/params";
 import { initializeApp } from "firebase-admin/app";
@@ -231,13 +232,35 @@ function buildWelcomeEmailContent(content: WelcomeContent) {
   return { html, text };
 }
 
+async function sendWelcomeEmailToUser(uid: string, email: string, locale: Locale) {
+  const content = WELCOME_CONTENT[locale];
+  const { html, text } = buildWelcomeEmailContent(content);
+  const resend = new Resend(resendApiKey.value());
+
+  try {
+    const { error } = await resend.emails.send({
+      from: WELCOME_EMAIL_FROM,
+      to: email,
+      subject: content.subject,
+      text,
+      html,
+    });
+    if (error) {
+      logger.error(`Failed to send welcome email to ${uid}`, error);
+    }
+  } catch (error) {
+    logger.error(`Failed to send welcome email to ${uid}`, error);
+  }
+}
+
 // auth.user().onCreate fires for every new Firebase Auth user, including
 // anonymous sessions (the app creates one automatically on first visit) —
 // those are filtered out below since anonymous users have no email. Note
 // this does NOT fire when an existing anonymous user upgrades to a real
 // account via linkWithCredential (that reuses the same uid rather than
-// creating a new one), so users who try the app anonymously before signing
-// up will not receive this email through this trigger.
+// creating a new one), so signups that start anonymous are instead caught
+// by sendPendingWelcomeEmail below, via the welcome_email_pending flag the
+// client sets right after linkWithCredential succeeds.
 export const sendWelcomeEmail = functionsV1
   .runWith({ secrets: [resendApiKey] })
   .auth.user()
@@ -252,22 +275,34 @@ export const sendWelcomeEmail = functionsV1
       logger.error(`Failed to read locale for welcome email (${user.uid})`, error);
     }
 
-    const content = WELCOME_CONTENT[locale];
-    const { html, text } = buildWelcomeEmailContent(content);
-    const resend = new Resend(resendApiKey.value());
+    await sendWelcomeEmailToUser(user.uid, user.email, locale);
+  });
+
+// Companion to sendWelcomeEmail for the linkWithCredential signup path,
+// which reuses the existing (anonymous) uid and never fires
+// auth.user().onCreate. The client flags users/{userId}.welcome_email_pending
+// = true right after a successful link; this picks that up, sends the same
+// welcome email, then clears the flag. The beforeData check guards against
+// the update this function itself makes (pending -> false) re-triggering it.
+export const sendPendingWelcomeEmail = onDocumentUpdated(
+  { document: "users/{userId}", secrets: [resendApiKey] },
+  async (event) => {
+    const beforeData = event.data?.before.data();
+    const afterData = event.data?.after.data();
+    if (!afterData || afterData.welcome_email_pending !== true) return;
+    if (beforeData?.welcome_email_pending === true) return;
+
+    const userId = event.params.userId;
 
     try {
-      const { error } = await resend.emails.send({
-        from: WELCOME_EMAIL_FROM,
-        to: user.email,
-        subject: content.subject,
-        text,
-        html,
-      });
-      if (error) {
-        logger.error(`Failed to send welcome email to ${user.uid}`, error);
+      const userRecord = await getAuth().getUser(userId);
+      if (userRecord.email) {
+        await sendWelcomeEmailToUser(userId, userRecord.email, resolveLocale(afterData.locale));
       }
     } catch (error) {
-      logger.error(`Failed to send welcome email to ${user.uid}`, error);
+      logger.error(`Failed to send pending welcome email to ${userId}`, error);
     }
-  });
+
+    await event.data!.after.ref.update({ welcome_email_pending: false });
+  },
+);
