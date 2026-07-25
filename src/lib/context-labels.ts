@@ -7,8 +7,9 @@ const ACTIVITY_LABELS: Record<ActivityKey, string> = {
   resting: "Resting",
   creative: "Creative",
   caregiving: "Caregiving",
-  outside: "Outside",
-  traveling: "Traveling",
+  outdoors: "Outdoors",
+  chores: "Chores",
+  other: "Other",
 };
 
 const SOCIAL_LABELS: Record<SocialKey, string> = {
@@ -29,6 +30,7 @@ export type CustomTokens = {
   social?: string[] | string;
   mental_engagement?: string;
   physical_engagement?: string;
+  activity_other?: string;
   sleep?: number;
   energy?: number;
   hunger?: number;
@@ -62,9 +64,10 @@ export function formatCustomTokens(tokens: CustomTokens | undefined | null): str
     parts.push(`Feeling: ${tokens.emotion}`);
   }
 
+  const activityOther = typeof tokens.activity_other === "string" ? tokens.activity_other.trim() : "";
   const activityLabels = toArray(tokens.activity)
     .filter((a): a is ActivityKey => a in ACTIVITY_LABELS)
-    .map((a) => ACTIVITY_LABELS[a]);
+    .map((a) => (a === "other" && activityOther ? activityOther : ACTIVITY_LABELS[a]));
   if (activityLabels.length > 0) parts.push(`Doing: ${activityLabels.join(", ")}`);
 
   const socialLabels = toArray(tokens.social)

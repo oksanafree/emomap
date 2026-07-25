@@ -41,6 +41,27 @@
   gap: 7px;
 }
 
+.ctxOtherInput {
+  width: 100%;
+  margin-top: 8px;
+  padding: 10px 14px;
+  border: 1px solid #d8d5ce;
+  border-radius: 12px;
+  background: #fff;
+  color: #2a2825;
+  font-size: 13px;
+  font-family: inherit;
+}
+
+.ctxOtherInput::placeholder {
+  color: #c0bdb8;
+}
+
+.ctxOtherInput:focus {
+  outline: none;
+  border-color: #7c6cf0;
+}
+
 .ctxSliderRow {
   display: flex;
   align-items: baseline;

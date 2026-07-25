@@ -129,9 +129,11 @@
       "resting": "Отдых",
       "creative": "Творчество",
       "caregiving": "Забота",
-      "outside": "На улице",
-      "traveling": "Путешествие"
+      "outdoors": "Прогулка",
+      "chores": "Домашние дела",
+      "other": "Другое"
     },
+    "activityOtherPlaceholder": "Что ты делал(а)?",
     "socialQuestion": "С кем ты был?",
     "social": {
       "alone": "Один / одна",

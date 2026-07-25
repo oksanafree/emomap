@@ -129,9 +129,11 @@
       "resting": "Resting",
       "creative": "Creative",
       "caregiving": "Caregiving",
-      "outside": "Outside",
-      "traveling": "Traveling"
+      "outdoors": "Outdoors",
+      "chores": "Chores",
+      "other": "Other"
     },
+    "activityOtherPlaceholder": "What were you doing?",
     "socialQuestion": "Who were you with?",
     "social": {
       "alone": "Alone",

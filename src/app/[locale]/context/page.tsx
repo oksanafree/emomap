@@ -48,6 +48,7 @@ function ContextPageInner() {
 
   const [emotion, setEmotion] = useState(searchParams.get("emotion") ?? "");
   const [activities, setActivities] = useState<Set<ActivityKey>>(new Set());
+  const [activityOther, setActivityOther] = useState("");
   const [social, setSocial] = useState<Set<SocialKey>>(new Set());
   const [mentalEngagement, setMentalEngagement] = useState<EngagementLevel | null>(null);
   const [physicalEngagement, setPhysicalEngagement] = useState<EngagementLevel | null>(null);
@@ -72,6 +73,7 @@ function ContextPageInner() {
 
         if (tokens.emotion) setEmotion(tokens.emotion);
         setActivities(new Set(toArray(tokens.activity) as ActivityKey[]));
+        if (typeof tokens.activity_other === "string") setActivityOther(tokens.activity_other);
         setSocial(new Set(toArray(tokens.social) as SocialKey[]));
         setMentalEngagement((tokens.mental_engagement as EngagementLevel) ?? null);
         setPhysicalEngagement((tokens.physical_engagement as EngagementLevel) ?? null);
@@ -143,6 +145,7 @@ function ContextPageInner() {
     const customTokens: Record<string, unknown> = {};
     if (emotion) customTokens.emotion = emotion;
     if (activities.size > 0) customTokens.activity = Array.from(activities);
+    if (activities.has("other") && activityOther.trim()) customTokens.activity_other = activityOther.trim();
     if (social.size > 0) customTokens.social = Array.from(social);
     if (mentalEngagement) customTokens.mental_engagement = mentalEngagement;
     if (physicalEngagement) customTokens.physical_engagement = physicalEngagement;
@@ -243,6 +246,15 @@ function ContextPageInner() {
                   </div>
                 ))}
               </div>
+              {activities.has("other") && (
+                <input
+                  type="text"
+                  className={styles.ctxOtherInput}
+                  placeholder={t("activityOtherPlaceholder")}
+                  value={activityOther}
+                  onChange={(e) => setActivityOther(e.target.value)}
+                />
+              )}
 
               <div className={styles.ctxGap} />
               <div className={styles.ctxQ}>{t("socialQuestion")}</div>
