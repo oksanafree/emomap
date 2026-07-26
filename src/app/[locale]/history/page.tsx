@@ -192,15 +192,15 @@ export default function HistoryPage() {
   const chronological = entries ? [...entries].reverse() : [];
   const mostRecentId = entries && entries.length > 0 ? entries[0].id : null;
 
+  const isMilestone = entries !== null && entries.length > 0 && entries.length < FULL_REPORT_ENTRIES;
+
   const statsLine =
     entries && entries.length > 0
-      ? [
-          t("entriesCount", { count: entries.length }),
-          t("daysCount", { count: dayCount }),
-          ...(entries.length < FULL_REPORT_ENTRIES
-            ? [t("fullReportRemaining", { remaining: FULL_REPORT_ENTRIES - entries.length })]
-            : []),
-        ].join(" · ")
+      ? entries.length < 5
+        ? t("firstReportRemaining", { remaining: 5 - entries.length })
+        : entries.length < FULL_REPORT_ENTRIES
+          ? t("fullReportRemaining", { remaining: FULL_REPORT_ENTRIES - entries.length })
+          : [t("entriesCount", { count: entries.length }), t("daysCount", { count: dayCount })].join(" · ")
       : " ";
 
   return (
@@ -208,7 +208,7 @@ export default function HistoryPage() {
       {showNotifPrompt && <NotificationPrompt onClose={() => setShowNotifPrompt(false)} />}
       <div className="flex min-h-screen flex-col bg-[#f7f6f4]">
         <div className={styles.topBar}>
-          <div className={styles.statsLine}>{statsLine}</div>
+          <div className={`${styles.statsLine} ${isMilestone ? styles.statsMilestone : ""}`}>{statsLine}</div>
         </div>
 
         <div className={styles.scrollArea}>
@@ -291,6 +291,7 @@ export default function HistoryPage() {
               >
                 {entriesExpanded ? t("hideEntries") : t("showEntries")}
               </button>
+              {entries.length < 5 && <p className={styles.encouragement}>{t("earlyEncouragement")}</p>}
               <div
                 className={`${styles.entryListWrap} ${entriesExpanded ? styles.entryListWrapExpanded : ""}`}
               >

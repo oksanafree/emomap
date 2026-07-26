@@ -8,8 +8,13 @@
 }
 
 .statsLine {
-  font-size: 13px;
-  color: #b0adb8;
+  font-size: 15px;
+  font-weight: 600;
+  color: #2a2825;
+}
+
+.statsMilestone {
+  color: #6b5fd0;
 }
 
 .scrollArea {
@@ -62,6 +67,16 @@
   color: #6a6870;
   font-size: 13px;
   cursor: pointer;
+}
+
+.encouragement {
+  max-width: 280px;
+  margin: 10px auto 0;
+  padding: 0 22px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #8a8680;
+  text-align: center;
 }
 
 .entryListWrap {
