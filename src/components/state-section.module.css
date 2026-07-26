@@ -1,0 +1,64 @@
+.section {
+  padding: 18px 22px 6px;
+  animation: sectionIn 500ms ease both;
+}
+
+@keyframes sectionIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.firstCheckinCaption {
+  margin: 0 0 6px;
+  font-size: 12px;
+  color: #9a9890;
+}
+
+.stateName {
+  margin: 0 0 10px;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1.25;
+}
+
+.description {
+  margin: 0 0 14px;
+  font-size: 15px;
+  line-height: 1.65;
+  color: #2a2825;
+}
+
+.note {
+  margin: 0 0 14px;
+  padding-left: 12px;
+  border-left: 2px solid #d8d5ce;
+  font-size: 14px;
+  font-style: italic;
+  line-height: 1.6;
+  color: #4a4750;
+  animation: noteIn 400ms ease both;
+}
+
+@keyframes noteIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.question {
+  margin: 0;
+  font-size: 13px;
+  font-style: italic;
+  line-height: 1.5;
+  color: #9a9890;
+}

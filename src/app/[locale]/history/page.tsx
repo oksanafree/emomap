@@ -14,6 +14,7 @@ import { getStateColor } from "@/lib/stateConfig";
 import { AuthGuard } from "@/components/AuthGuard";
 import { NotificationPrompt } from "@/components/NotificationPrompt";
 import { HeatMapCanvas } from "@/components/HeatMapCanvas";
+import { StateSection } from "@/components/StateSection";
 import mapStyles from "@/styles/map-visual.module.css";
 import styles from "./history.module.css";
 
@@ -115,6 +116,38 @@ function HistoryPageInner() {
   const [reportExpanded, setReportExpanded] = useState(false);
   const [heatMapActive, setHeatMapActive] = useState(false);
   const reportSectionRef = useRef<HTMLDivElement>(null);
+
+  // Captured once via lazy init so the section keeps rendering for the
+  // lifetime of this page view even after the URL params below are stripped —
+  // a later back-navigation or refresh to the plain /history URL must not
+  // re-trigger it.
+  const [newCheckinData] = useState(() => {
+    if (searchParams.get("new") !== "1") return null;
+    const state = searchParams.get("state") as StateKey | null;
+    if (!state) return null;
+    return {
+      state,
+      emotion: searchParams.get("emotion") ?? "",
+      isFirstCheckin: searchParams.get("firstCheckin") === "1",
+      showQuestion: searchParams.get("showQuestion") === "1",
+    };
+  });
+
+  useEffect(() => {
+    if (!newCheckinData) return;
+    // Strip only the one-time fresh-checkin params, preserving anything else
+    // (e.g. firstDirection, which the map's own connecting-line logic reads
+    // live from searchParams for the duration of this page view).
+    const remaining = new URLSearchParams(searchParams.toString());
+    remaining.delete("new");
+    remaining.delete("state");
+    remaining.delete("emotion");
+    remaining.delete("firstCheckin");
+    remaining.delete("showQuestion");
+    const query = remaining.toString();
+    router.replace(query ? `/history?${query}` : "/history");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if ("serviceWorker" in navigator) {
@@ -358,6 +391,16 @@ function HistoryPageInner() {
               </button>
             )}
           </div>
+
+          {newCheckinData && (
+            <StateSection
+              state={newCheckinData.state}
+              emotion={newCheckinData.emotion}
+              isFirstCheckin={newCheckinData.isFirstCheckin}
+              showQuestion={newCheckinData.showQuestion}
+              locale={locale}
+            />
+          )}
 
           {entries && entries.length > 0 && (
             <>

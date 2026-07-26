@@ -31,7 +31,6 @@ import {
 import type { StateKey } from "@/lib/state-detection";
 import { AuthGuard } from "@/components/AuthGuard";
 import { HomeNavIcon } from "@/components/HomeNavIcon";
-import { StateCard } from "@/components/StateCard";
 import checkinStyles from "@/styles/checkin-screen.module.css";
 import styles from "./context.module.css";
 
@@ -65,8 +64,6 @@ function ContextPageInner() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loadingEntry, setLoadingEntry] = useState(isEditing);
-  const [checkinCount, setCheckinCount] = useState<number | null>(null);
-  const [showQuestion, setShowQuestion] = useState(false);
 
   useEffect(() => {
     if (!entryId || !user) return;
@@ -208,10 +205,10 @@ function ContextPageInner() {
         }).catch(() => {});
       }
 
-      // Entries 1-2 never show the reflection question (handled by StateCard's
-      // isFirstCheckin path / this default of false). From entry 3 on, only
-      // surface it when the state repeats within the last 3 check-ins or every
-      // 3rd check-in — otherwise it starts to feel repetitive.
+      // Entries 1-2 never show the reflection question on the history page's
+      // state section. From entry 3 on, only surface it when the state
+      // repeats within the last 3 check-ins or every 3rd check-in — otherwise
+      // it starts to feel repetitive.
       let shouldShowQuestion = false;
       if (count >= 3) {
         try {
@@ -225,9 +222,17 @@ function ContextPageInner() {
         }
       }
 
-      setShowQuestion(shouldShowQuestion);
-      setCheckinCount(count);
+      const historyParams = new URLSearchParams({
+        new: "1",
+        state,
+        emotion,
+        showQuestion: shouldShowQuestion ? "1" : "0",
+        firstCheckin: count === 1 ? "1" : "0",
+      });
+      if (count === 2) historyParams.set("firstDirection", "1");
+
       setSaving(false);
+      router.push(`/history?${historyParams.toString()}`);
       return;
     } catch {
       // Non-fatal: the entry is already saved, report regeneration is best-effort.
@@ -238,22 +243,6 @@ function ContextPageInner() {
 
   function handleDiscard() {
     router.push("/history");
-  }
-
-  function handleStateCardContinue() {
-    router.push(checkinCount === 2 ? "/history?firstDirection=1" : "/history");
-  }
-
-  if (checkinCount !== null) {
-    return (
-      <StateCard
-        state={state}
-        emotion={emotion}
-        isFirstCheckin={checkinCount === 1}
-        showQuestion={showQuestion}
-        onContinue={handleStateCardContinue}
-      />
-    );
   }
 
   return (
