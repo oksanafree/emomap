@@ -27,6 +27,7 @@ import {
 import type { StateKey } from "@/lib/state-detection";
 import { AuthGuard } from "@/components/AuthGuard";
 import { HomeNavIcon } from "@/components/HomeNavIcon";
+import { StateCard } from "@/components/StateCard";
 import checkinStyles from "@/styles/checkin-screen.module.css";
 import styles from "./context.module.css";
 
@@ -60,6 +61,7 @@ function ContextPageInner() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loadingEntry, setLoadingEntry] = useState(isEditing);
+  const [checkinCount, setCheckinCount] = useState<number | null>(null);
 
   useEffect(() => {
     if (!entryId || !user) return;
@@ -200,7 +202,8 @@ function ContextPageInner() {
           body: JSON.stringify({ userId: user.uid, locale, type: generationType }),
         }).catch(() => {});
       }
-      router.push(`/checkin-done?count=${count}`);
+      setCheckinCount(count);
+      setSaving(false);
       return;
     } catch {
       // Non-fatal: the entry is already saved, report regeneration is best-effort.
@@ -211,6 +214,21 @@ function ContextPageInner() {
 
   function handleDiscard() {
     router.push("/history");
+  }
+
+  function handleStateCardContinue() {
+    router.push(checkinCount === 2 ? "/history?firstDirection=1" : "/history");
+  }
+
+  if (checkinCount !== null) {
+    return (
+      <StateCard
+        state={state}
+        emotion={emotion}
+        isFirstCheckin={checkinCount === 1}
+        onContinue={handleStateCardContinue}
+      />
+    );
   }
 
   return (

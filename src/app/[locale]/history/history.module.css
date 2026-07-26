@@ -40,6 +40,31 @@
   letter-spacing: 0.02em;
 }
 
+.firstDirectionLine {
+  stroke: #7c6cf0;
+  stroke-width: 2;
+  fill: none;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: drawLine 600ms ease forwards;
+  animation-delay: 300ms;
+}
+
+@keyframes drawLine {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.firstDirectionText {
+  margin-top: 14px;
+  font-size: 13px;
+  font-style: italic;
+  color: #9a97a3;
+  text-align: center;
+  letter-spacing: 0.02em;
+}
+
 .secLbl {
   margin-top: 16px;
   font-size: 13px;

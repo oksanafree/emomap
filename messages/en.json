@@ -116,6 +116,57 @@
       "Still": ["Mixed", "Uncertain", "Peaceful", "Numb"]
     }
   },
+  "StateCard": {
+    "continue": "Continue →",
+    "firstCheckinText": "Your map just started.",
+    "states": {
+      "Building": {
+        "header": "You are BUILDING.",
+        "description": "The situation is working with you, and you're actively shaping it. Something is moving forward — you're making, building, steering, creating. Energy is going somewhere and something is responding.",
+        "question": "What can you set down right now?"
+      },
+      "Protecting": {
+        "header": "You are PROTECTING.",
+        "description": "Holding ground, defending something that matters. The situation is pressing in and you're actively meeting it — resisting, confronting, managing. You're in the effort of it.",
+        "question": "What in your life right now doesn't need defending?"
+      },
+      "Receiving": {
+        "header": "You are RECEIVING.",
+        "description": "The situation is offering something and you're open to it. Not steering, not resisting — letting in. Something easing or supportive is available right now, and you're in contact with it.",
+        "question": "What helped things fall in your favor?"
+      },
+      "Enduring": {
+        "header": "You are ENDURING.",
+        "description": "Something pressing is happening, and right now you're not steering it — you're moving through it. The situation is pushing in, and your capacity to change it is limited at this moment.",
+        "question": "Who in your life could use something from you right now?"
+      },
+      "Opening": {
+        "header": "You are OPENING.",
+        "description": "You're ready to act, but the situation isn't fully clear yet. There's energy to move — and uncertainty about what to move toward. You're at a threshold.",
+        "question": "If nothing is clear yet, what are you already deciding?"
+      },
+      "Bracing": {
+        "header": "You are BRACING.",
+        "description": "Something is pressing in — or might be. You're on alert, preparing, tensed for what may come. The threat is real or possible; you're not moving yet, but you're ready.",
+        "question": "Are you preparing to act — or preparing to keep preparing?"
+      },
+      "Seeking": {
+        "header": "You are SEEKING.",
+        "description": "Something is available — easing, supporting, offering — and you're reaching toward it. Not quite there yet. Moving toward what may already be starting to come toward you.",
+        "question": "What if what you're looking for has been here all along?"
+      },
+      "Drifting": {
+        "header": "You are DRIFTING.",
+        "description": "The situation is unclear and you're not pushing against it. Not passive — more like suspended. Waiting for something to resolve or reveal itself.",
+        "question": "Where does this current take you if you don't choose?"
+      },
+      "Still": {
+        "header": "You are STILL.",
+        "description": "Neither pressing nor giving. Neither acting nor yielding. A pause — space without clear pull in any direction.",
+        "question": "Is this stillness helping you find yourself — or helping you hide?"
+      }
+    }
+  },
   "Context": {
     "navTitle": "Add context",
     "hint": "Optional — skip any question",
@@ -195,7 +246,8 @@
     "delete": "Delete",
     "deleteConfirm": "Delete this entry? This can't be undone.",
     "showEntries": "Show entries ▾",
-    "hideEntries": "Hide entries ▴"
+    "hideEntries": "Hide entries ▴",
+    "firstDirectionText": "Your first direction."
   },
   "Insight": {
     "headline": "A pattern is starting to form",

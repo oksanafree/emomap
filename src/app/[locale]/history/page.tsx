@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState, type TouchEvent as ReactTouchEvent } from "react";
+import { Suspense, useEffect, useRef, useState, type TouchEvent as ReactTouchEvent } from "react";
+import { useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { collection, deleteDoc, doc, getDocs, orderBy, query, Timestamp } from "firebase/firestore";
 import { Link, useRouter } from "@/i18n/navigation";
@@ -9,6 +10,7 @@ import { useSliderSound } from "@/lib/use-slider-sound";
 import { db } from "@/lib/firebase";
 import { isIOS, isStandalonePwa } from "@/lib/platform";
 import type { StateKey } from "@/lib/state-detection";
+import { getStateColor } from "@/lib/stateConfig";
 import { AuthGuard } from "@/components/AuthGuard";
 import { NotificationPrompt } from "@/components/NotificationPrompt";
 import mapStyles from "@/styles/map-visual.module.css";
@@ -92,12 +94,13 @@ function EntryRow({
   );
 }
 
-export default function HistoryPage() {
+function HistoryPageInner() {
   const t = useTranslations("History");
   const tMap = useTranslations("Map");
   const tInstall = useTranslations("Install");
   const locale = useLocale();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { user, loading: authLoading } = useAnonymousAuth();
   const { sndNav } = useSliderSound();
   const [entries, setEntries] = useState<HistoryEntry[] | null>(null);
@@ -194,6 +197,9 @@ export default function HistoryPage() {
 
   const isMilestone = entries !== null && entries.length > 0 && entries.length < FULL_REPORT_ENTRIES;
 
+  const showFirstDirectionLine =
+    entries !== null && entries.length === 2 && searchParams.get("firstDirection") === "1";
+
   const statsLine =
     entries && entries.length > 0
       ? entries.length < 5
@@ -255,21 +261,37 @@ export default function HistoryPage() {
                       />
                     );
                   })}
+                  {showFirstDirectionLine && (
+                    <line
+                      className={styles.firstDirectionLine}
+                      x1={`${50 + chronological[0].x * 42}%`}
+                      y1={`${50 - chronological[0].y * 42}%`}
+                      x2={`${50 + chronological[1].x * 42}%`}
+                      y2={`${50 - chronological[1].y * 42}%`}
+                      pathLength={1}
+                    />
+                  )}
                 </svg>
               )}
-              {entries?.map((entry) => (
-                <div
-                  key={entry.id}
-                  className={`${mapStyles.constellationDot} ${
-                    entry.id === mostRecentId ? styles.dotRecent : styles.dotFaded
-                  }`}
-                  style={{
-                    left: `${50 + entry.x * 42}%`,
-                    top: `${50 - entry.y * 42}%`,
-                  }}
-                />
-              ))}
+              {entries?.map((entry) => {
+                const color = getStateColor(entry.state);
+                return (
+                  <div
+                    key={entry.id}
+                    className={`${mapStyles.constellationDot} ${
+                      entry.id === mostRecentId ? styles.dotRecent : styles.dotFaded
+                    }`}
+                    style={{
+                      left: `${50 + entry.x * 42}%`,
+                      top: `${50 - entry.y * 42}%`,
+                      background: color,
+                      boxShadow: entry.id === mostRecentId ? `0 0 10px 2px ${color}b3` : undefined,
+                    }}
+                  />
+                );
+              })}
             </div>
+            {showFirstDirectionLine && <p className={styles.firstDirectionText}>{t("firstDirectionText")}</p>}
 
             {authLoading || entries === null ? (
               <p className={styles.secLbl}>{t("loading")}</p>
@@ -324,5 +346,13 @@ export default function HistoryPage() {
         </div>
       </div>
     </AuthGuard>
+  );
+}
+
+export default function HistoryPage() {
+  return (
+    <Suspense fallback={null}>
+      <HistoryPageInner />
+    </Suspense>
   );
 }
