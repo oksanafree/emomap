@@ -189,7 +189,7 @@ export default function OnboardingPage() {
           {reportCheckStatus === "found" && (
             <button
               type="button"
-              onClick={() => router.push("/report")}
+              onClick={() => router.push("/history?showReport=1")}
               className="mt-3 w-full rounded-2xl border border-[#3a3468] bg-transparent py-[18px] text-[17px] text-[#6868b0]"
             >
               {tHome("viewReport")}

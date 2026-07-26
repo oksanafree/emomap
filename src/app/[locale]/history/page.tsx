@@ -3,8 +3,8 @@
 import { Suspense, useEffect, useRef, useState, type TouchEvent as ReactTouchEvent } from "react";
 import { useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { collection, deleteDoc, doc, getDocs, orderBy, query, Timestamp } from "firebase/firestore";
-import { Link, useRouter } from "@/i18n/navigation";
+import { collection, deleteDoc, doc, getDoc, getDocs, orderBy, query, Timestamp } from "firebase/firestore";
+import { useRouter } from "@/i18n/navigation";
 import { useAnonymousAuth } from "@/lib/use-anonymous-auth";
 import { useSliderSound } from "@/lib/use-slider-sound";
 import { db } from "@/lib/firebase";
@@ -13,8 +13,11 @@ import type { StateKey } from "@/lib/state-detection";
 import { getStateColor } from "@/lib/stateConfig";
 import { AuthGuard } from "@/components/AuthGuard";
 import { NotificationPrompt } from "@/components/NotificationPrompt";
+import { HeatMapCanvas } from "@/components/HeatMapCanvas";
 import mapStyles from "@/styles/map-visual.module.css";
 import styles from "./history.module.css";
+
+const MIN_ENTRIES_FOR_HEATMAP = 10;
 
 const NOTIF_ASKED_KEY = "notif_asked";
 const INSTALL_PROMPT_SEEN_KEY = "install_prompt_seen";
@@ -108,12 +111,43 @@ function HistoryPageInner() {
   const [showNotifPrompt, setShowNotifPrompt] = useState(false);
   const [showIOSBanner, setShowIOSBanner] = useState(false);
   const [entriesExpanded, setEntriesExpanded] = useState(false);
+  const [reportText, setReportText] = useState<string | null>(null);
+  const [reportExpanded, setReportExpanded] = useState(false);
+  const [heatMapActive, setHeatMapActive] = useState(false);
+  const reportSectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("/firebase-messaging-sw.js").catch(() => {});
     }
   }, []);
+
+  useEffect(() => {
+    if (!user) return;
+    let cancelled = false;
+    getDoc(doc(db, "users", user.uid))
+      .then((snap) => {
+        if (cancelled) return;
+        const data = snap.data();
+        const text = data?.[`report_${locale}`]?.text ?? data?.report?.text ?? null;
+        setReportText(typeof text === "string" && text.length > 0 ? text : null);
+      })
+      .catch(() => {
+        if (!cancelled) setReportText(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [user, locale]);
+
+  useEffect(() => {
+    if (searchParams.get("showReport") !== "1" || !reportText) return;
+    setReportExpanded(true);
+    const frame = requestAnimationFrame(() => {
+      reportSectionRef.current?.scrollIntoView({ behavior: "smooth" });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [searchParams, reportText]);
 
   useEffect(() => {
     if (!entries || entries.length === 0) return;
@@ -168,6 +202,12 @@ function HistoryPageInner() {
     router.push("/world");
   }
 
+  function handleSeeReport() {
+    if (!reportText) return;
+    setReportExpanded(true);
+    reportSectionRef.current?.scrollIntoView({ behavior: "smooth" });
+  }
+
   async function handleDeleteEntry(entryId: string) {
     if (!user) return;
     if (!window.confirm(t("deleteConfirm"))) return;
@@ -199,6 +239,9 @@ function HistoryPageInner() {
 
   const showFirstDirectionLine =
     entries !== null && entries.length === 2 && searchParams.get("firstDirection") === "1";
+
+  const canShowHeatMap = entries !== null && entries.length >= MIN_ENTRIES_FOR_HEATMAP;
+  const isHeatMapMode = canShowHeatMap && heatMapActive;
 
   const statsLine =
     entries && entries.length > 0
@@ -245,7 +288,7 @@ function HistoryPageInner() {
               <div className={mapStyles.ql} style={{ bottom: 8, right: 10 }}>
                 {tMap("quadrants.receiving")}
               </div>
-              {chronological.length > 1 && (
+              {!isHeatMapMode && chronological.length > 1 && (
                 <svg className={mapStyles.mapSvg}>
                   {chronological.slice(1).map((entry, i) => {
                     const from = chronological[i];
@@ -273,23 +316,29 @@ function HistoryPageInner() {
                   )}
                 </svg>
               )}
-              {entries?.map((entry) => {
-                const color = getStateColor(entry.state);
-                return (
-                  <div
-                    key={entry.id}
-                    className={`${mapStyles.constellationDot} ${
-                      entry.id === mostRecentId ? styles.dotRecent : styles.dotFaded
-                    }`}
-                    style={{
-                      left: `${50 + entry.x * 42}%`,
-                      top: `${50 - entry.y * 42}%`,
-                      background: color,
-                      boxShadow: entry.id === mostRecentId ? `0 0 10px 2px ${color}b3` : undefined,
-                    }}
-                  />
-                );
-              })}
+              {isHeatMapMode && entries && (
+                <HeatMapCanvas
+                  points={entries.map((entry) => ({ x: entry.x, y: entry.y, color: getStateColor(entry.state) }))}
+                />
+              )}
+              {!isHeatMapMode &&
+                entries?.map((entry) => {
+                  const color = getStateColor(entry.state);
+                  return (
+                    <div
+                      key={entry.id}
+                      className={`${mapStyles.constellationDot} ${
+                        entry.id === mostRecentId ? styles.dotRecent : styles.dotFaded
+                      }`}
+                      style={{
+                        left: `${50 + entry.x * 42}%`,
+                        top: `${50 - entry.y * 42}%`,
+                        background: color,
+                        boxShadow: entry.id === mostRecentId ? `0 0 10px 2px ${color}b3` : undefined,
+                      }}
+                    />
+                  );
+                })}
             </div>
             {showFirstDirectionLine && <p className={styles.firstDirectionText}>{t("firstDirectionText")}</p>}
 
@@ -302,6 +351,12 @@ function HistoryPageInner() {
             ) : (
               <div className={styles.mapLabel}>{t("mapLabel")}</div>
             )}
+
+            {canShowHeatMap && (
+              <button type="button" className={styles.heatToggle} onClick={() => setHeatMapActive((v) => !v)}>
+                {heatMapActive ? t("heatMapOff") : t("heatMapOn")}
+              </button>
+            )}
           </div>
 
           {entries && entries.length > 0 && (
@@ -313,7 +368,6 @@ function HistoryPageInner() {
               >
                 {entriesExpanded ? t("hideEntries") : t("showEntries")}
               </button>
-              {entries.length < 5 && <p className={styles.encouragement}>{t("earlyEncouragement")}</p>}
               <div
                 className={`${styles.entryListWrap} ${entriesExpanded ? styles.entryListWrapExpanded : ""}`}
               >
@@ -332,14 +386,35 @@ function HistoryPageInner() {
                   </div>
                 </div>
               </div>
+
+              {reportText && (
+                <div ref={reportSectionRef} className={styles.reportSection}>
+                  <button
+                    type="button"
+                    className={styles.entriesToggle}
+                    onClick={() => setReportExpanded((v) => !v)}
+                  >
+                    {reportExpanded ? t("hideReport") : t("showReport")}
+                  </button>
+                  <div
+                    className={`${styles.entryListWrap} ${reportExpanded ? styles.entryListWrapExpanded : ""}`}
+                  >
+                    <div className={styles.entryListInner}>
+                      <p className={styles.reportText}>{reportText}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {entries.length < 5 && <p className={styles.encouragement}>{t("earlyEncouragement")}</p>}
             </>
           )}
         </div>
 
         <div className={styles.bottomBar}>
-          <Link href="/report" className={styles.ghostBtn}>
+          <button type="button" className={styles.ghostBtn} onClick={handleSeeReport}>
             {t("seeReport")}
-          </Link>
+          </button>
           <button type="button" className={styles.solidBtn} onClick={handleNewMoment}>
             {t("newMoment")}
           </button>

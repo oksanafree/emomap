@@ -8,7 +8,6 @@ import { useSliderSound } from "@/lib/use-slider-sound";
 import { calcFont } from "@/lib/slider-math";
 import { AuthGuard } from "@/components/AuthGuard";
 import { HomeNavIcon } from "@/components/HomeNavIcon";
-import { MiniMap } from "@/components/MiniMap";
 import styles from "@/styles/checkin-screen.module.css";
 
 export default function WorldPage() {
@@ -55,8 +54,6 @@ export default function WorldPage() {
               {t.rich("question", { b: (chunks) => <b>{chunks}</b> })}
             </div>
           </div>
-
-          <MiniMap x={(value - 50) / 50} y={0} />
 
           <div className={styles.sliderArea}>
             <div

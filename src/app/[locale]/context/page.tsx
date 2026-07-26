@@ -9,6 +9,10 @@ import {
   doc,
   getCountFromServer,
   getDoc,
+  getDocs,
+  limit,
+  orderBy,
+  query,
   serverTimestamp,
   updateDoc,
 } from "firebase/firestore";
@@ -62,6 +66,7 @@ function ContextPageInner() {
   const [error, setError] = useState<string | null>(null);
   const [loadingEntry, setLoadingEntry] = useState(isEditing);
   const [checkinCount, setCheckinCount] = useState<number | null>(null);
+  const [showQuestion, setShowQuestion] = useState(false);
 
   useEffect(() => {
     if (!entryId || !user) return;
@@ -202,6 +207,25 @@ function ContextPageInner() {
           body: JSON.stringify({ userId: user.uid, locale, type: generationType }),
         }).catch(() => {});
       }
+
+      // Entries 1-2 never show the reflection question (handled by StateCard's
+      // isFirstCheckin path / this default of false). From entry 3 on, only
+      // surface it when the state repeats within the last 3 check-ins or every
+      // 3rd check-in — otherwise it starts to feel repetitive.
+      let shouldShowQuestion = false;
+      if (count >= 3) {
+        try {
+          const recentSnap = await getDocs(query(entriesRef, orderBy("timestamp", "desc"), limit(3)));
+          const recentStates = recentSnap.docs.map((d) => d.data().state as StateKey | undefined);
+          const previousStates = recentStates.slice(1);
+          const repeatsRecentState = previousStates.some((s) => s === state);
+          shouldShowQuestion = repeatsRecentState || count % 3 === 0;
+        } catch {
+          shouldShowQuestion = count % 3 === 0;
+        }
+      }
+
+      setShowQuestion(shouldShowQuestion);
       setCheckinCount(count);
       setSaving(false);
       return;
@@ -226,6 +250,7 @@ function ContextPageInner() {
         state={state}
         emotion={emotion}
         isFirstCheckin={checkinCount === 1}
+        showQuestion={showQuestion}
         onContinue={handleStateCardContinue}
       />
     );

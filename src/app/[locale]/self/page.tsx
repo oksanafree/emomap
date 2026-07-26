@@ -8,13 +8,12 @@ import { useSliderSound } from "@/lib/use-slider-sound";
 import { calcFont } from "@/lib/slider-math";
 import { AuthGuard } from "@/components/AuthGuard";
 import { HomeNavIcon } from "@/components/HomeNavIcon";
-import { MiniMap } from "@/components/MiniMap";
 import styles from "@/styles/checkin-screen.module.css";
 
 export default function SelfPage() {
   const t = useTranslations("Self");
   const router = useRouter();
-  const { worldValue, setSelfValue } = useCheckin();
+  const { setSelfValue } = useCheckin();
   const [value, setValue] = useState(50);
   const { startSlide, sndSlide, sndNav } = useSliderSound();
 
@@ -55,8 +54,6 @@ export default function SelfPage() {
               {t.rich("question", { b: (chunks) => <b>{chunks}</b> })}
             </div>
           </div>
-
-          <MiniMap x={((worldValue ?? 50) - 50) / 50} y={(value - 50) / 50} />
 
           <div className={styles.sliderArea}>
             <div
