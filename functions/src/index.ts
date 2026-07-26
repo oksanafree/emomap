@@ -165,9 +165,9 @@ export const dailyReminder = onSchedule(
   },
 );
 
-// Distinct from EMAIL_FROM (reminders@) — the welcome email intentionally
-// sends from a different local part on the same verified domain.
-const WELCOME_EMAIL_FROM = "Emomapp <reminder@emomapp.app>";
+// Distinct from EMAIL_FROM (reminders@emomapp.app) — the welcome email
+// sends from reminder@ on the mail. subdomain verified in Resend.
+const WELCOME_EMAIL_FROM = "Emomapp <reminder@mail.emomapp.app>";
 const WELCOME_URL = "https://emomapp.app";
 
 type WelcomeContent = {
