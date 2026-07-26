@@ -122,47 +122,47 @@
     "states": {
       "Building": {
         "header": "You are BUILDING.",
-        "description": "The situation is working with you, and you're actively shaping it. Something is moving forward — you're making, building, steering, creating. Energy is going somewhere and something is responding.",
+        "description": "The circumstances are helping, and you're actively shaping what's happening. You're directing, creating, moving something forward.",
         "question": "Does anything here no longer need your effort?"
       },
       "Protecting": {
         "header": "You are PROTECTING.",
-        "description": "Holding ground, defending something that matters. The situation is pressing in and you're actively meeting it — resisting, confronting, managing. You're in the effort of it.",
+        "description": "The circumstances are pressing, and you're actively holding your ground — resisting, confronting, managing what's coming.",
         "question": "What here truly needs your protection right now?"
       },
       "Receiving": {
         "header": "You are RECEIVING.",
-        "description": "The situation is offering something and you're open to it. Not steering, not resisting — letting in. Something easing or supportive is available right now, and you're in contact with it.",
+        "description": "The circumstances are supportive, and you're allowing yourself to take that in. You're not directing — you're open and receiving.",
         "question": "What becomes possible now that you feel supported?"
       },
       "Enduring": {
         "header": "You are ENDURING.",
-        "description": "Something pressing is happening, and right now you're not steering it — you're moving through it. The situation is pushing in, and your capacity to change it is limited at this moment.",
+        "description": "The circumstances are pressing, and your ability to change them right now is limited. You're moving through what you can't yet change.",
         "question": "What is one small part of this moment still within your reach?"
       },
       "Opening": {
         "header": "You are OPENING.",
-        "description": "You're ready to act, but the situation isn't fully clear yet. There's energy to move — and uncertainty about what to move toward. You're at a threshold.",
+        "description": "You're ready to act, though the circumstances aren't fully clear yet. Direction is still taking shape.",
         "question": "What could you learn before choosing a direction?"
       },
       "Bracing": {
         "header": "You are BRACING.",
-        "description": "Something is pressing in — or might be. You're on alert, preparing, tensed for what may come. The threat is real or possible; you're not moving yet, but you're ready.",
+        "description": "The circumstances feel pressing, but the way to respond isn't clear yet. You're reading the situation and preparing.",
         "question": "What is happening now — and what are you only preparing for?"
       },
       "Seeking": {
         "header": "You are SEEKING.",
-        "description": "Something is available — easing, supporting, offering — and you're reaching toward it. Not quite there yet. Moving toward what may already be starting to come toward you.",
+        "description": "The circumstances seem favorable, but your role isn't fully clear yet. You're looking at what's available.",
         "question": "What are you looking for — and what is already here?"
       },
       "Drifting": {
         "header": "You are DRIFTING.",
-        "description": "The situation is unclear and you're not pushing against it. Not passive — more like suspended. Waiting for something to resolve or reveal itself.",
+        "description": "The circumstances are unclear, and you're not trying to direct them. You're watching and waiting for something to emerge.",
         "question": "What can you notice or choose without full clarity?"
       },
       "Still": {
         "header": "You are STILL.",
-        "description": "Neither pressing nor giving. Neither acting nor yielding. A pause — space without clear pull in any direction.",
+        "description": "Neither the circumstances nor your role have a clear direction right now. This is a pause where much is still undefined.",
         "question": "What kind of stillness is this for you?"
       }
     }

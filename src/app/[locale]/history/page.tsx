@@ -114,7 +114,6 @@ function HistoryPageInner() {
   const [entriesExpanded, setEntriesExpanded] = useState(false);
   const [reportText, setReportText] = useState<string | null>(null);
   const [reportExpanded, setReportExpanded] = useState(false);
-  const [heatMapActive, setHeatMapActive] = useState(false);
   const reportSectionRef = useRef<HTMLDivElement>(null);
 
   // Captured once via lazy init so the section keeps rendering for the
@@ -235,12 +234,6 @@ function HistoryPageInner() {
     router.push("/world");
   }
 
-  function handleSeeReport() {
-    if (!reportText) return;
-    setReportExpanded(true);
-    reportSectionRef.current?.scrollIntoView({ behavior: "smooth" });
-  }
-
   async function handleDeleteEntry(entryId: string) {
     if (!user) return;
     if (!window.confirm(t("deleteConfirm"))) return;
@@ -273,8 +266,7 @@ function HistoryPageInner() {
   const showFirstDirectionLine =
     entries !== null && entries.length === 2 && searchParams.get("firstDirection") === "1";
 
-  const canShowHeatMap = entries !== null && entries.length >= MIN_ENTRIES_FOR_HEATMAP;
-  const isHeatMapMode = canShowHeatMap && heatMapActive;
+  const showHeatMap = entries !== null && entries.length >= MIN_ENTRIES_FOR_HEATMAP;
 
   const statsLine =
     entries && entries.length > 0
@@ -321,7 +313,12 @@ function HistoryPageInner() {
               <div className={mapStyles.ql} style={{ bottom: 8, right: 10 }}>
                 {tMap("quadrants.receiving")}
               </div>
-              {!isHeatMapMode && chronological.length > 1 && (
+              {showHeatMap && entries && (
+                <HeatMapCanvas
+                  points={entries.map((entry) => ({ x: entry.x, y: entry.y, color: getStateColor(entry.state) }))}
+                />
+              )}
+              {chronological.length > 1 && (
                 <svg className={mapStyles.mapSvg}>
                   {chronological.slice(1).map((entry, i) => {
                     const from = chronological[i];
@@ -349,29 +346,23 @@ function HistoryPageInner() {
                   )}
                 </svg>
               )}
-              {isHeatMapMode && entries && (
-                <HeatMapCanvas
-                  points={entries.map((entry) => ({ x: entry.x, y: entry.y, color: getStateColor(entry.state) }))}
-                />
-              )}
-              {!isHeatMapMode &&
-                entries?.map((entry) => {
-                  const color = getStateColor(entry.state);
-                  return (
-                    <div
-                      key={entry.id}
-                      className={`${mapStyles.constellationDot} ${
-                        entry.id === mostRecentId ? styles.dotRecent : styles.dotFaded
-                      }`}
-                      style={{
-                        left: `${50 + entry.x * 42}%`,
-                        top: `${50 - entry.y * 42}%`,
-                        background: color,
-                        boxShadow: entry.id === mostRecentId ? `0 0 10px 2px ${color}b3` : undefined,
-                      }}
-                    />
-                  );
-                })}
+              {entries?.map((entry) => {
+                const color = getStateColor(entry.state);
+                return (
+                  <div
+                    key={entry.id}
+                    className={`${mapStyles.constellationDot} ${
+                      entry.id === mostRecentId ? styles.dotRecent : styles.dotFaded
+                    }`}
+                    style={{
+                      left: `${50 + entry.x * 42}%`,
+                      top: `${50 - entry.y * 42}%`,
+                      background: color,
+                      boxShadow: entry.id === mostRecentId ? `0 0 10px 2px ${color}b3` : undefined,
+                    }}
+                  />
+                );
+              })}
             </div>
             {showFirstDirectionLine && <p className={styles.firstDirectionText}>{t("firstDirectionText")}</p>}
 
@@ -383,12 +374,6 @@ function HistoryPageInner() {
               <p className={styles.secLbl}>{t("empty")}</p>
             ) : (
               <div className={styles.mapLabel}>{t("mapLabel")}</div>
-            )}
-
-            {canShowHeatMap && (
-              <button type="button" className={styles.heatToggle} onClick={() => setHeatMapActive((v) => !v)}>
-                {heatMapActive ? t("heatMapOff") : t("heatMapOn")}
-              </button>
             )}
           </div>
 
@@ -455,9 +440,6 @@ function HistoryPageInner() {
         </div>
 
         <div className={styles.bottomBar}>
-          <button type="button" className={styles.ghostBtn} onClick={handleSeeReport}>
-            {t("seeReport")}
-          </button>
           <button type="button" className={styles.solidBtn} onClick={handleNewMoment}>
             {t("newMoment")}
           </button>

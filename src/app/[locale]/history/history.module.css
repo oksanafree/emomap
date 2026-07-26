@@ -94,18 +94,6 @@
   cursor: pointer;
 }
 
-.heatToggle {
-  display: block;
-  margin: 10px auto 0;
-  padding: 6px 16px;
-  background: none;
-  border: 1px solid #d8d5ce;
-  border-radius: 14px;
-  color: #6a6870;
-  font-size: 12px;
-  cursor: pointer;
-}
-
 .reportSection {
   margin-top: 4px;
 }
@@ -229,18 +217,6 @@
   gap: 10px;
   padding: 12px 20px calc(env(safe-area-inset-bottom, 0px) + 18px);
   flex-shrink: 0;
-}
-
-.ghostBtn {
-  flex: 1;
-  padding: 14px;
-  background: transparent;
-  border: 1.5px solid #2a2825;
-  border-radius: 22px;
-  color: #2a2825;
-  font-size: 15px;
-  text-align: center;
-  cursor: pointer;
 }
 
 .solidBtn {
