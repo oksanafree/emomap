@@ -15,6 +15,7 @@ import { NotificationPrompt } from "@/components/NotificationPrompt";
 import { HeatMapCanvas } from "@/components/HeatMapCanvas";
 import { StateSection } from "@/components/StateSection";
 import { CheckinCountdown } from "@/components/CheckinCountdown";
+import { ReturnNudge } from "@/components/ReturnNudge";
 import mapStyles from "@/styles/map-visual.module.css";
 import styles from "./history.module.css";
 
@@ -298,6 +299,8 @@ function HistoryPageInner() {
               locale={locale}
             />
           )}
+
+          {newCheckinData && <ReturnNudge state={newCheckinData.state} />}
 
           {entries !== null && (
             <CheckinCountdown

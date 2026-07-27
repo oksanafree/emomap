@@ -119,51 +119,61 @@
   "StateCard": {
     "continue": "Continue →",
     "firstCheckinText": "Your map just started.",
+    "returnAnchor": "After a meeting, a meal, or a shift in feeling.",
     "states": {
       "Building": {
         "header": "You are BUILDING.",
         "description": "The circumstances are helping, and you're actively shaping what's happening. You're directing, creating, moving something forward.",
-        "question": "Does anything here no longer need your effort?"
+        "question": "Does anything here no longer need your effort?",
+        "returnNudge": "Come back when the momentum changes."
       },
       "Protecting": {
         "header": "You are PROTECTING.",
         "description": "The circumstances are pressing, and you're actively holding your ground — resisting, confronting, managing what's coming.",
-        "question": "What here truly needs your protection right now?"
+        "question": "What here truly needs your protection right now?",
+        "returnNudge": "Come back when the pressure shifts — even slightly."
       },
       "Receiving": {
         "header": "You are RECEIVING.",
         "description": "The circumstances are supportive, and you're allowing yourself to take that in. You're not directing — you're open and receiving.",
-        "question": "What becomes possible now that you feel supported?"
+        "question": "What becomes possible now that you feel supported?",
+        "returnNudge": "Come back when you start steering again."
       },
       "Enduring": {
         "header": "You are ENDURING.",
         "description": "The circumstances are pressing, and your ability to change them right now is limited. You're moving through what you can't yet change.",
-        "question": "What is one small part of this moment still within your reach?"
+        "question": "What is one small part of this moment still within your reach?",
+        "returnNudge": "Come back when anything — even small — feels different."
       },
       "Opening": {
         "header": "You are OPENING.",
         "description": "You're ready to act, though the circumstances aren't fully clear yet. Direction is still taking shape.",
-        "question": "What could you learn before choosing a direction?"
+        "question": "What could you learn before choosing a direction?",
+        "returnNudge": "Come back when the direction becomes clearer."
       },
       "Bracing": {
         "header": "You are BRACING.",
         "description": "The circumstances feel pressing, but the way to respond isn't clear yet. You're reading the situation and preparing.",
-        "question": "What is happening now — and what are you only preparing for?"
+        "question": "What is happening now — and what are you only preparing for?",
+        "returnNudge": "Come back when you decide — or when it resolves."
       },
       "Seeking": {
         "header": "You are SEEKING.",
         "description": "The circumstances seem favorable, but your role isn't fully clear yet. You're looking at what's available.",
-        "question": "What are you looking for — and what is already here?"
+        "question": "What are you looking for — and what is already here?",
+        "returnNudge": "Come back when you find it — or stop looking."
       },
       "Drifting": {
         "header": "You are DRIFTING.",
         "description": "The circumstances are unclear, and you're not trying to direct them. You're watching and waiting for something to emerge.",
-        "question": "What can you notice or choose without full clarity?"
+        "question": "What can you notice or choose without full clarity?",
+        "returnNudge": "Come back when something catches your attention."
       },
       "Still": {
         "header": "You are STILL.",
         "description": "Neither the circumstances nor your role have a clear direction right now. This is a pause where much is still undefined.",
-        "question": "What kind of stillness is this for you?"
+        "question": "What kind of stillness is this for you?",
+        "returnNudge": "Come back when the stillness breaks."
       }
     }
   },

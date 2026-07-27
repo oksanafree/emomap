@@ -1,0 +1,65 @@
+.card {
+  margin: 4px 22px 0;
+  padding: 16px 18px;
+  background: #fbfaf8;
+  border: 1px solid #e8e5e0;
+  border-radius: 14px;
+  text-align: left;
+}
+
+.trajectory {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.dotFilled {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.arrowLine {
+  position: relative;
+  width: 32px;
+  height: 1px;
+  margin: 0 6px;
+  background: #c5c2ba;
+  flex-shrink: 0;
+}
+
+.arrowLine::after {
+  content: "";
+  position: absolute;
+  right: -1px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-style: solid;
+  border-width: 3px 0 3px 5px;
+  border-color: transparent transparent transparent #c5c2ba;
+}
+
+.dotEmpty {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1.5px solid #c5c2ba;
+  background: transparent;
+  flex-shrink: 0;
+}
+
+.nudgeLine {
+  margin: 0 0 4px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #2a2825;
+  line-height: 1.5;
+}
+
+.anchorLine {
+  margin: 0;
+  font-size: 12px;
+  color: #9a9890;
+  line-height: 1.5;
+}
