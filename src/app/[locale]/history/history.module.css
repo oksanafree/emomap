@@ -164,3 +164,19 @@
   font-weight: 600;
   cursor: pointer;
 }
+
+.legalLinks {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 18px;
+  padding: 0 22px;
+  font-size: 12px;
+  color: #b0adb8;
+}
+
+.legalLinks a {
+  color: #9a9890;
+  text-decoration: underline;
+}

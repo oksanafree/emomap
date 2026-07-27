@@ -310,6 +310,12 @@
     "generatedOn": "Generated {date}",
     "refreshedRecently": "Refreshed recently"
   },
+  "Legal": {
+    "privacyTitle": "Privacy Policy",
+    "termsTitle": "Terms of Service",
+    "privacyLink": "Privacy Policy",
+    "termsLink": "Terms of Service"
+  },
   "ReportPending": {
     "headline": "Your report is being prepared.",
     "body": "We'll send you a notification when it's ready — usually within a minute. Keep checking in.",
@@ -334,6 +340,13 @@
       "weakPassword": "Password must be at least 6 characters",
       "invalidEmail": "Enter a valid email address",
       "generic": "Something went wrong. Try again."
+    },
+    "consent": {
+      "terms": "I agree to the <link>Terms of Service</link>.",
+      "privacy": "I have read the <link>Privacy Policy</link>, including how my data is shared with Anthropic's Claude API.",
+      "psychData": "I consent to Emomapp collecting my psychological, emotional, and body-related check-in information to provide personalized reflections and reports.",
+      "anthropic": "I consent to my check-in data (excluding my email address) being sent to Anthropic's Claude API to generate state reflections and pattern reports.",
+      "error": "Please accept all terms to continue."
     }
   },
   "Profile": {

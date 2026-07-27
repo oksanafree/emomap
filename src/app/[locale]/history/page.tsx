@@ -4,7 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { collection, doc, getDoc, getDocs, orderBy, query, Timestamp } from "firebase/firestore";
-import { useRouter } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { useAnonymousAuth } from "@/lib/use-anonymous-auth";
 import { db } from "@/lib/firebase";
 import { isIOS, isStandalonePwa } from "@/lib/platform";
@@ -40,6 +40,7 @@ function HistoryPageInner() {
   const t = useTranslations("History");
   const tMap = useTranslations("Map");
   const tInstall = useTranslations("Install");
+  const tLegal = useTranslations("Legal");
   const locale = useLocale();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -314,6 +315,12 @@ function HistoryPageInner() {
               onOpenReport={() => router.push("/report")}
             />
           )}
+
+          <div className={styles.legalLinks}>
+            <Link href="/privacy">{tLegal("privacyLink")}</Link>
+            <span>·</span>
+            <Link href="/terms">{tLegal("termsLink")}</Link>
+          </div>
         </div>
 
         {showNoReportMessage && <p className={styles.noReportMessage}>{t("noReportYetMessage")}</p>}

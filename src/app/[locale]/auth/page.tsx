@@ -10,14 +10,16 @@ import {
   signInWithEmailAndPassword,
   type User,
 } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
-import { useRouter } from "@/i18n/navigation";
+import { doc, serverTimestamp, setDoc } from "firebase/firestore";
+import { Link, useRouter } from "@/i18n/navigation";
 import { getFirebaseAuth, db } from "@/lib/firebase";
 import { AGE_RANGE_KEYS, GENDER_KEYS, type AgeRangeKey, type GenderKey } from "@/lib/profile-options";
 import styles from "./auth.module.css";
 
 type Mode = "signup" | "login";
 type Step = "form" | "profile";
+
+const CONSENT_POLICY_VERSION = "2026-07";
 
 function AuthPageInner() {
   const t = useTranslations("Auth");
@@ -35,6 +37,12 @@ function AuthPageInner() {
   const [gender, setGender] = useState<GenderKey | null>(null);
   const [ageRange, setAgeRange] = useState<AgeRangeKey | null>(null);
   const [profileSaving, setProfileSaving] = useState(false);
+  const [consentTerms, setConsentTerms] = useState(false);
+  const [consentPrivacy, setConsentPrivacy] = useState(false);
+  const [consentPsychData, setConsentPsychData] = useState(false);
+  const [consentAnthropic, setConsentAnthropic] = useState(false);
+
+  const allConsentsChecked = consentTerms && consentPrivacy && consentPsychData && consentAnthropic;
 
   useEffect(() => {
     if (searchParams.get("from") === "onboarding" && localStorage.getItem("em_onboarded")) {
@@ -77,6 +85,12 @@ function AuthPageInner() {
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setError(null);
+
+    if (mode === "signup" && !allConsentsChecked) {
+      setError(t("consent.error"));
+      return;
+    }
+
     setSubmitting(true);
     const auth = getFirebaseAuth();
 
@@ -98,6 +112,40 @@ function AuthPageInner() {
         } else {
           signedUpUser = (await createUserWithEmailAndPassword(auth, email, password)).user;
         }
+
+        try {
+          await setDoc(
+            doc(db, "users", signedUpUser.uid),
+            {
+              consents: {
+                terms_of_service: {
+                  accepted: true,
+                  policy_version: CONSENT_POLICY_VERSION,
+                  accepted_at: serverTimestamp(),
+                },
+                privacy_policy: {
+                  accepted: true,
+                  policy_version: CONSENT_POLICY_VERSION,
+                  accepted_at: serverTimestamp(),
+                },
+                psychological_data_collection: {
+                  accepted: true,
+                  policy_version: CONSENT_POLICY_VERSION,
+                  accepted_at: serverTimestamp(),
+                },
+                anthropic_api_processing: {
+                  accepted: true,
+                  policy_version: CONSENT_POLICY_VERSION,
+                  accepted_at: serverTimestamp(),
+                },
+              },
+            },
+            { merge: true },
+          );
+        } catch (err) {
+          console.error("Failed to record signup consent", err);
+        }
+
         await mintSessionCookie(signedUpUser);
         setSubmitting(false);
         setStep("profile");
@@ -182,9 +230,66 @@ function AuthPageInner() {
               </button>
             </div>
 
+            {mode === "signup" && (
+              <div className={styles.consentGroup}>
+                <label className={styles.consentRow}>
+                  <input
+                    type="checkbox"
+                    checked={consentTerms}
+                    onChange={(e) => setConsentTerms(e.target.checked)}
+                  />
+                  <span>
+                    {t.rich("consent.terms", {
+                      link: (chunks) => (
+                        <Link href="/terms" target="_blank" rel="noopener noreferrer">
+                          {chunks}
+                        </Link>
+                      ),
+                    })}
+                  </span>
+                </label>
+                <label className={styles.consentRow}>
+                  <input
+                    type="checkbox"
+                    checked={consentPrivacy}
+                    onChange={(e) => setConsentPrivacy(e.target.checked)}
+                  />
+                  <span>
+                    {t.rich("consent.privacy", {
+                      link: (chunks) => (
+                        <Link href="/privacy" target="_blank" rel="noopener noreferrer">
+                          {chunks}
+                        </Link>
+                      ),
+                    })}
+                  </span>
+                </label>
+                <label className={styles.consentRow}>
+                  <input
+                    type="checkbox"
+                    checked={consentPsychData}
+                    onChange={(e) => setConsentPsychData(e.target.checked)}
+                  />
+                  <span>{t("consent.psychData")}</span>
+                </label>
+                <label className={styles.consentRow}>
+                  <input
+                    type="checkbox"
+                    checked={consentAnthropic}
+                    onChange={(e) => setConsentAnthropic(e.target.checked)}
+                  />
+                  <span>{t("consent.anthropic")}</span>
+                </label>
+              </div>
+            )}
+
             {error && <p className={styles.error}>{error}</p>}
 
-            <button type="submit" className={styles.submit} disabled={submitting}>
+            <button
+              type="submit"
+              className={styles.submit}
+              disabled={submitting || (mode === "signup" && !allConsentsChecked)}
+            >
               {submitting ? t("submitting") : mode === "signup" ? t("createAccount") : t("logIn")}
             </button>
           </form>
