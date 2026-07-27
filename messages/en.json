@@ -284,7 +284,9 @@
     "notEnoughEntries": "Your report will be ready after 5 check-ins.",
     "reportError": "Could not prepare your report. Try again.",
     "back": "Back to my trail →",
-    "refresh": "Refresh report →",
+    "refresh": "Refresh report",
+    "updating": "Updating...",
+    "generatedOn": "Generated {date}",
     "refreshedRecently": "Refreshed recently"
   },
   "ReportPending": {

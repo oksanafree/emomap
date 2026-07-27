@@ -6,7 +6,6 @@ import { useLocale, useTranslations } from "next-intl";
 import { collection, deleteDoc, doc, getDoc, getDocs, orderBy, query, Timestamp } from "firebase/firestore";
 import { useRouter } from "@/i18n/navigation";
 import { useAnonymousAuth } from "@/lib/use-anonymous-auth";
-import { useSliderSound } from "@/lib/use-slider-sound";
 import { db } from "@/lib/firebase";
 import { isIOS, isStandalonePwa } from "@/lib/platform";
 import type { StateKey } from "@/lib/state-detection";
@@ -106,7 +105,6 @@ function HistoryPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user, loading: authLoading } = useAnonymousAuth();
-  const { sndNav } = useSliderSound();
   const [entries, setEntries] = useState<HistoryEntry[] | null>(null);
   const [error, setError] = useState(false);
   const [showNotifPrompt, setShowNotifPrompt] = useState(false);
@@ -228,11 +226,6 @@ function HistoryPageInner() {
       cancelled = true;
     };
   }, [user]);
-
-  function handleNewMoment() {
-    sndNav();
-    router.push("/world");
-  }
 
   async function handleDeleteEntry(entryId: string) {
     if (!user) return;
@@ -437,12 +430,6 @@ function HistoryPageInner() {
               {entries.length < 5 && <p className={styles.encouragement}>{t("earlyEncouragement")}</p>}
             </>
           )}
-        </div>
-
-        <div className={styles.bottomBar}>
-          <button type="button" className={styles.solidBtn} onClick={handleNewMoment}>
-            {t("newMoment")}
-          </button>
         </div>
       </div>
     </AuthGuard>

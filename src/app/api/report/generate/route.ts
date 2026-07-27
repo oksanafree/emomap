@@ -110,6 +110,10 @@ export async function POST(request: NextRequest) {
           last_generated_at: FieldValue.serverTimestamp(),
           entry_count: entriesChronological.length,
         },
+        // Shared across locales: always overwritten with the current
+        // generation time, so it naturally reflects whichever language was
+        // generated most recently.
+        report_generated_at: FieldValue.serverTimestamp(),
       },
       { merge: true },
     );

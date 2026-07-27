@@ -22,6 +22,7 @@
   min-height: 0;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 24px);
 }
 
 .mapArea {
@@ -212,20 +213,3 @@
   cursor: pointer;
 }
 
-.bottomBar {
-  display: flex;
-  gap: 10px;
-  padding: 12px 20px calc(env(safe-area-inset-bottom, 0px) + 18px);
-  flex-shrink: 0;
-}
-
-.solidBtn {
-  flex: 1;
-  padding: 14px;
-  background: #2a2825;
-  border: none;
-  border-radius: 22px;
-  color: #f0eeec;
-  font-size: 15px;
-  cursor: pointer;
-}

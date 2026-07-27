@@ -1,0 +1,47 @@
+.scroll {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 4px 22px calc(env(safe-area-inset-bottom, 0px) + 28px);
+}
+
+.status {
+  margin-top: 24px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #8a8680;
+  text-align: center;
+}
+
+.generatedAt {
+  margin: 18px 0 4px;
+  font-size: 12px;
+  color: #b0adb8;
+}
+
+.reportText {
+  margin: 0 0 24px;
+  font-size: 15px;
+  line-height: 1.75;
+  color: #2a2825;
+  white-space: pre-wrap;
+}
+
+.refreshBtn {
+  display: block;
+  width: 100%;
+  margin: 0 0 24px;
+  padding: 15px;
+  background: transparent;
+  border: 1.5px solid #2a2825;
+  border-radius: 22px;
+  color: #2a2825;
+  font-size: 15px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.refreshBtn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
