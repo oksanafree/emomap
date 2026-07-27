@@ -114,6 +114,12 @@
   color: #b0adb8;
 }
 
+.ctxSliderPrefill {
+  margin-top: 6px;
+  font-size: 11px;
+  color: #9a9890;
+}
+
 .cc {
   padding: 8px 14px;
   border: 1px solid #d8d5ce;

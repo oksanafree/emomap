@@ -14,6 +14,7 @@ import {
   orderBy,
   query,
   serverTimestamp,
+  Timestamp,
   updateDoc,
 } from "firebase/firestore";
 import { Link, useRouter } from "@/i18n/navigation";
@@ -57,6 +58,7 @@ function ContextPageInner() {
   const [mentalEngagement, setMentalEngagement] = useState<EngagementLevel | null>(null);
   const [physicalEngagement, setPhysicalEngagement] = useState<EngagementLevel | null>(null);
   const [sleep, setSleep] = useState<number | null>(null);
+  const [sleepPrefillHours, setSleepPrefillHours] = useState<number | null>(null);
   const [energy, setEnergy] = useState<number | null>(null);
   const [hunger, setHunger] = useState<number | null>(null);
   const [bodyNote, setBodyNote] = useState("");
@@ -94,6 +96,35 @@ function ContextPageInner() {
       cancelled = true;
     };
   }, [entryId, user]);
+
+  // New-entry flow only: if the user already checked in earlier today and
+  // logged a sleep value, carry it forward as the starting point — sleep
+  // doesn't change moment to moment the way energy/hunger do.
+  useEffect(() => {
+    if (isEditing || !user) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const snap = await getDocs(
+          query(collection(db, "users", user.uid, "entries"), orderBy("timestamp", "desc"), limit(1)),
+        );
+        if (cancelled || snap.empty) return;
+        const data = snap.docs[0].data();
+        const timestamp = data.timestamp instanceof Timestamp ? data.timestamp.toDate() : null;
+        if (!timestamp || timestamp.toDateString() !== new Date().toDateString()) return;
+        const priorSleep = data.custom_tokens?.sleep;
+        if (typeof priorSleep === "number") {
+          setSleep((prev) => (prev === null ? priorSleep : prev));
+          setSleepPrefillHours(priorSleep);
+        }
+      } catch (err) {
+        console.error("Failed to check today's earlier entry for sleep pre-fill", err);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [isEditing, user]);
 
   function toggleActivity(key: ActivityKey) {
     setActivities((prev) => {
@@ -351,7 +382,7 @@ function ContextPageInner() {
                 min={0}
                 max={10}
                 step={1}
-                value={sleep ?? 5}
+                value={sleep ?? 7}
                 onChange={(e) => selectSleep(Number(e.target.value))}
                 onTouchStart={startSlide}
                 onMouseDown={startSlide}
@@ -361,6 +392,11 @@ function ContextPageInner() {
                 <span>{t("sleepMinLabel")}</span>
                 <span>{t("sleepMaxLabel")}</span>
               </div>
+              {sleepPrefillHours !== null && (
+                <div className={styles.ctxSliderPrefill}>
+                  {t("sleepPrefillLabel", { hours: sleepPrefillHours })}
+                </div>
+              )}
 
               <div className={styles.ctxGap} />
               <div className={styles.ctxSliderRow}>

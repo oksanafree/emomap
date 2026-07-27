@@ -202,6 +202,7 @@
     "bodyState": "BODY STATE",
     "sleepQuestion": "Sleep last night?",
     "sleepValue": "{hours}h",
+    "sleepPrefillLabel": "From earlier today: {hours}h",
     "sleepMinLabel": "0h",
     "sleepMaxLabel": "10h+",
     "energyQuestion": "Energy right now?",

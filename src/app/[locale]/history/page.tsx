@@ -259,17 +259,18 @@ function HistoryPageInner() {
               )}
               {entries?.map((entry) => {
                 const color = getStateColor(entry.state);
+                const isMostRecent = entry.id === mostRecentId;
                 return (
                   <div
                     key={entry.id}
-                    className={`${mapStyles.constellationDot} ${
-                      entry.id === mostRecentId ? styles.dotRecent : styles.dotFaded
+                    className={`${mapStyles.constellationDot} ${isMostRecent ? styles.dotRecent : styles.dotFaded} ${
+                      isMostRecent && newCheckinData ? styles.dotBloom : ""
                     }`}
                     style={{
                       left: `${50 + entry.x * 42}%`,
                       top: `${50 - entry.y * 42}%`,
                       background: color,
-                      boxShadow: entry.id === mostRecentId ? `0 0 10px 2px ${color}b3` : undefined,
+                      boxShadow: isMostRecent ? `0 0 10px 2px ${color}b3` : undefined,
                     }}
                   />
                 );

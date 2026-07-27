@@ -202,6 +202,7 @@
     "bodyState": "СОСТОЯНИЕ ТЕЛА",
     "sleepQuestion": "Сколько часов сна?",
     "sleepValue": "{hours}ч",
+    "sleepPrefillLabel": "Сегодня утром: {hours}ч",
     "sleepMinLabel": "Не спал",
     "sleepMaxLabel": "10ч+",
     "energyQuestion": "Энергия сейчас?",

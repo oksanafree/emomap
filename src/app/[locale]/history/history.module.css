@@ -79,6 +79,22 @@
   opacity: 0.35;
 }
 
+.dotBloom {
+  animation: dotBloom 400ms ease-out;
+}
+
+@keyframes dotBloom {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+  }
+  60% {
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
 .iosBanner {
   display: flex;
   align-items: center;
