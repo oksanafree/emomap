@@ -260,6 +260,7 @@
     "error": "Не удалось загрузить записи.",
     "seeReportButton": "Отчёт",
     "entriesButton": "Отметки",
+    "settingsLink": "Настройки",
     "noReportYetMessage": "Первый отчёт появится после 5 отметок.",
     "firstDirectionText": "Твоё первое направление.",
     "heatMapOn": "Тепловая карта",
@@ -315,6 +316,18 @@
     "termsTitle": "Условия использования",
     "privacyLink": "Политика конфиденциальности",
     "termsLink": "Условия использования"
+  },
+  "Settings": {
+    "navTitle": "Настройки",
+    "dangerZone": "Опасная зона",
+    "deleteAccountHint": "Полностью удалить аккаунт и все данные отметок.",
+    "deleteAccountButton": "Удалить аккаунт",
+    "deleteConfirmMessage": "Это удалит ваш аккаунт и все данные без возможности восстановления.",
+    "cancelButton": "Отмена",
+    "confirmDeleteButton": "Удалить аккаунт",
+    "deleting": "Удаляем...",
+    "deleteError": "Не удалось удалить аккаунт. Попробуйте снова.",
+    "reauthRequired": "Для безопасности выйдите из аккаунта и войдите снова, затем повторите попытку."
   },
   "ReportPending": {
     "headline": "Твой отчёт готовится.",

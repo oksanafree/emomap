@@ -3,7 +3,7 @@ import styles from "@/styles/legal.module.css";
 export function TermsOfServiceEn() {
   return (
     <>
-      <p className={styles.meta}>Beta version · [Month] 2026</p>
+      <p className={styles.meta}>Beta version · July 2026</p>
 
       <h2 className={styles.heading}>Beta notice</h2>
       <p className={styles.paragraph}>
@@ -116,7 +116,7 @@ export function TermsOfServiceEn() {
 export function TermsOfServiceRu() {
   return (
     <>
-      <p className={styles.meta}>Бета-версия · [месяц] 2026</p>
+      <p className={styles.meta}>Бета-версия · июль 2026</p>
 
       <h2 className={styles.heading}>Бета-версия</h2>
       <p className={styles.paragraph}>

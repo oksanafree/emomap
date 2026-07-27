@@ -5,7 +5,7 @@ import { SESSION_COOKIE_NAME } from "./lib/session-cookie";
 
 const intlMiddleware = createMiddleware(routing);
 
-const PROTECTED_PATHS = ["/world", "/self", "/context", "/history", "/report", "/entries"];
+const PROTECTED_PATHS = ["/world", "/self", "/context", "/history", "/report", "/entries", "/settings"];
 
 function getLocaleAndRest(pathname: string): { locale: string; rest: string } {
   for (const locale of routing.locales) {

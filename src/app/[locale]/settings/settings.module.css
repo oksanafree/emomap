@@ -1,0 +1,110 @@
+.scroll {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 12px 22px calc(env(safe-area-inset-bottom, 0px) + 28px);
+}
+
+.section {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #e8e5e0;
+}
+
+.sectionLabel {
+  margin: 0 0 4px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #b0adb8;
+  text-transform: uppercase;
+}
+
+.sectionHint {
+  margin: 0 0 14px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #8a8680;
+}
+
+.dangerBtn {
+  width: 100%;
+  padding: 15px;
+  background: transparent;
+  border: 1.5px solid #d64545;
+  border-radius: 16px;
+  color: #d64545;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.error {
+  margin: 10px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #d64545;
+  text-align: center;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(20, 18, 30, 0.5);
+}
+
+.dialog {
+  width: 100%;
+  max-width: 340px;
+  padding: 24px 22px 20px;
+  background: #fff;
+  border-radius: 18px;
+  text-align: center;
+}
+
+.dialogMessage {
+  margin: 0 0 20px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: #2a2825;
+}
+
+.dialogActions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dialogCancel {
+  width: 100%;
+  padding: 14px;
+  background: transparent;
+  border: 1.5px solid #d8d5ce;
+  border-radius: 14px;
+  color: #2a2825;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.dialogConfirm {
+  width: 100%;
+  padding: 14px;
+  background: #d64545;
+  border: none;
+  border-radius: 14px;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.dialogConfirm:disabled {
+  opacity: 0.6;
+  cursor: default;
+}

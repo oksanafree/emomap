@@ -3,7 +3,7 @@ import styles from "@/styles/legal.module.css";
 export function PrivacyPolicyEn() {
   return (
     <>
-      <p className={styles.meta}>Effective date: [Month] 2026 · Beta version</p>
+      <p className={styles.meta}>Effective date: July 2026 · Beta version</p>
       <p className={styles.meta}>Data controller: Oksana Sivkovich Fagin · oksanafagin@gmail.com</p>
 
       <h2 className={styles.heading}>What is Emomapp?</h2>
@@ -168,7 +168,7 @@ export function PrivacyPolicyEn() {
 export function PrivacyPolicyRu() {
   return (
     <>
-      <p className={styles.meta}>Дата вступления в силу: [месяц] 2026 · Бета-версия</p>
+      <p className={styles.meta}>Дата вступления в силу: июль 2026 · Бета-версия</p>
       <p className={styles.meta}>Контролёр данных: Оксана Сивкович Фагин · oksanafagin@gmail.com</p>
 
       <h2 className={styles.heading}>Что такое Эмокарта?</h2>

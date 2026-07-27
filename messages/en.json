@@ -260,6 +260,7 @@
     "error": "Could not load your entries.",
     "seeReportButton": "See report",
     "entriesButton": "Entries",
+    "settingsLink": "Settings",
     "noReportYetMessage": "Your first report will be ready after 5 check-ins.",
     "firstDirectionText": "Your first direction.",
     "heatMapOn": "Heat map",
@@ -315,6 +316,18 @@
     "termsTitle": "Terms of Service",
     "privacyLink": "Privacy Policy",
     "termsLink": "Terms of Service"
+  },
+  "Settings": {
+    "navTitle": "Settings",
+    "dangerZone": "Danger zone",
+    "deleteAccountHint": "Permanently delete your account and all check-in data.",
+    "deleteAccountButton": "Delete Account",
+    "deleteConfirmMessage": "This will permanently delete your account and all check-in data. This cannot be undone.",
+    "cancelButton": "Cancel",
+    "confirmDeleteButton": "Delete account",
+    "deleting": "Deleting...",
+    "deleteError": "Could not delete your account. Try again.",
+    "reauthRequired": "For your security, please log out and log back in, then try again."
   },
   "ReportPending": {
     "headline": "Your report is being prepared.",
