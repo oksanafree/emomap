@@ -38,7 +38,16 @@ function ReportPageInner() {
 
       const text = data?.[`report_${locale}`]?.text;
       if (typeof text === "string" && text.length > 0) {
-        const generated = data?.report_generated_at;
+        // report_generated_at was added after this feature shipped, so older
+        // reports may not have it — fall back to the per-locale timestamp
+        // that's existed since report generation itself was built, then to
+        // whatever timestamp the user document happens to carry.
+        const generated =
+          data?.report_generated_at ??
+          data?.[`report_${locale}`]?.last_generated_at ??
+          data?.updatedAt ??
+          data?.createdAt ??
+          null;
         setGeneratedAt(generated instanceof Timestamp ? generated.toDate() : null);
         setReportText(text);
         setStatus("ready");
