@@ -1,11 +1,39 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
+import { Resend } from "resend";
 import { FieldValue } from "firebase-admin/firestore";
 import { getMessaging } from "firebase-admin/messaging";
-import { getAdminApp, getAdminDb } from "@/lib/firebase-admin";
+import { getAdminApp, getAdminAuth, getAdminDb } from "@/lib/firebase-admin";
 import { computePatternVariables, type ReportEntry } from "@/lib/report-patterns";
 import { formatCustomTokens } from "@/lib/context-labels";
 import { SYSTEM_PROMPT, buildGenderInstruction, buildReportUserMessage } from "@/lib/report-prompt";
+
+// Same verified Resend sending domain used by the welcome/reminder emails in
+// functions/src/index.ts.
+const REPORT_READY_EMAIL_FROM = "Emomapp <reminder@mail.emomapp.app>";
+
+const REPORT_READY_EMAIL_CONTENT: Record<"en" | "ru", Record<"short" | "full", { subject: string; body: string }>> = {
+  en: {
+    short: {
+      subject: "Your Emomapp report is ready",
+      body: "Your first Emomapp report is ready — based on your first 5 check-ins, it surfaces what your map is starting to show. Open the app to read it. — Emomapp",
+    },
+    full: {
+      subject: "Your full Emomapp report is ready",
+      body: "Your full Emomapp report is ready — based on 20 check-ins, it reveals the patterns in your map. Open the app to read it. — Emomapp",
+    },
+  },
+  ru: {
+    short: {
+      subject: "Твой отчёт в Эмокарте готов",
+      body: "Твой первый отчёт в Эмокарте готов — на основе первых 5 отметок он показывает, что начинает проявляться на твоей карте. Открой приложение, чтобы прочитать его. — Эмокарта",
+    },
+    full: {
+      subject: "Твой полный отчёт в Эмокарте готов",
+      body: "Твой полный отчёт в Эмокарте готов — на основе 20 отметок он раскрывает паттерны твоей карты. Открой приложение, чтобы прочитать его. — Эмокарта",
+    },
+  },
+};
 
 export async function POST(request: NextRequest) {
   let userId: string | undefined;
@@ -120,6 +148,42 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("Failed to save generated report", error);
     return NextResponse.json({ error: "Could not save report." }, { status: 500 });
+  }
+
+  // Report-ready email — gated per report type (short = 5-entry milestone,
+  // full = 20-entry milestone) rather than on report_generated_at existing,
+  // since that shared timestamp is already set after the first-ever
+  // generation and would otherwise permanently block the 20-entry email.
+  // This also naturally prevents a manual refresh from re-sending: by the
+  // time a user can refresh, the milestone's email has already gone out and
+  // the flag below is already set.
+  try {
+    const alreadySent = userData?.report_ready_email_sent?.[reportType] === true;
+    if (!alreadySent) {
+      const userRecord = await getAdminAuth().getUser(userId);
+      if (userRecord.email) {
+        const emailLocale: "en" | "ru" = userData?.locale === "ru" ? "ru" : "en";
+        const content = REPORT_READY_EMAIL_CONTENT[emailLocale][reportType];
+        const resend = new Resend(process.env.RESEND_API_KEY);
+        const { error } = await resend.emails.send({
+          from: REPORT_READY_EMAIL_FROM,
+          to: userRecord.email,
+          subject: content.subject,
+          text: content.body,
+          html: `<p>${content.body}</p>`,
+        });
+        if (error) {
+          console.error(`Failed to send report-ready email to ${userId}`, error);
+        } else {
+          await db
+            .collection("users")
+            .doc(userId)
+            .set({ [`report_ready_email_sent.${reportType}`]: true }, { merge: true });
+        }
+      }
+    }
+  } catch (error) {
+    console.error("Failed to send report-ready email", error);
   }
 
   try {

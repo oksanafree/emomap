@@ -1,9 +1,9 @@
 "use client";
 
-import { Suspense, useEffect, useRef, useState, type TouchEvent as ReactTouchEvent } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { collection, deleteDoc, doc, getDoc, getDocs, orderBy, query, Timestamp } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, orderBy, query, Timestamp } from "firebase/firestore";
 import { useRouter } from "@/i18n/navigation";
 import { useAnonymousAuth } from "@/lib/use-anonymous-auth";
 import { db } from "@/lib/firebase";
@@ -14,16 +14,16 @@ import { AuthGuard } from "@/components/AuthGuard";
 import { NotificationPrompt } from "@/components/NotificationPrompt";
 import { HeatMapCanvas } from "@/components/HeatMapCanvas";
 import { StateSection } from "@/components/StateSection";
+import { CheckinCountdown } from "@/components/CheckinCountdown";
 import mapStyles from "@/styles/map-visual.module.css";
 import styles from "./history.module.css";
 
 const MIN_ENTRIES_FOR_HEATMAP = 10;
+const BRAND_PURPLE = "#7c6cf0";
 
 const NOTIF_ASKED_KEY = "notif_asked";
 const INSTALL_PROMPT_SEEN_KEY = "install_prompt_seen";
-const FULL_REPORT_ENTRIES = 20;
-const SWIPE_REVEAL_THRESHOLD = 40;
-const LONG_PRESS_MS = 500;
+const NO_REPORT_MESSAGE_MS = 3000;
 
 type HistoryEntry = {
   id: string;
@@ -34,68 +34,6 @@ type HistoryEntry = {
   y: number;
   state: StateKey | null;
 };
-
-function EntryRow({
-  entry,
-  dateLabel,
-  stateLabel,
-  deleteLabel,
-  onDelete,
-}: {
-  entry: HistoryEntry;
-  dateLabel: string;
-  stateLabel: string | null;
-  deleteLabel: string;
-  onDelete: (id: string) => void;
-}) {
-  const [revealed, setRevealed] = useState(false);
-  const touchStartX = useRef<number | null>(null);
-  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  function clearLongPressTimer() {
-    if (longPressTimer.current) {
-      clearTimeout(longPressTimer.current);
-      longPressTimer.current = null;
-    }
-  }
-
-  function handleTouchStart(e: ReactTouchEvent) {
-    touchStartX.current = e.touches[0].clientX;
-    longPressTimer.current = setTimeout(() => setRevealed(true), LONG_PRESS_MS);
-  }
-
-  function handleTouchMove(e: ReactTouchEvent) {
-    if (touchStartX.current === null) return;
-    const deltaX = e.touches[0].clientX - touchStartX.current;
-    if (deltaX < -SWIPE_REVEAL_THRESHOLD) {
-      clearLongPressTimer();
-      setRevealed(true);
-    }
-  }
-
-  function handleTouchEnd() {
-    touchStartX.current = null;
-    clearLongPressTimer();
-  }
-
-  return (
-    <div className={styles.entryRow}>
-      <button type="button" className={styles.entryDeleteBtn} onClick={() => onDelete(entry.id)}>
-        {deleteLabel}
-      </button>
-      <div
-        className={`${styles.entryContent} ${revealed ? styles.entryContentRevealed : ""}`}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-        onClick={() => revealed && setRevealed(false)}
-      >
-        <span className={styles.entryDate}>{dateLabel}</span>
-        {stateLabel && <span className={styles.entryState}>{stateLabel}</span>}
-      </div>
-    </div>
-  );
-}
 
 function HistoryPageInner() {
   const t = useTranslations("History");
@@ -109,10 +47,8 @@ function HistoryPageInner() {
   const [error, setError] = useState(false);
   const [showNotifPrompt, setShowNotifPrompt] = useState(false);
   const [showIOSBanner, setShowIOSBanner] = useState(false);
-  const [entriesExpanded, setEntriesExpanded] = useState(false);
   const [reportText, setReportText] = useState<string | null>(null);
-  const [reportExpanded, setReportExpanded] = useState(false);
-  const reportSectionRef = useRef<HTMLDivElement>(null);
+  const [showNoReportMessage, setShowNoReportMessage] = useState(false);
 
   // Captured once via lazy init so the section keeps rendering for the
   // lifetime of this page view even after the URL params below are stripped —
@@ -171,15 +107,6 @@ function HistoryPageInner() {
   }, [user, locale]);
 
   useEffect(() => {
-    if (searchParams.get("showReport") !== "1" || !reportText) return;
-    setReportExpanded(true);
-    const frame = requestAnimationFrame(() => {
-      reportSectionRef.current?.scrollIntoView({ behavior: "smooth" });
-    });
-    return () => cancelAnimationFrame(frame);
-  }, [searchParams, reportText]);
-
-  useEffect(() => {
     if (!entries || entries.length === 0) return;
     if (!localStorage.getItem(NOTIF_ASKED_KEY)) {
       setShowNotifPrompt(true);
@@ -227,23 +154,18 @@ function HistoryPageInner() {
     };
   }, [user]);
 
-  async function handleDeleteEntry(entryId: string) {
-    if (!user) return;
-    if (!window.confirm(t("deleteConfirm"))) return;
-    try {
-      await deleteDoc(doc(db, "users", user.uid, "entries", entryId));
-      setEntries((prev) => (prev ? prev.filter((e) => e.id !== entryId) : prev));
-    } catch (err) {
-      console.error("Failed to delete entry", err);
+  function handleSeeReport() {
+    if (reportText) {
+      router.push("/report");
+      return;
     }
+    setShowNoReportMessage(true);
+    window.setTimeout(() => setShowNoReportMessage(false), NO_REPORT_MESSAGE_MS);
   }
 
-  const dateFormatter = new Intl.DateTimeFormat(locale, {
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  });
+  function handleOpenEntries() {
+    router.push("/entries");
+  }
 
   const dayCount = entries
     ? new Set(entries.filter((e) => e.timestamp).map((e) => e.timestamp!.toDateString())).size
@@ -254,8 +176,6 @@ function HistoryPageInner() {
   const chronological = entries ? [...entries].reverse() : [];
   const mostRecentId = entries && entries.length > 0 ? entries[0].id : null;
 
-  const isMilestone = entries !== null && entries.length > 0 && entries.length < FULL_REPORT_ENTRIES;
-
   const showFirstDirectionLine =
     entries !== null && entries.length === 2 && searchParams.get("firstDirection") === "1";
 
@@ -263,19 +183,17 @@ function HistoryPageInner() {
 
   const statsLine =
     entries && entries.length > 0
-      ? entries.length < 5
-        ? t("firstReportRemaining", { remaining: 5 - entries.length })
-        : entries.length < FULL_REPORT_ENTRIES
-          ? t("fullReportRemaining", { remaining: FULL_REPORT_ENTRIES - entries.length })
-          : [t("entriesCount", { count: entries.length }), t("daysCount", { count: dayCount })].join(" · ")
+      ? [t("entriesCount", { count: entries.length }), t("daysCount", { count: dayCount })].join(" · ")
       : " ";
+
+  const countdownColor = entries && entries.length > 0 ? getStateColor(entries[0].state) : BRAND_PURPLE;
 
   return (
     <AuthGuard>
       {showNotifPrompt && <NotificationPrompt onClose={() => setShowNotifPrompt(false)} />}
       <div className="flex min-h-screen flex-col bg-[#f7f6f4]">
         <div className={styles.topBar}>
-          <div className={`${styles.statsLine} ${isMilestone ? styles.statsMilestone : ""}`}>{statsLine}</div>
+          <div className={styles.statsLine}>{statsLine}</div>
         </div>
 
         <div className={styles.scrollArea}>
@@ -380,56 +298,24 @@ function HistoryPageInner() {
             />
           )}
 
-          {entries && entries.length > 0 && (
-            <>
-              <button
-                type="button"
-                className={styles.entriesToggle}
-                onClick={() => setEntriesExpanded((v) => !v)}
-              >
-                {entriesExpanded ? t("hideEntries") : t("showEntries")}
-              </button>
-              <div
-                className={`${styles.entryListWrap} ${entriesExpanded ? styles.entryListWrapExpanded : ""}`}
-              >
-                <div className={styles.entryListInner}>
-                  <div className={styles.entryList}>
-                    {entries.map((entry) => (
-                      <EntryRow
-                        key={entry.id}
-                        entry={entry}
-                        dateLabel={entry.timestamp ? dateFormatter.format(entry.timestamp) : ""}
-                        stateLabel={entry.state ? tMap(`states.${entry.state}.name`) : null}
-                        deleteLabel={t("delete")}
-                        onDelete={handleDeleteEntry}
-                      />
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {reportText && (
-                <div ref={reportSectionRef} className={styles.reportSection}>
-                  <button
-                    type="button"
-                    className={styles.entriesToggle}
-                    onClick={() => setReportExpanded((v) => !v)}
-                  >
-                    {reportExpanded ? t("hideReport") : t("showReport")}
-                  </button>
-                  <div
-                    className={`${styles.entryListWrap} ${reportExpanded ? styles.entryListWrapExpanded : ""}`}
-                  >
-                    <div className={styles.entryListInner}>
-                      <p className={styles.reportText}>{reportText}</p>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {entries.length < 5 && <p className={styles.encouragement}>{t("earlyEncouragement")}</p>}
-            </>
+          {entries !== null && (
+            <CheckinCountdown
+              entryCount={entries.length}
+              color={countdownColor}
+              onOpenReport={() => router.push("/report")}
+            />
           )}
+        </div>
+
+        {showNoReportMessage && <p className={styles.noReportMessage}>{t("noReportYetMessage")}</p>}
+
+        <div className={styles.bottomBar}>
+          <button type="button" className={styles.primaryBtn} onClick={handleSeeReport}>
+            {t("seeReportButton")}
+          </button>
+          <button type="button" className={styles.secondaryBtn} onClick={handleOpenEntries}>
+            {t("entriesButton")}
+          </button>
         </div>
       </div>
     </AuthGuard>

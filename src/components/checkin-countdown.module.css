@@ -1,0 +1,36 @@
+.wrap {
+  padding: 18px 22px 6px;
+  text-align: center;
+}
+
+.number {
+  font-size: 64px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.label {
+  margin: 6px 0 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #2a2825;
+}
+
+.subtext {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: #9a9890;
+}
+
+.link {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 0;
+  background: none;
+  border: none;
+  font-size: 13px;
+  font-weight: 600;
+  color: #7c6cf0;
+  cursor: pointer;
+}

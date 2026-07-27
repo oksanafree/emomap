@@ -1,0 +1,113 @@
+.screen {
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: #f7f6f4;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+.maxW {
+  width: 100%;
+  max-width: 430px;
+  margin: 0 auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  padding: calc(env(safe-area-inset-top, 0px) + 18px) 22px 0;
+  flex-shrink: 0;
+}
+
+.navBack {
+  width: 36px;
+  flex-shrink: 0;
+  font-size: 28px;
+  color: #bbb9b2;
+  cursor: pointer;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  min-height: 48px;
+  text-decoration: none;
+}
+
+.navTitle {
+  flex: 1;
+  text-align: center;
+  font-size: 16px;
+  color: #2a2825;
+}
+
+.navSp {
+  width: 36px;
+  flex-shrink: 0;
+}
+
+.scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 12px 22px calc(env(safe-area-inset-bottom, 0px) + 24px);
+}
+
+.status {
+  margin-top: 24px;
+  font-size: 14px;
+  color: #8a8680;
+  text-align: center;
+}
+
+.entryRow {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  margin-bottom: 8px;
+}
+
+.entryDeleteBtn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 84px;
+  background: #d64545;
+  border: none;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.entryContent {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  background: #fff;
+  border: 1px solid #e8e5e0;
+  border-radius: 12px;
+  transform: translateX(0);
+  transition: transform 0.2s ease;
+}
+
+.entryContentRevealed {
+  transform: translateX(-84px);
+}
+
+.entryDate {
+  font-size: 14px;
+  color: #2a2825;
+}
+
+.entryState {
+  font-size: 12px;
+  font-weight: 600;
+}

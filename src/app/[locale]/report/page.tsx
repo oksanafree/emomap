@@ -91,6 +91,8 @@ function ReportPageInner() {
         </div>
 
         <div className={styles.scroll}>
+          <h1 className={styles.title}>{t("title")}</h1>
+
           {status === "loading" && <p className={styles.status}>{t("loading")}</p>}
           {status === "error" && <p className={styles.status}>{t("reportError")}</p>}
           {status === "empty" && <p className={styles.status}>{t("notEnoughEntries")}</p>}
