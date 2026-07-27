@@ -32,20 +32,25 @@
     },
     "steps": [
       {
-        "headline": "Your mind scans every moment.",
-        "body": "Most of it goes unnoticed. Emomapp makes it visible and creates your reality trajectory."
+        "headline": "Emomapp doesn't measure how you feel.",
+        "subline": "It measures how you move.",
+        "body": "Most apps ask: how do you feel? Emomapp asks something different."
       },
       {
-        "headline": "Two questions. Ten seconds.",
-        "body": "How is life treating you right now? How are YOU moving through it? Your answers are coordinates on a map. Check in often — and the map becomes a trail."
+        "headline": "Two questions. One moment.",
+        "body": "How is the SITUATION impacting you right now? How are YOU impacting the situation? Your answers place a dot on a map."
       },
       {
-        "headline": "Emomapp will track your inner world.",
-        "body": "After enough check-ins, you will see your unique patterns. Where do you tend to land? What moves you? An AI reads your trail and reflects it back."
+        "headline": "Your dot. Your trail.",
+        "body": "Each check-in places a dot on a 2D map. Over time, the dots form a trail — a record of how you move through your life."
       },
       {
-        "headline": "Your first report in 5 check-ins.",
-        "body": "After two weeks of regular check-ins — a detailed analysis of your unique patterns. The more you check in, the clearer the picture."
+        "headline": "The pattern lives in the movement.",
+        "body": "Check in a few times a day — after a meeting, a meal, when the energy shifts. The direction between dots is where the insight lives."
+      },
+      {
+        "headline": "After 5 check-ins, your first report.",
+        "body": "AI surfaces what your data shows — patterns you wouldn't notice on your own. The more you check in, the clearer the picture."
       }
     ]
   },

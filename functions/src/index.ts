@@ -168,67 +168,72 @@ export const dailyReminder = onSchedule(
 // Distinct from EMAIL_FROM (reminders@emomapp.app) — the welcome email
 // sends from reminder@ on the mail. subdomain verified in Resend.
 const WELCOME_EMAIL_FROM = "Emomapp <reminder@mail.emomapp.app>";
-const WELCOME_URL = "https://emomapp.app";
 
 type WelcomeContent = {
   subject: string;
-  paragraphs: string[];
-  ctaText: string;
-  ctaLinkLabel: string;
+  intro: string;
+  questionsIntro: string;
+  bullets: [string, string];
+  paragraph2: string;
+  paragraph3: string;
+  closing: string;
+  signatureName: string;
   telegramText: string;
-  telegramLinkLabel: string;
   telegramUrl: string;
-  signature: string;
 };
 
 const WELCOME_CONTENT: Record<Locale, WelcomeContent> = {
   en: {
     subject: "Welcome to Emomapp",
-    paragraphs: [
-      "Welcome to Emomapp — and thank you for being a founding user. Your interest in this project means a great deal to me.",
-      "Most apps ask how you feel. Emomapp asks how is the situation impacting you — and how are you impacting it? Instead of labeling emotions, you place yourself on a map. Two axes, a few taps, and you've captured your state in the moment.",
-      "The magic happens over time. Check in a few times a day — morning, after a hard meeting, before bed — and Emomapp begins to calculate your trajectory. Patterns you'd never notice on your own start to surface: that your energy drops on Sundays, that tension at work always follows poor sleep, that you're more resilient than you think.",
-      "No other app does this - because no one asked the right question until now.",
-    ],
-    ctaText: "Your first check-in takes 30 seconds.",
-    ctaLinkLabel: "Open Emomapp",
-    telegramText:
-      "Join our founding users community on Telegram — share your experience, ask questions, and help shape what Emomapp becomes:",
-    telegramLinkLabel: "Join the group",
+    intro: "Emomapp doesn't measure how you feel — it measures how you move.",
+    questionsIntro: "Most apps ask you to rate your mood. Emomapp asks two different questions:",
+    bullets: ["How is the situation impacting you right now?", "How are you impacting the situation?"],
+    paragraph2:
+      "Your answers place a dot on a 2D map. Check in a few times today — after a meeting, a meal, when the energy shifts. The trajectory between dots is where the insight lives.",
+    paragraph3: "After 5 check-ins, your first pattern report appears. After 20, the full picture.",
+    closing: "Welcome to your map.",
+    signatureName: "Emomapp",
+    telegramText: "Join our community:",
     telegramUrl: "https://t.me/+gpylW64kg_lkOTUx",
-    signature: "Oksana",
   },
   ru: {
     subject: "Добро пожаловать в Эмокарту",
-    paragraphs: [
-      "Добро пожаловать в Эмокарту и спасибо за твое участие в проекте!",
-      "Большинство приложений спрашивают, как ты себя чувствуешь. Эмокарта спрашивает как обстоятельства влияют на тебя — и как ты влияешь на них? Вместо того чтобы называть эмоции, мы предлагаем отмечать твое состояние на карте внутреннего мира. Две шкалы, несколько кликов — и координаты настроения зафиксированы.",
-      "Но главное происходит со временем. Отмечайся несколько раз в день — утром, после сложной встречи, перед сном — и Эмокарта начнёт вычислять твою индивидуальную траекторию. Начинают проявляться паттерны поведения, которые сложно заметить самому: например, что энергия особенно падает по воскресеньям, или что напряжение на работе всегда следует за плохим сном, или что ты устойчивее, чем думаешь.",
-      "Ни одно другое приложение этого не делает, потому что никто до сих пор не задавал правильного вопроса.",
-    ],
-    ctaText: "Первая отметка займёт 30 секунд.",
-    ctaLinkLabel: "Открыть Эмокарту",
-    telegramText:
-      "Также присоединяйся к сообществу первых пользователей в Telegram — делись опытом, задавай вопросы и участвуй в строительстве Эмокарты:",
-    telegramLinkLabel: "Войти в группу",
+    intro: "Эмокарта не измеряет, что ты чувствуешь — она измеряет, как ты движешься.",
+    questionsIntro: "Большинство приложений просят оценить настроение. Эмокарта задаёт два других вопроса:",
+    bullets: ["Как обстоятельства влияют на тебя прямо сейчас?", "Как ты влияешь на обстоятельства?"],
+    paragraph2:
+      "Твои ответы — точка на двумерной карте. Отметься несколько раз сегодня — после встречи, еды, смены состояния. Траектория между точками — это и есть инсайт.",
+    paragraph3: "После 5 отметок появится твой первый отчёт о паттернах. После 20 — полная картина.",
+    closing: "Добро пожаловать на свою карту.",
+    signatureName: "Эмокарта",
+    telegramText: "Присоединяйся к сообществу:",
     telegramUrl: "https://t.me/+CNtztWwlF6syODlh",
-    signature: "Оксана",
   },
 };
 
 function buildWelcomeEmailContent(content: WelcomeContent) {
+  const bulletsHtml = `<ul>${content.bullets.map((bullet) => `<li>${bullet}</li>`).join("")}</ul>`;
+  const bulletsText = content.bullets.map((bullet) => `· ${bullet}`).join("\n");
+
   const html = [
-    ...content.paragraphs.map((paragraph) => `<p>${paragraph}</p>`),
-    `<p>${content.ctaText} <a href="${WELCOME_URL}">${content.ctaLinkLabel}</a></p>`,
-    `<p>${content.telegramText} <a href="${content.telegramUrl}">${content.telegramLinkLabel}</a></p>`,
-    `<p>${content.signature}</p>`,
+    `<p>${content.intro}</p>`,
+    `<p>${content.questionsIntro}</p>`,
+    bulletsHtml,
+    `<p>${content.paragraph2}</p>`,
+    `<p>${content.paragraph3}</p>`,
+    `<p>${content.closing}<br/>— ${content.signatureName}</p>`,
+    `<p>${content.telegramText} <a href="${content.telegramUrl}">${content.telegramUrl}</a></p>`,
   ].join("");
+
   const text = [
-    ...content.paragraphs,
-    `${content.ctaText} ${content.ctaLinkLabel}: ${WELCOME_URL}`,
-    `${content.telegramText} ${content.telegramLinkLabel}: ${content.telegramUrl}`,
-    content.signature,
+    content.intro,
+    `${content.questionsIntro}\n${bulletsText}`,
+    content.paragraph2,
+    content.paragraph3,
+    `${content.closing}\n— ${content.signatureName}`,
+    `${content.telegramText} ${content.telegramUrl}`,
   ].join("\n\n");
+
   return { html, text };
 }
 

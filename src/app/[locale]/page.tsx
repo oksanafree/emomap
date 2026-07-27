@@ -13,7 +13,7 @@ import { OnboardingSliderPreview } from "@/components/onboarding-slider-preview"
 import { OnboardingMilestones } from "@/components/onboarding-milestones";
 
 const ONBOARDED_KEY = "em_onboarded";
-const TOTAL_STEPS = 4;
+const TOTAL_STEPS = 5;
 const SWIPE_THRESHOLD = 50;
 
 export default function OnboardingPage() {
@@ -163,6 +163,8 @@ export default function OnboardingPage() {
     receivingLabel: t("quadrants.receiving"),
   };
 
+  const stepSubline = (t.raw(`steps.${step}`) as { subline?: string }).subline;
+
   if (awaitingOnboardingStatus) {
     return <div className="min-h-screen bg-[#080914]" />;
   }
@@ -233,8 +235,8 @@ export default function OnboardingPage() {
             selfLabel={t("sliderLabels.self")}
           />
         )}
-        {step === 2 && <TrailMap {...mapLabels} />}
-        {step === 3 && (
+        {(step === 2 || step === 3) && <TrailMap {...mapLabels} />}
+        {step === 4 && (
           <OnboardingMilestones
             firstLabel={t("milestones.first")}
             secondLabel={t("milestones.second")}
@@ -243,6 +245,9 @@ export default function OnboardingPage() {
         <h1 className="text-center text-[32px] font-light leading-tight tracking-[-0.02em] text-[#e8e4ff]">
           {t(`steps.${step}.headline`)}
         </h1>
+        {stepSubline && (
+          <p className="text-center text-[19px] leading-tight text-[#a89ee8]">{stepSubline}</p>
+        )}
         <p className="max-w-[300px] text-center text-[17px] leading-[1.7] text-[#6868b0]">
           {t(`steps.${step}.body`)}
         </p>
