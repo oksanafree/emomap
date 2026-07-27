@@ -29,7 +29,7 @@ import {
   type EngagementLevel,
   type SocialKey,
 } from "@/lib/context-options";
-import type { StateKey } from "@/lib/state-detection";
+import { computeIntensity, type StateKey } from "@/lib/state-detection";
 import { AuthGuard } from "@/components/AuthGuard";
 import { HomeNavIcon } from "@/components/HomeNavIcon";
 import checkinStyles from "@/styles/checkin-screen.module.css";
@@ -48,6 +48,7 @@ function ContextPageInner() {
   const x = Number(searchParams.get("x")) || 0;
   const y = Number(searchParams.get("y")) || 0;
   const state = (searchParams.get("state") as StateKey) || "Still";
+  const intensity = computeIntensity(x, y);
   const entryId = searchParams.get("entryId");
   const isEditing = Boolean(entryId);
 
@@ -253,10 +254,19 @@ function ContextPageInner() {
         }
       }
 
+      // At high intensity in a pressured state, the user is dealing with
+      // something real — skip the reflection question regardless of the
+      // repeat/divisible-by-3 logic above.
+      const HIGH_INTENSITY_SKIP_STATES: StateKey[] = ["Enduring", "Protecting", "Bracing"];
+      if (intensity === "high" && HIGH_INTENSITY_SKIP_STATES.includes(state)) {
+        shouldShowQuestion = false;
+      }
+
       const historyParams = new URLSearchParams({
         new: "1",
         state,
         emotion,
+        intensity,
         showQuestion: shouldShowQuestion ? "1" : "0",
         firstCheckin: count === 1 ? "1" : "0",
       });

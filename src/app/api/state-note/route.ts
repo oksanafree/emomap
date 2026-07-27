@@ -27,26 +27,41 @@ Rules:
 - Do not mention: trauma, healing, the nervous system, regulation, growth, resilience
 - Do not include advice or a question
 - Do not imply the app knows more than the submitted state and emotion
+- If intensity is high: the user is in a strong, clear version of this state. Acknowledge the weight or fullness of it directly.
+- If intensity is low: the user is in a mild or ambiguous version of this state. Keep the note light and exploratory.
+- If intensity is medium: standard tone.
+- Never use the word "intensity" or "extreme" in the output.
 - If locale is "ru", respond in Russian`;
+
+const INTENSITY_LEVELS = ["low", "medium", "high"] as const;
+type IntensityLevel = (typeof INTENSITY_LEVELS)[number];
+
+const INTENSITY_DISTANCE_PHRASE: Record<IntensityLevel, string> = {
+  low: "close to",
+  medium: "moderately distant from",
+  high: "far from",
+};
 
 // Serverless instances are ephemeral, so an in-memory cache wouldn't
 // reliably prevent duplicate calls for the same combination across
 // invocations — persist in Firestore instead, keyed by a hash of
-// state+emotion+locale (hashed rather than used raw so arbitrary user-typed
-// emotion text, including Cyrillic and punctuation, always makes a safe,
-// bounded-length Firestore document ID).
-function cacheKeyFor(state: string, emotion: string, locale: string): string {
-  return createHash("sha256").update(`${state}::${emotion}::${locale}`).digest("hex");
+// state+emotion+intensity+locale (hashed rather than used raw so arbitrary
+// user-typed emotion text, including Cyrillic and punctuation, always makes a
+// safe, bounded-length Firestore document ID).
+function cacheKeyFor(state: string, emotion: string, intensity: string, locale: string): string {
+  return createHash("sha256").update(`${state}::${emotion}::${intensity}::${locale}`).digest("hex");
 }
 
 export async function POST(request: NextRequest) {
   let state: string | undefined;
   let emotion: string | undefined;
+  let intensity: unknown;
   let locale: unknown;
   try {
     const body = await request.json();
     state = body.state;
     emotion = body.emotion;
+    intensity = body.intensity;
     locale = body.locale;
   } catch {
     return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
@@ -61,10 +76,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Unknown state." }, { status: 400 });
   }
 
+  const resolvedIntensity: IntensityLevel = INTENSITY_LEVELS.includes(intensity as IntensityLevel)
+    ? (intensity as IntensityLevel)
+    : "medium";
   const resolvedLocale: "en" | "ru" = locale === "ru" ? "ru" : "en";
 
   const db = getAdminDb();
-  const cacheKey = cacheKeyFor(state, emotion, resolvedLocale);
+  const cacheKey = cacheKeyFor(state, emotion, resolvedIntensity, resolvedLocale);
   const cacheRef = db.collection("state_note_cache").doc(cacheKey);
 
   try {
@@ -82,6 +100,7 @@ export async function POST(request: NextRequest) {
     `State: ${state}`,
     `State meaning: ${description}`,
     `Emotion the user chose: ${emotion}`,
+    `Intensity: ${resolvedIntensity} — the user's position is ${INTENSITY_DISTANCE_PHRASE[resolvedIntensity]} the center of the map`,
     `Locale: ${resolvedLocale}`,
     "",
     "Write the observation.",
@@ -112,6 +131,7 @@ export async function POST(request: NextRequest) {
       note,
       state,
       emotion,
+      intensity: resolvedIntensity,
       locale: resolvedLocale,
       created_at: new Date().toISOString(),
     });

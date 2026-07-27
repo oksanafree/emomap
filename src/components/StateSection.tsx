@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import type { StateKey } from "@/lib/state-detection";
+import type { Intensity, StateKey } from "@/lib/state-detection";
 import { getStateColor } from "@/lib/stateConfig";
 import styles from "./state-section.module.css";
 
@@ -12,12 +12,20 @@ const NOTE_FETCH_TIMEOUT_MS = 4000;
 type StateSectionProps = {
   state: StateKey;
   emotion: string;
+  intensity: Intensity;
   isFirstCheckin: boolean;
   showQuestion: boolean;
   locale: string;
 };
 
-export function StateSection({ state, emotion, isFirstCheckin, showQuestion, locale }: StateSectionProps) {
+export function StateSection({
+  state,
+  emotion,
+  intensity,
+  isFirstCheckin,
+  showQuestion,
+  locale,
+}: StateSectionProps) {
   const t = useTranslations("StateCard");
   const color = getStateColor(state);
   const [note, setNote] = useState<string | null>(null);
@@ -36,7 +44,7 @@ export function StateSection({ state, emotion, isFirstCheckin, showQuestion, loc
     fetch("/api/state-note", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ state, emotion, locale }),
+      body: JSON.stringify({ state, emotion, intensity, locale }),
       signal: controller.signal,
     })
       .then((res) => (res.ok ? res.json() : null))
@@ -53,7 +61,7 @@ export function StateSection({ state, emotion, isFirstCheckin, showQuestion, loc
       clearTimeout(timeoutId);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state, emotion, locale]);
+  }, [state, emotion, intensity, locale]);
 
   const showNote = Boolean(emotion) && Boolean(note) && noteMinDelayElapsed;
 

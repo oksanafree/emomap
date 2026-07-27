@@ -24,3 +24,14 @@ export function detectState(x: number, y: number): StateKey {
   if (x >= 0 && y < 0) return "Receiving";
   return "Enduring";
 }
+
+export type Intensity = "low" | "medium" | "high";
+
+// Distance from center, normalized against the farthest reachable point
+// (a corner of the [-1,1] square, at distance sqrt(2) ≈ 1.41).
+export function computeIntensity(x: number, y: number): Intensity {
+  const normalized = Math.sqrt(x * x + y * y) / Math.SQRT2;
+  if (normalized < 0.33) return "low";
+  if (normalized <= 0.66) return "medium";
+  return "high";
+}

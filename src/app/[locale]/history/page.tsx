@@ -8,7 +8,7 @@ import { useRouter } from "@/i18n/navigation";
 import { useAnonymousAuth } from "@/lib/use-anonymous-auth";
 import { db } from "@/lib/firebase";
 import { isIOS, isStandalonePwa } from "@/lib/platform";
-import type { StateKey } from "@/lib/state-detection";
+import type { Intensity, StateKey } from "@/lib/state-detection";
 import { getStateColor } from "@/lib/stateConfig";
 import { AuthGuard } from "@/components/AuthGuard";
 import { NotificationPrompt } from "@/components/NotificationPrompt";
@@ -59,9 +59,12 @@ function HistoryPageInner() {
     if (searchParams.get("new") !== "1") return null;
     const state = searchParams.get("state") as StateKey | null;
     if (!state) return null;
+    const intensityParam = searchParams.get("intensity");
+    const intensity: Intensity = intensityParam === "low" || intensityParam === "high" ? intensityParam : "medium";
     return {
       state,
       emotion: searchParams.get("emotion") ?? "",
+      intensity,
       isFirstCheckin: searchParams.get("firstCheckin") === "1",
       showQuestion: searchParams.get("showQuestion") === "1",
     };
@@ -76,6 +79,7 @@ function HistoryPageInner() {
     remaining.delete("new");
     remaining.delete("state");
     remaining.delete("emotion");
+    remaining.delete("intensity");
     remaining.delete("firstCheckin");
     remaining.delete("showQuestion");
     const query = remaining.toString();
@@ -294,6 +298,7 @@ function HistoryPageInner() {
             <StateSection
               state={newCheckinData.state}
               emotion={newCheckinData.emotion}
+              intensity={newCheckinData.intensity}
               isFirstCheckin={newCheckinData.isFirstCheckin}
               showQuestion={newCheckinData.showQuestion}
               locale={locale}
