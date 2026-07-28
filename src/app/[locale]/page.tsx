@@ -251,6 +251,11 @@ export default function OnboardingPage() {
         <p className="max-w-[300px] text-center text-[17px] leading-[1.7] text-[#6868b0]">
           {t(`steps.${step}.body`)}
         </p>
+        {step === 1 && (
+          <p className="max-w-[300px] text-center text-[13px] italic leading-[1.6] text-[#4848a0]">
+            {t("byline")}
+          </p>
+        )}
       </div>
 
       <div className="flex items-center gap-[10px] pb-6">

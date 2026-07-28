@@ -16,6 +16,7 @@
     "start": "Let's start →",
     "login": "Log in",
     "checkInNow": "Check in now →",
+    "byline": "Developed by Oksana Sivkovich Fagin, PhD — cognitive psychologist and CUNY professor.",
     "quadrants": {
       "protecting": "Protecting",
       "building": "Building",
@@ -314,8 +315,10 @@
   "Legal": {
     "privacyTitle": "Privacy Policy",
     "termsTitle": "Terms of Service",
+    "aboutTitle": "About Emomapp",
     "privacyLink": "Privacy Policy",
-    "termsLink": "Terms of Service"
+    "termsLink": "Terms of Service",
+    "aboutLink": "About"
   },
   "Settings": {
     "navTitle": "Settings",

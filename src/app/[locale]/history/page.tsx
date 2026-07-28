@@ -317,11 +317,13 @@ function HistoryPageInner() {
           )}
 
           <div className={styles.legalLinks}>
-            <Link href="/settings">{t("settingsLink")}</Link>
-            <span>·</span>
             <Link href="/privacy">{tLegal("privacyLink")}</Link>
             <span>·</span>
             <Link href="/terms">{tLegal("termsLink")}</Link>
+            <span>·</span>
+            <Link href="/settings">{t("settingsLink")}</Link>
+            <span>·</span>
+            <Link href="/about">{tLegal("aboutLink")}</Link>
           </div>
         </div>
 
