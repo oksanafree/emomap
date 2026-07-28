@@ -12,13 +12,17 @@ export const STATE_KEYS = [
 
 export type StateKey = (typeof STATE_KEYS)[number];
 
+// Still requires both axes genuinely at rest — a tight box at center, not
+// just a nearby radius. Opening/Bracing/Seeking/Drifting share that same
+// inner threshold, so they pick up exactly the room Still gives up.
+const STILL_THRESHOLD = 0.1;
+
 export function detectState(x: number, y: number): StateKey {
-  const r = Math.sqrt(x * x + y * y) / Math.sqrt(2);
-  if (r < 0.18) return "Still";
   const ax = Math.abs(x);
   const ay = Math.abs(y);
-  if (ay < 0.12 && ax >= 0.12) return x > 0 ? "Opening" : "Bracing";
-  if (ax < 0.12 && ay >= 0.12) return y > 0 ? "Seeking" : "Drifting";
+  if (ax < STILL_THRESHOLD && ay < STILL_THRESHOLD) return "Still";
+  if (ay < STILL_THRESHOLD && ax >= STILL_THRESHOLD) return x > 0 ? "Opening" : "Bracing";
+  if (ax < STILL_THRESHOLD && ay >= STILL_THRESHOLD) return y > 0 ? "Seeking" : "Drifting";
   if (x >= 0 && y >= 0) return "Building";
   if (x < 0 && y >= 0) return "Protecting";
   if (x >= 0 && y < 0) return "Receiving";
