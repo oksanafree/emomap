@@ -76,12 +76,12 @@
     "question": "At this moment — how do you influence the situation?",
     "liveWord": {
       "ambiguous": "Ambiguous",
-      "active": "I direct",
-      "passive": "I follow"
+      "active": "I influence",
+      "passive": "I don't influence"
     },
     "endLabels": {
-      "leftSub": ["I don't influence"],
-      "rightSub": ["I influence"]
+      "leftSub": ["I yield", "I watch", "I drift"],
+      "rightSub": ["I steer", "I shape", "I make"]
     },
     "cta": "See my map →"
   },
