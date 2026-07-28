@@ -6,6 +6,7 @@ import { routing } from "@/i18n/routing";
 import { CheckinProvider } from "@/lib/checkin-context";
 import { LogoutButton } from "@/components/LogoutButton";
 import { SessionBridge } from "@/components/SessionBridge";
+import { PushTokenBridge } from "@/components/PushTokenBridge";
 import "./globals.css";
 
 const geistSans = localFont({
@@ -57,6 +58,7 @@ export default async function LocaleLayout({
             {children}
             <LogoutButton />
             <SessionBridge />
+            <PushTokenBridge />
           </CheckinProvider>
         </NextIntlClientProvider>
       </body>
