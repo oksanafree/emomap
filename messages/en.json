@@ -73,7 +73,7 @@
   "Self": {
     "navTitle": "Emomapp",
     "category": "YOU",
-    "question": "At this moment — how do you influence the situation?",
+    "question": "At this moment — how do <b>YOU</b> influence the situation?",
     "liveWord": {
       "ambiguous": "Ambiguous",
       "active": "I influence",
