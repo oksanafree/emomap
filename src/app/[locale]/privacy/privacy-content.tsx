@@ -169,7 +169,7 @@ export function PrivacyPolicyRu() {
   return (
     <>
       <p className={styles.meta}>Дата вступления в силу: июль 2026 · Бета-версия</p>
-      <p className={styles.meta}>Контролёр данных: Оксана Сивкович Фагин · oksanafagin@gmail.com</p>
+      <p className={styles.meta}>Контролёр данных: Оксана Сивкович Фейгин · oksanafagin@gmail.com</p>
 
       <h2 className={styles.heading}>Что такое Эмокарта?</h2>
       <p className={styles.paragraph}>

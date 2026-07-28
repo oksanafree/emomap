@@ -45,7 +45,7 @@ export function AboutRu() {
       </p>
 
       <h2 className={styles.heading}>Кто создал</h2>
-      <p className={styles.paragraph}>Оксана Сивкович Фагин — когнитивный психолог и преподаватель.</p>
+      <p className={styles.paragraph}>Оксана Сивкович Фейгин — когнитивный психолог и преподаватель.</p>
 
       <p className={styles.tagline}>
         Эмокарта измеряет не то, что ты чувствуешь. Она измеряет то, как твои чувства меняются.

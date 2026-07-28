@@ -185,7 +185,7 @@ type WelcomeContent = {
 const WELCOME_CONTENT: Record<Locale, WelcomeContent> = {
   en: {
     subject: "Welcome to Emomapp",
-    intro: "Emomapp doesn't measure how you feel — it measures how you move.",
+    intro: "Emomapp doesn't measure how you feel — it measures how your inner state shifts.",
     questionsIntro: "Most apps ask you to rate your mood. Emomapp asks two different questions:",
     bullets: ["How is the situation impacting you right now?", "How are you impacting the situation?"],
     paragraph2:
@@ -198,7 +198,7 @@ const WELCOME_CONTENT: Record<Locale, WelcomeContent> = {
   },
   ru: {
     subject: "Добро пожаловать в Эмокарту",
-    intro: "Эмокарта не измеряет, что ты чувствуешь — она измеряет, как ты движешься.",
+    intro: "Эмокарта измеряет не то, что ты чувствуешь — она измеряет то, как твои чувства меняются.",
     questionsIntro: "Большинство приложений просят оценить настроение. Эмокарта задаёт два других вопроса:",
     bullets: ["Как обстоятельства влияют на тебя прямо сейчас?", "Как ты влияешь на обстоятельства?"],
     paragraph2:

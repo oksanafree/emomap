@@ -34,7 +34,7 @@
     "steps": [
       {
         "headline": "Emomapp doesn't measure how you feel.",
-        "subline": "It measures how you move.",
+        "subline": "It measures how your inner state shifts.",
         "body": "Most apps ask: how do you feel? Emomapp asks something different."
       },
       {
@@ -73,15 +73,15 @@
   "Self": {
     "navTitle": "Emomapp",
     "category": "YOU",
-    "question": "At this moment — how do <b>YOU</b> impact the situation?",
+    "question": "At this moment — how do you influence the situation?",
     "liveWord": {
       "ambiguous": "Ambiguous",
       "active": "I direct",
       "passive": "I follow"
     },
     "endLabels": {
-      "leftSub": ["I yield", "I watch", "I drift"],
-      "rightSub": ["I steer", "I shape", "I make"]
+      "leftSub": ["I don't influence"],
+      "rightSub": ["I influence"]
     },
     "cta": "See my map →"
   },
