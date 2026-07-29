@@ -6,7 +6,12 @@ import { getMessaging } from "firebase-admin/messaging";
 import { getAdminApp, getAdminAuth, getAdminDb } from "@/lib/firebase-admin";
 import { computePatternVariables, type ReportEntry } from "@/lib/report-patterns";
 import { formatCustomTokens } from "@/lib/context-labels";
-import { SYSTEM_PROMPT, buildGenderInstruction, buildReportUserMessage } from "@/lib/report-prompt";
+import {
+  SYSTEM_PROMPT,
+  buildGenderInstruction,
+  buildReportUserMessage,
+  buildTranslationPrompt,
+} from "@/lib/report-prompt";
 
 // Same verified Resend sending domain used by the welcome/reminder emails in
 // functions/src/index.ts.
@@ -92,17 +97,22 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Could not load entries." }, { status: 500 });
   }
 
-  const reportLocale = locale === "ru" ? "ru" : "en";
+  // The requested locale only controls which saved version the push
+  // notification links to below — generation itself always happens in
+  // English, then gets translated, so both languages come from the same
+  // analysis instead of being written independently and potentially
+  // disagreeing with each other.
+  const requestedLocale = locale === "ru" ? "ru" : "en";
   const reportType: "short" | "full" =
     type === "short" || type === "full" ? type : entriesChronological.length >= 20 ? "full" : "short";
   const maxTokens = reportType === "short" ? 1500 : 4000;
   const patterns = computePatternVariables(entriesChronological);
-  const userMessage = buildReportUserMessage(patterns, entriesChronological, reportLocale, reportType);
+  const userMessage = buildReportUserMessage(patterns, entriesChronological, "en", reportType);
   const systemPrompt = `${SYSTEM_PROMPT}\n\n${buildGenderInstruction(userData?.gender)}`;
 
-  let reportText: string;
+  const anthropic = new Anthropic();
+  let reportTextEn: string;
   try {
-    const anthropic = new Anthropic();
     const stream = anthropic.messages.stream({
       model: "claude-opus-4-6",
       max_tokens: maxTokens,
@@ -110,12 +120,12 @@ export async function POST(request: NextRequest) {
       messages: [{ role: "user", content: userMessage }],
     });
     const finalMessage = await stream.finalMessage();
-    reportText = finalMessage.content
+    reportTextEn = finalMessage.content
       .filter((block): block is Anthropic.TextBlock => block.type === "text")
       .map((block) => block.text)
       .join("");
 
-    if (!reportText) {
+    if (!reportTextEn) {
       console.error(
         "Claude produced no text output. stop_reason:",
         finalMessage.stop_reason,
@@ -132,15 +142,14 @@ export async function POST(request: NextRequest) {
   try {
     await db.collection("users").doc(userId).set(
       {
-        [`report_${reportLocale}`]: {
-          text: reportText,
+        report_en: {
+          text: reportTextEn,
           type: reportType,
           last_generated_at: FieldValue.serverTimestamp(),
           entry_count: entriesChronological.length,
         },
-        // Shared across locales: always overwritten with the current
-        // generation time, so it naturally reflects whichever language was
-        // generated most recently.
+        // Shared across locales: overwritten on every generation, so it
+        // naturally reflects the most recent one.
         report_generated_at: FieldValue.serverTimestamp(),
       },
       { merge: true },
@@ -148,6 +157,40 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("Failed to save generated report", error);
     return NextResponse.json({ error: "Could not save report." }, { status: 500 });
+  }
+
+  // Translation is best-effort: the English report is already saved above,
+  // so a translation failure shouldn't fail the whole request.
+  try {
+    const translationPrompt = buildTranslationPrompt(reportTextEn, userData?.gender);
+    const translationMessage = await anthropic.messages.create({
+      model: "claude-opus-4-6",
+      max_tokens: Math.ceil(maxTokens * 1.3),
+      messages: [{ role: "user", content: translationPrompt }],
+    });
+    const reportTextRu = translationMessage.content
+      .filter((block): block is Anthropic.TextBlock => block.type === "text")
+      .map((block) => block.text)
+      .join("")
+      .trim();
+
+    if (reportTextRu) {
+      await db.collection("users").doc(userId).set(
+        {
+          report_ru: {
+            text: reportTextRu,
+            type: reportType,
+            last_generated_at: FieldValue.serverTimestamp(),
+            entry_count: entriesChronological.length,
+          },
+        },
+        { merge: true },
+      );
+    } else {
+      console.error("Report translation produced no text output");
+    }
+  } catch (error) {
+    console.error("Failed to translate report to Russian", error);
   }
 
   // Report-ready email — gated per report type (short = 5-entry milestone,
@@ -205,7 +248,7 @@ export async function POST(request: NextRequest) {
                 title: "Your report is ready",
                 body: "Your trail has been read. Tap to see your patterns.",
               },
-              data: { url: `/${reportLocale}/report` },
+              data: { url: `/${requestedLocale}/report` },
             });
           } catch (error) {
             if ((error as { code?: string }).code === "messaging/registration-token-not-registered") {

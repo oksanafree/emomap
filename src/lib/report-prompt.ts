@@ -17,6 +17,30 @@ export function buildGenderInstruction(gender: string | undefined): string {
   return "Use gender-neutral or plural forms where possible in Russian.";
 }
 
+// Translation only — never re-analyzes the data. Generating the report once
+// in English and translating it keeps the two languages structurally and
+// substantively identical instead of producing two independently-written
+// analyses that can disagree with each other.
+export function buildTranslationPrompt(englishReport: string, gender: string | undefined): string {
+  const genderDescription =
+    gender === "female"
+      ? "female"
+      : gender === "male"
+        ? "male"
+        : "of unspecified gender — use gender-neutral or plural Russian forms where possible";
+
+  const instruction = [
+    "Translate the following psychological pattern report into Russian.",
+    `The user is ${genderDescription}.`,
+    "Use grammatically correct Russian verb forms and adjectives that match the user's gender throughout (e.g. \"двигалась\" not \"двигался\" for a female user).",
+    "Preserve all section headings, formatting, and structure exactly.",
+    "Use the following Russian names for the quadrant states: BUILDING → СТРОЮ, PROTECTING → ЗАЩИЩАЮ, RECEIVING → ПРИНИМАЮ, ENDURING → ТЕРПЛЮ, SEEKING → ИЩУ, DRIFTING → ДРЕЙФУЮ, BRACING → СЖИМАЮСЬ, OPENING → ОТКРЫВАЮСЬ, STILL → ТИШИНА.",
+    "Do not add, remove, or reinterpret any content — translate only.",
+  ].join(" ");
+
+  return `${instruction}\n\n${englishReport}`;
+}
+
 export function buildReportUserMessage(
   patterns: PatternVariables,
   entries: ReportEntry[],

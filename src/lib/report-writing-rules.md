@@ -18,6 +18,12 @@ The person reading the report is reading about themselves. Every sentence should
 
 **The voice:** A warm, observant friend. Not a clinician. Not an AI assistant explaining its analysis. Not a teacher.
 
+**Voice rules:**
+- Write in second person ("you") throughout
+- Warm but precise — not clinical, not academic
+- Short, direct sentences. No over-explanation, no hedging, no throat-clearing before getting to the point
+- Describe patterns you observe — what recurs, what changed, what correlated. Note correlations without claiming causation
+
 ---
 
 ## 2. The Two Languages — Never Mix Them
@@ -95,9 +101,32 @@ The report makes observations. It does not label them.
 ❌ "Something interesting to note:"
 ✅ Just note it.
 
+### Never say something is "worth noticing" or "worth knowing"
+This is the same announcing problem in a shorter disguise. State the observation directly instead of flagging that it deserves attention.
+
+❌ "Seeing the world as consistently generous is worth noticing."
+✅ "Seeing the world as consistently generous — how do you respond to what doesn't fit?"
+
+❌ "What refueled you each time is worth knowing."
+✅ "What refueled you each time?"
+
+### Never end a section with a takeaway, lesson, or moral
+The report describes what happened. It does not close a section by summarizing what the reader should learn from it.
+
+❌ "The lesson here is that recovery takes many forms."
+✅ End on the observation or question itself — no wrap-up sentence after it.
+
+### Avoid vague, meaningless phrases
+These sound reflective but say nothing concrete. Name the specific moment, condition, or change instead.
+
+❌ "The moments that mattered most."
+❌ "Everything fell away."
+❌ "What made that possible."
+✅ Name the actual moment, activity, or condition from the data.
+
 ### Never use the "not X, but Y" formula
-❌ "Worth noticing — not because it's wrong, but because the world and you are rarely that one-sided."
-✅ "Worth noticing because the world and you are rarely that one-sided."
+❌ "Not because it's unusual, but because it kept happening the same way each time."
+✅ "It happened the same way each time."
 
 ### Never compare to other users or norms
 ❌ "No other participant reached this level consistently."
@@ -142,7 +171,7 @@ Always point to it. Focus on the return, not the fall. Ask what helped — not w
 
 Template: "[Difficult state] happened. [Recovery] followed. What helped you get there?"
 
-Example: "Three times the world turned pressuring and you felt depleted. Three times you came back. What refueled you each time is worth noticing."
+Example: "Three times the world turned pressuring and you felt depleted. Three times you came back. What refueled you each time?"
 
 ### When emotions don't match perception
 Name the mismatch explicitly when it appears 2+ times or follows a pattern.
@@ -236,16 +265,16 @@ Appears as an additional observation, after the three cards.
 **Template for each state:**
 
 *Building dominant:*
-"Seeing the world as consistently generous and yourself as consistently capable is worth noticing. How do you respond to what doesn't fit — the obstacles, the resistance, the moments when circumstances aren't actually with you?"
+"The world has felt consistently generous, and you've consistently felt capable. How do you respond to what doesn't fit — the obstacles, the resistance, the moments when circumstances aren't actually with you?"
 
 *Protecting dominant:*
-"Seeing the world as consistently pressuring and yourself as consistently needing to push back is worth noticing. How do you respond to the moments when circumstances are actually with you, or when the pressure eases?"
+"The world has felt consistently pressuring, and you've consistently felt like you needed to push back. How do you respond to the moments when circumstances are actually with you, or when the pressure eases?"
 
 *Receiving dominant:*
-"Seeing the world as consistently open and yourself as consistently flowing through it is worth noticing. How do you respond to what asks something of you — the moments that require direction, a decision, or a push?"
+"The world has felt consistently open, and you've consistently felt like you were flowing through it. How do you respond to what asks something of you — the moments that require direction, a decision, or a push?"
 
 *Enduring dominant:*
-"Seeing the world as consistently against you and yourself as consistently without the resources to meet it is worth noticing. If this reading reflects how life has been feeling more broadly — not just these specific moments — it may be time to talk to someone."
+"The world has felt consistently against you, and you've consistently felt without the resources to meet it. If this reading reflects how life has been feeling more broadly — not just these specific moments — it may be time to talk to someone."
 
 ### Closing Encouragement Line
 
@@ -393,6 +422,10 @@ Every pair below is drawn from real corrections made during pilot report review.
 | Physical location from activity | Never infer physical setting from activity tokens. "Work / Study" → write "working" or "at work". Never write "at the desk", "at the computer", "in the office", "at the table". The system does not know where the person was. |
 | Duration/timing between entries | Never write "just minutes apart", "lasted only a few minutes", or any time gap claim between entries. Only use the timestamp to establish sequence (morning, afternoon, evening), not spacing. |
 | Abstract filler sentences | Remove sentences like "Both were the space the day moved through on the way somewhere else" — if a sentence doesn't communicate a concrete observation, cut it. |
+| X is worth noticing / worth knowing | [Remove the lead-in — state the observation directly instead of flagging that it deserves attention] |
+| The moments that mattered most | [Vague — name the specific moment from the data instead] |
+| Everything fell away | [Vague — describe concretely what changed] |
+| What made that possible | [Vague — name the specific condition or context from the data] |
 | Closing question with inferred setting | Closing questions must reference only what was actually logged (emotions, activity, social context). Never use an inferred location in a closing question. |
 
 ---
@@ -617,7 +650,7 @@ For every difficult period in the data, ask:
 - Is there a pattern across multiple recoveries?
 
 **Wrong framing:** "You fell into difficult territory three times."
-**Right framing:** "Three times the world turned hostile and you felt without agency. Three times you came back. What enabled the recovery is worth knowing."
+**Right framing:** "Three times the world turned hostile and you felt without agency. Three times you came back. What enabled the recovery?"
 
 When a recovery appears, always surface it explicitly and ask what made it possible.
 
