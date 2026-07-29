@@ -249,6 +249,7 @@
     "cta": "Go to my trail →"
   },
   "History": {
+    "newCheckinAria": "New check-in",
     "entriesCount": "{count, plural, one {# check-in} other {# check-ins}}",
     "daysCount": "{count, plural, one {# day} other {# days}}",
     "countdownFirstReport": "{remaining, plural, one {more check-in to your first report} other {more check-ins to your first report}}",

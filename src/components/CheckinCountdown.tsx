@@ -9,10 +9,9 @@ const FULL_REPORT_ENTRIES = 20;
 type CheckinCountdownProps = {
   entryCount: number;
   color: string;
-  onOpenReport: () => void;
 };
 
-export function CheckinCountdown({ entryCount, color, onOpenReport }: CheckinCountdownProps) {
+export function CheckinCountdown({ entryCount, color }: CheckinCountdownProps) {
   const t = useTranslations("History");
 
   if (entryCount >= FULL_REPORT_ENTRIES) return null;
@@ -27,13 +26,7 @@ export function CheckinCountdown({ entryCount, color, onOpenReport }: CheckinCou
         {remaining}
       </div>
       <p className={styles.label}>{label}</p>
-      {isEarly ? (
-        <p className={styles.subtext}>{t("countdownSubtextEarly")}</p>
-      ) : (
-        <button type="button" className={styles.link} onClick={onOpenReport}>
-          {t("countdownReportReadyLink")}
-        </button>
-      )}
+      {isEarly && <p className={styles.subtext}>{t("countdownSubtextEarly")}</p>}
     </div>
   );
 }

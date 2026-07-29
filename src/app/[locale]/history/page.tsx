@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { collection, doc, getDoc, getDocs, orderBy, query, Timestamp } from "firebase/firestore";
 import { Link, useRouter } from "@/i18n/navigation";
 import { useAnonymousAuth } from "@/lib/use-anonymous-auth";
+import { useSliderSound } from "@/lib/use-slider-sound";
 import { db } from "@/lib/firebase";
 import { isIOS, isStandalonePwa } from "@/lib/platform";
 import type { Intensity, StateKey } from "@/lib/state-detection";
@@ -45,6 +46,7 @@ function HistoryPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user, loading: authLoading } = useAnonymousAuth();
+  const { sndNav } = useSliderSound();
   const [entries, setEntries] = useState<HistoryEntry[] | null>(null);
   const [error, setError] = useState(false);
   const [showNotifPrompt, setShowNotifPrompt] = useState(false);
@@ -173,6 +175,11 @@ function HistoryPageInner() {
     router.push("/entries");
   }
 
+  function handleNewCheckin() {
+    sndNav();
+    router.push("/world");
+  }
+
   const dayCount = entries
     ? new Set(entries.filter((e) => e.timestamp).map((e) => e.timestamp!.toDateString())).size
     : 0;
@@ -281,6 +288,14 @@ function HistoryPageInner() {
                   />
                 );
               })}
+              <button
+                type="button"
+                className={styles.mapFab}
+                onClick={handleNewCheckin}
+                aria-label={t("newCheckinAria")}
+              >
+                <span className={styles.mapFabIcon} />
+              </button>
             </div>
             {showFirstDirectionLine && <p className={styles.firstDirectionText}>{t("firstDirectionText")}</p>}
 
@@ -309,11 +324,7 @@ function HistoryPageInner() {
           {newCheckinData && <ReturnNudge state={newCheckinData.state} />}
 
           {entries !== null && (
-            <CheckinCountdown
-              entryCount={entries.length}
-              color={countdownColor}
-              onOpenReport={() => router.push("/report")}
-            />
+            <CheckinCountdown entryCount={entries.length} color={countdownColor} />
           )}
 
           <div className={styles.legalLinks}>

@@ -249,6 +249,7 @@
     "cta": "Моя карта →"
   },
   "History": {
+    "newCheckinAria": "Новая отметка",
     "entriesCount": "{count, plural, one {# отметка} few {# отметки} many {# отметок} other {# отметок}}",
     "daysCount": "{count, plural, one {# день} few {# дня} many {# дней} other {# дней}}",
     "countdownFirstReport": "{remaining, plural, one {ещё отметка до первого отчёта} few {ещё отметки до первого отчёта} many {ещё отметок до первого отчёта} other {ещё отметок до первого отчёта}}",

@@ -113,14 +113,18 @@ function ReportPageInner() {
                   {t("generatedOn", { date: dateFormatter.format(generatedAt) })}
                 </p>
               )}
+              {canRefresh && (
+                <button
+                  type="button"
+                  className={styles.refreshBtn}
+                  onClick={handleRefresh}
+                  disabled={refreshing}
+                >
+                  {refreshing ? t("updating") : t("refresh")}
+                </button>
+              )}
               {reportText && <p className={styles.reportText}>{reportText}</p>}
             </>
-          )}
-
-          {canRefresh && (
-            <button type="button" className={styles.refreshBtn} onClick={handleRefresh} disabled={refreshing}>
-              {refreshing ? t("updating") : t("refresh")}
-            </button>
           )}
         </div>
       </div>
