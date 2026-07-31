@@ -15,22 +15,50 @@ const STATE_DESCRIPTIONS: Record<string, string> = {
   Still: "Neither pressing nor giving; neither acting nor yielding — a pause",
 };
 
+// Interpolated into the user message per-request (see STATE_SPECIFIC_GUIDANCE
+// below) rather than listing all nine in the system prompt, so the model
+// only ever sees the guidance relevant to the state actually submitted.
+const STATE_SPECIFIC_GUIDANCE: Record<string, string> = {
+  Building:
+    "Momentum state — energy is flowing in both directions, the situation helping and them directing. Acknowledge the alignment. Note this is a good time to make progress while conditions hold.",
+  Protecting:
+    "They are actively resisting or managing pressure while feeling capable. The key dynamic: active resistance costs energy. The risk is depletion, not the pressure itself. Acknowledge the active resistance specifically, name energy as the resource being spent (be direct, not poetic), and add a brief reminder not to burn all reserves. Tone reference only, do not reuse this wording verbatim: \"You're holding your ground against real pressure — and that takes fuel. Active resistance has a cost. Make sure you're not spending everything you have.\"",
+  Receiving:
+    "Receptive state — the situation is generous, they are letting go. Acknowledge the ease and openness. No urgency needed here.",
+  Enduring:
+    "The hardest state — pressure without agency. Acknowledge how much this costs. Don't rush toward solutions — just witness it accurately.",
+  Drifting:
+    "Neither signal nor direction. Name the emptiness specifically — not difficult, not easy. Note that this state often precedes a shift.",
+  Bracing:
+    "Pressure is here, response not yet formed. Acknowledge the tension of not yet knowing how to respond. This is a transition moment.",
+  Seeking:
+    "Directed without external signal. Acknowledge the internal drive without external confirmation. Note the uncertainty.",
+  Opening:
+    "The situation is offering something, they haven't fully decided how to meet it. Acknowledge the opportunity and the openness.",
+  Still:
+    "Both dimensions near center — neither signal nor direction, true center. This is rare — acknowledge it as such. Can be peaceful or numb — don't assume which.",
+};
+
 const SYSTEM_PROMPT = `You generate brief state notes for a psychological self-awareness app.
 The user has checked in and reported both a state position and an emotion label.
 
-Rules:
-- 1-2 sentences, under 40 words
-- Warm and present-tense
+General rules:
+- 2-3 sentences maximum
+- Write in second person, present tense
+- Be specific to what's actually happening in this state — no generic emotional language
+- Name what's actually at stake in the state, not just how it feels
 - Acknowledge the emotion label as something the user named — do not explain it or its cause
 - Do not claim the emotion is natural, expected, appropriate, surprising, or contradictory for the state
 - Do not use: "you need," "you should," "this means," "it makes sense that"
+- Do not use: "there's weight to," "carry the weight," "weight of," "this is meaningful," "honor this moment," or similar vague acknowledgments
 - Do not mention: trauma, healing, the nervous system, regulation, growth, resilience
 - Do not include advice or a question
 - Do not imply the app knows more than the submitted state and emotion
-- If intensity is high: the user is in a strong, clear version of this state. Acknowledge the weight or fullness of it directly.
+- If intensity is high: the user is in a strong, clear version of this state. Acknowledge the strength or fullness of it directly — without using the vague acknowledgment phrases above.
 - If intensity is low: the user is in a mild or ambiguous version of this state. Keep the note light and exploratory.
 - If intensity is medium: standard tone.
 - Never use the word "intensity" or "extreme" in the output.
+- Follow the state-specific guidance given for the state named in the user message.
 - If locale is "ru", respond in Russian`;
 
 const INTENSITY_LEVELS = ["low", "medium", "high"] as const;
@@ -42,14 +70,21 @@ const INTENSITY_DISTANCE_PHRASE: Record<IntensityLevel, string> = {
   high: "far from",
 };
 
+// Bumped whenever SYSTEM_PROMPT or STATE_SPECIFIC_GUIDANCE changes
+// meaningfully, so old cached notes written under prior rules stop being
+// served and get regenerated instead of silently persisting forever.
+const PROMPT_VERSION = "v2";
+
 // Serverless instances are ephemeral, so an in-memory cache wouldn't
 // reliably prevent duplicate calls for the same combination across
 // invocations — persist in Firestore instead, keyed by a hash of
-// state+emotion+intensity+locale (hashed rather than used raw so arbitrary
-// user-typed emotion text, including Cyrillic and punctuation, always makes a
-// safe, bounded-length Firestore document ID).
+// state+emotion+intensity+locale+promptVersion (hashed rather than used raw
+// so arbitrary user-typed emotion text, including Cyrillic and punctuation,
+// always makes a safe, bounded-length Firestore document ID).
 function cacheKeyFor(state: string, emotion: string, intensity: string, locale: string): string {
-  return createHash("sha256").update(`${state}::${emotion}::${intensity}::${locale}`).digest("hex");
+  return createHash("sha256")
+    .update(`${state}::${emotion}::${intensity}::${locale}::${PROMPT_VERSION}`)
+    .digest("hex");
 }
 
 export async function POST(request: NextRequest) {
@@ -99,6 +134,7 @@ export async function POST(request: NextRequest) {
   const userMessage = [
     `State: ${state}`,
     `State meaning: ${description}`,
+    `State-specific guidance: ${STATE_SPECIFIC_GUIDANCE[state]}`,
     `Emotion the user chose: ${emotion}`,
     `Intensity: ${resolvedIntensity} — the user's position is ${INTENSITY_DISTANCE_PHRASE[resolvedIntensity]} the center of the map`,
     `Locale: ${resolvedLocale}`,
@@ -133,6 +169,7 @@ export async function POST(request: NextRequest) {
       emotion,
       intensity: resolvedIntensity,
       locale: resolvedLocale,
+      prompt_version: PROMPT_VERSION,
       created_at: new Date().toISOString(),
     });
   } catch (error) {
