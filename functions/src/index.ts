@@ -1,5 +1,5 @@
 import { onSchedule } from "firebase-functions/v2/scheduler";
-import { onDocumentUpdated } from "firebase-functions/v2/firestore";
+import { onDocumentCreated, onDocumentUpdated } from "firebase-functions/v2/firestore";
 import * as functionsV1 from "firebase-functions/v1";
 import { defineSecret } from "firebase-functions/params";
 import { initializeApp } from "firebase-admin/app";
@@ -8,35 +8,22 @@ import { getMessaging } from "firebase-admin/messaging";
 import { getAuth } from "firebase-admin/auth";
 import { Resend } from "resend";
 import * as logger from "firebase-functions/logger";
+import {
+  EMAIL_FROM,
+  WELCOME_EMAIL_FROM,
+  REMINDER_CONTENT,
+  WELCOME_CONTENT,
+  INSTALL_PROMPT_CONTENT,
+  buildReminderEmailContent,
+  buildWelcomeEmailContent,
+  buildInstallPromptEmailContent,
+  resolveLocale,
+  type Locale,
+} from "./email-templates";
 
 initializeApp();
 
 const resendApiKey = defineSecret("RESEND_API_KEY");
-
-// Requires a domain (or subdomain, e.g. mail.emomapp.app) verified in the
-// Resend dashboard — until that's done, sends from this address will fail.
-const EMAIL_FROM = "Emomapp <reminders@emomapp.app>";
-
-type Locale = "en" | "ru";
-
-const REMINDER_CONTENT: Record<Locale, { subject: string; body: string; cta: string; url: string }> = {
-  en: {
-    subject: "Mark yourself on Emomapp",
-    body: "Hey! This is a reminder to log your mood on Emomapp. The best time to check in is right after something shifts — a difficult conversation, a burst of energy or a moment of calm. Open Emomapp when you feel it and add a note. The more you check in, the more detailed your report becomes.",
-    cta: "Check in now →",
-    url: "https://emomapp.app/en",
-  },
-  ru: {
-    subject: "Отметься на Эмокарте",
-    body: "Здравствуйте. Это напоминание зайти на Эмокарту и отметить ваше состояние. Лучший момент для отметки — сразу после того, как что-то изменилось. Тяжёлый разговор, прилив энергии или неожиданное спокойствие. Откройте Emomapp когда ощущаете, что пора. Чем чаще вы отмечаетесь на Эмокарте, тем подробнее будет отчёт о ваших скрытых тенденциях.",
-    cta: "Отметиться →",
-    url: "https://emomapp.app/ru",
-  },
-};
-
-function resolveLocale(value: unknown): Locale {
-  return value === "ru" ? "ru" : "en";
-}
 
 // The UTC instant corresponding to 00:00:00 today in `timeZone`. Used to
 // decide whether a user's latest entry happened "today" (calendar day in
@@ -49,12 +36,6 @@ function startOfTodayUtc(timeZone: string): Date {
   const asUtc = new Date(midnightUtcGuess.toLocaleString("en-US", { timeZone: "UTC" }));
   const offsetMs = asUtc.getTime() - asTz.getTime();
   return new Date(midnightUtcGuess.getTime() + offsetMs);
-}
-
-function buildEmailContent(content: (typeof REMINDER_CONTENT)[Locale]) {
-  const text = `${content.subject}\n\n${content.body}\n\n${content.cta} ${content.url}`;
-  const html = `<p>${content.body}</p><p><a href="${content.url}">${content.cta}</a></p>`;
-  return { text, html };
 }
 
 async function sendReminders() {
@@ -139,7 +120,7 @@ async function sendReminders() {
           const userRecord = await getAuth().getUser(userDoc.id);
           if (!userRecord.email) return;
 
-          const { text: emailText, html: emailHtml } = buildEmailContent(content);
+          const { text: emailText, html: emailHtml } = buildReminderEmailContent(content);
           const { error } = await resend.emails.send({
             from: EMAIL_FROM,
             to: userRecord.email,
@@ -164,78 +145,6 @@ export const dailyReminder = onSchedule(
     await sendReminders();
   },
 );
-
-// Distinct from EMAIL_FROM (reminders@emomapp.app) — the welcome email
-// sends from reminder@ on the mail. subdomain verified in Resend.
-const WELCOME_EMAIL_FROM = "Emomapp <reminder@mail.emomapp.app>";
-
-type WelcomeContent = {
-  subject: string;
-  intro: string;
-  questionsIntro: string;
-  bullets: [string, string];
-  paragraph2: string;
-  paragraph3: string;
-  closing: string;
-  signatureName: string;
-  telegramText: string;
-  telegramUrl: string;
-};
-
-const WELCOME_CONTENT: Record<Locale, WelcomeContent> = {
-  en: {
-    subject: "Welcome to Emomapp",
-    intro: "Emomapp doesn't measure how you feel — it measures how your inner state shifts.",
-    questionsIntro: "Most apps ask you to rate your mood. Emomapp asks two different questions:",
-    bullets: ["How is the situation impacting you right now?", "How are you impacting the situation?"],
-    paragraph2:
-      "Your answers place a dot on a 2D map. Check in a few times today — after a meeting, a meal, when the energy shifts. The trajectory between dots is where the insight lives.",
-    paragraph3: "After 5 check-ins, your first pattern report appears. After 20, the full picture.",
-    closing: "Welcome to your map.",
-    signatureName: "Emomapp",
-    telegramText: "Join our community:",
-    telegramUrl: "https://t.me/+gpylW64kg_lkOTUx",
-  },
-  ru: {
-    subject: "Добро пожаловать в Эмокарту",
-    intro: "Эмокарта измеряет не то, что ты чувствуешь — она измеряет то, как твои чувства меняются.",
-    questionsIntro: "Большинство приложений просят оценить настроение. Эмокарта задаёт два других вопроса:",
-    bullets: ["Как обстоятельства влияют на тебя прямо сейчас?", "Как ты влияешь на обстоятельства?"],
-    paragraph2:
-      "Твои ответы — точка на двумерной карте. Отметься несколько раз сегодня — после встречи, еды, смены состояния. Траектория между точками — это и есть инсайт.",
-    paragraph3: "После 5 отметок появится твой первый отчёт о паттернах. После 20 — полная картина.",
-    closing: "Добро пожаловать на свою карту.",
-    signatureName: "Эмокарта",
-    telegramText: "Присоединяйся к сообществу:",
-    telegramUrl: "https://t.me/+CNtztWwlF6syODlh",
-  },
-};
-
-function buildWelcomeEmailContent(content: WelcomeContent) {
-  const bulletsHtml = `<ul>${content.bullets.map((bullet) => `<li>${bullet}</li>`).join("")}</ul>`;
-  const bulletsText = content.bullets.map((bullet) => `· ${bullet}`).join("\n");
-
-  const html = [
-    `<p>${content.intro}</p>`,
-    `<p>${content.questionsIntro}</p>`,
-    bulletsHtml,
-    `<p>${content.paragraph2}</p>`,
-    `<p>${content.paragraph3}</p>`,
-    `<p>${content.closing}<br/>— ${content.signatureName}</p>`,
-    `<p>${content.telegramText} <a href="${content.telegramUrl}">${content.telegramUrl}</a></p>`,
-  ].join("");
-
-  const text = [
-    content.intro,
-    `${content.questionsIntro}\n${bulletsText}`,
-    content.paragraph2,
-    content.paragraph3,
-    `${content.closing}\n— ${content.signatureName}`,
-    `${content.telegramText} ${content.telegramUrl}`,
-  ].join("\n\n");
-
-  return { html, text };
-}
 
 async function sendWelcomeEmailToUser(uid: string, email: string, locale: Locale) {
   const content = WELCOME_CONTENT[locale];
@@ -309,5 +218,50 @@ export const sendPendingWelcomeEmail = onDocumentUpdated(
     }
 
     await event.data!.after.ref.update({ welcome_email_pending: false });
+  },
+);
+
+// Fires on every new entry, but only ever sends once per user: gated on the
+// install_prompt_email_sent flag, which is only set after a successful send.
+// Anonymous users have no email (getUser().email is undefined) and are
+// skipped without setting the flag, so a user who checks in anonymously
+// before signing up still gets the prompt on their first entry after a real
+// email exists, instead of never getting it at all.
+export const sendInstallPromptEmail = onDocumentCreated(
+  { document: "users/{userId}/entries/{entryId}", secrets: [resendApiKey] },
+  async (event) => {
+    const userId = event.params.userId;
+    const db = getFirestore();
+    const userRef = db.collection("users").doc(userId);
+
+    try {
+      const userSnap = await userRef.get();
+      const userData = userSnap.data();
+      if (userData?.install_prompt_email_sent === true) return;
+
+      const userRecord = await getAuth().getUser(userId);
+      if (!userRecord.email) return;
+
+      const content = INSTALL_PROMPT_CONTENT[resolveLocale(userData?.locale)];
+      const { html, text } = buildInstallPromptEmailContent(content);
+      const resend = new Resend(resendApiKey.value());
+
+      const { error } = await resend.emails.send({
+        from: WELCOME_EMAIL_FROM,
+        to: userRecord.email,
+        subject: content.subject,
+        text,
+        html,
+      });
+
+      if (error) {
+        logger.error(`Failed to send install-prompt email to ${userId}`, error);
+        return;
+      }
+
+      await userRef.set({ install_prompt_email_sent: true }, { merge: true });
+    } catch (error) {
+      logger.error(`Failed to send install-prompt email to ${userId}`, error);
+    }
   },
 );
