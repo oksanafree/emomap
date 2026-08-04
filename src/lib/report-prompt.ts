@@ -77,10 +77,10 @@ export function buildReportUserMessage(
           "",
           "This response streams to the reader word by word as you write it, so write the report as the final text directly — plain paragraphs, not the JSON structure from Section 13.",
           "Open with the pattern statement as a lead paragraph, no heading.",
-          "For each of the three cards (WHAT YOUR MAP SHOWS, WHAT THIS REVEALS, SOMETHING TO WATCH), put its label in capital letters alone on its own line, then the card's text on the next line.",
+          "Write the three angles (what the map shows, what this reveals, something to watch) as connected flowing paragraphs, in that order — no capitalized labels or headings. This report is under 20 entries, and section headers are reserved for reports that long or longer.",
           "Follow with any axis note or distortion flag as plain paragraphs if they apply.",
-          "After the SOMETHING TO WATCH card, add the closing encouragement line described at the end of Section 6, as its own short paragraph.",
-          "Separate every paragraph and labeled card with a single blank line. Do not use markdown formatting (no #, *, or backticks) and do not wrap anything in JSON.",
+          "After the last paragraph, add the closing encouragement line described at the end of Section 6, as its own short paragraph.",
+          "Separate every paragraph with a single blank line. Do not use markdown formatting (no #, *, or backticks) and do not wrap anything in JSON.",
         ]
       : [
           "Generate a full report following the Fourteen-Entry Report Structure (Section 7) and the content guidance in the Output Format (Section 13) from your instructions.",

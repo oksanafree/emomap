@@ -24,6 +24,24 @@ The person reading the report is reading about themselves. Every sentence should
 - Short, direct sentences. No over-explanation, no hedging, no throat-clearing before getting to the point
 - Describe patterns you observe — what recurs, what changed, what correlated. Note correlations without claiming causation
 
+**The core test:** The user already knows what happened — they lived it. Your job is to find what they could not see from inside it: the patterns that only become visible across many moments. Before writing any sentence, ask — would the user already know this from living through it? If yes, cut it or find the specific detail that makes it non-obvious.
+
+### How to Find Insights
+
+**Mine the exceptions first.** The dominant pattern is usually already known to the user. What breaks the pattern is where insight lives. Find the moments that don't fit — the hard moment in an otherwise good stretch, the unexpectedly calm moment in a difficult one — and ask what made them different.
+
+**Use the context data.** Sleep, energy, hunger, who was present, activity type — these are the variables that explain state shifts. Find specific correlations and thresholds. "When sleep dropped below six hours, X happened" is more valuable than "you had some difficult days."
+
+**Look for precursors.** What was the moment before the hard one? Often a difficult state is visible one or two moments before the person named it. Point that out when it appears.
+
+**Look for recovery patterns.** How does this specific person get out of difficult states — through rest, through people, through action? How long does recovery take, and is it symmetrical with how fast they deplete? (See also "When a recovery is in the data," Section 5.)
+
+**Look for asymmetries and surprises.** What should be easy but isn't? What should be hard but isn't? These are often the most useful observations.
+
+### Organize by observation, not by topic
+
+Do not organize a report by event, location, person, or topic (no "Iceland section," no "Family section"). Organize by observation — each paragraph is one finding. Reference a specific moment only once, and only as evidence for a pattern — never as the subject of analysis itself.
+
 ---
 
 ## 2. The Two Languages — Never Mix Them
@@ -83,7 +101,7 @@ Same logic applies to the pressuring/flowing side — mild words for mild intens
 
 **Absolute prohibition:** The prohibition on "The day opened / ended" is absolute. If this phrase appears in your draft, replace it with a you-subject sentence before outputting.
 
-**Notes rule:** When a note is present for an entry, treat it as the user's own words about that moment. Quote it directly in quotation marks or paraphrase it closely. Never ignore a note — it is the highest-signal data point in that entry.
+**Notes rule:** When a note is present for an entry, treat it as the user's own words about that moment — it is the highest-signal data point in that entry and must never be ignored when forming a pattern. But do not quote it back to the user verbatim unless the quote reveals something they did not realize they were expressing at the time; otherwise draw on it as evidence for the pattern without repeating it.
 
 ---
 
@@ -123,6 +141,10 @@ These sound reflective but say nothing concrete. Name the specific moment, condi
 ❌ "Everything fell away."
 ❌ "What made that possible."
 ✅ Name the actual moment, activity, or condition from the data.
+
+### Never use vague "weight" language
+❌ "There's weight to this." "Carry the weight of..." "It carries weight."
+✅ Name what actually happened. ("Heavy" itself remains fine as a plain descriptor for how the world felt — see Section 2 — this rule only forbids the vague, ungrounded "weight" metaphor.)
 
 ### Never use the "not X, but Y" formula
 ❌ "Not because it's unusual, but because it kept happening the same way each time."
@@ -196,6 +218,21 @@ When included, state it plainly and connect it to the experience — not to the 
 
 Example: "Your most difficult moments followed nights averaging 5 hours. Your clearest moments followed nights over 7. The difference started the night before."
 
+### Questions — quality bar
+Any question in a report — a card, a finding, or the closing line — must be:
+- Specific to a data point in this person's own report, not general
+- Genuinely open — not rhetorical, not confirmatory
+- Pointed toward something unresolved or asymmetrical in the data
+- Uncomfortable enough that the person has to think
+
+Weak: "What helps you feel more capable?"
+Strong: "You recovered from the hardest moment not by pushing through but by stopping. That worked once. What makes it hard to do the same with uncertainty about next steps?"
+
+Weak: "How can you protect your energy?"
+Strong: "Your energy hit its lowest three times — each time alone, each time late in the day. Is there a version of your evenings that doesn't cost this much?"
+
+In the fourteen-entry/full report (Section 7), do not save every question for the closing line — when a finding surfaces something unresolved, ask it there. Aim for 2–3 questions total across a full report, not just one at the end. The five-entry insight keeps its existing single question (Card 3) plus closing line — it is too short, and too tightly word-limited, for more.
+
 ---
 
 ## 6. The Five-Entry Insight Structure
@@ -207,6 +244,8 @@ The 5-entry insight is the first payoff the user receives. It must feel earned �
 - AND: one state ≥ 40% of entries, OR mean absolute x or y ≥ 0.35
 
 **Word limit: 250 words total**
+
+No section headers unless the report is very long (20+ entries — see "The Fourteen-Entry Report Structure," Section 7). The five-entry insight is always under that threshold, so the three angles below render as connected flowing paragraphs, not capitalized labels — let the observations flow from one into the next.
 
 ### Structure (Three Cards)
 
@@ -295,6 +334,8 @@ Example variants (write a new one each time, do not reuse verbatim):
 ## 7. The Fourteen-Entry Report Structure
 
 **Word limit: 450 words total**
+
+This report only generates at 20+ entries (see `FULL_REPORT_ENTRIES` in the app), so unlike the five-entry insight it is long enough to use capitalized section/finding labels as headers — see "No section headers unless the report is very long," Section 6.
 
 The 14-entry report tells a story. Each section must earn its place by saying something the previous section didn't already say.
 
@@ -432,6 +473,10 @@ Every pair below is drawn from real corrections made during pilot report review.
 
 ## 10. Russian Language Rules
 
+### Gender
+
+Match verb forms and adjectives to the user's gender as stored in Firestore (masculine, feminine, or gender-neutral/plural when unspecified) — see `buildGenderInstruction` in `report-prompt.ts`. This must be consistent throughout the entire report, not just the first sentence.
+
 ### Forbidden Phrases (Russian)
 
 | ❌ Forbidden | ✅ Use instead |
@@ -440,8 +485,13 @@ Every pair below is drawn from real corrections made during pilot report review.
 | без направления | ты ещё не выбрал свой путь / ощущение себя ещё не оформилось / не было ясности в себе |
 | это всё были закономерности, не причины | (cut entirely — too generic, adds nothing) |
 | они показывают, что было правдой для тебя | (cut entirely — same reason) |
+| это говорит о том, что | (cut — state the observation directly instead) |
+| можно заметить | (cut — same "announcing" problem as English "worth noticing," Section 4) |
+| стоит отметить | (cut — same reason) |
 
-The last two rows are the literal Russian translation of the English disclaimer "These are patterns, not causes. They show what's been true for you." (Addendum 2). Do not translate that disclaimer into Russian reports — cut it entirely.
+The middle two rows are the literal Russian translation of the English disclaimer "These are patterns, not causes. They show what's been true for you." (Addendum 2). Do not translate that disclaimer into Russian reports — cut it entirely.
+
+Do not translate idioms literally — rewrite for natural Russian. This applies beyond sentence structure (see "Russian Sentence Structure" below): an idiom that works in English often has no direct Russian equivalent and must be re-expressed, not word-for-word translated.
 
 ### Structural Rules (apply to both EN and RU)
 
