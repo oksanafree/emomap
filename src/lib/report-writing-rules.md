@@ -30,17 +30,37 @@ The person reading the report is reading about themselves. Every sentence should
 
 **Mine the exceptions first.** The dominant pattern is usually already known to the user. What breaks the pattern is where insight lives. Find the moments that don't fit — the hard moment in an otherwise good stretch, the unexpectedly calm moment in a difficult one — and ask what made them different.
 
-**Use the context data.** Sleep, energy, hunger, who was present, activity type — these are the variables that explain state shifts. Find specific correlations and thresholds. "When sleep dropped below six hours, X happened" is more valuable than "you had some difficult days."
+**Use the context data precisely.** Sleep, energy, hunger, who was present, activity type, time of day — these are the variables that explain state shifts. Find specific correlations and thresholds, and use the actual numbers from the data. "When sleep dropped below six hours, direction disappeared" is more valuable than "you had some difficult days."
 
 **Look for precursors.** What was the moment before the hard one? Often a difficult state is visible one or two moments before the person named it. Point that out when it appears.
 
-**Look for recovery patterns.** How does this specific person get out of difficult states — through rest, through people, through action? How long does recovery take, and is it symmetrical with how fast they deplete? (See also "When a recovery is in the data," Section 5.)
+**Look for recovery patterns.** How does this specific person get out of difficult states — through rest, through people, through stopping, through action? How long does recovery take, and is it symmetrical with how fast they deplete? Be specific — "you came back by morning" is a pattern worth naming. (See also "When a recovery is in the data," Section 5.)
+
+**Look for what is absent.** Which states never appeared, or almost never? Absence is data worth noting factually — but never turn it into a capacity claim (see "Forbidden: absent-state commentary," Section 4). State plainly that a state didn't appear; do not add reassurance that the capacity "exists in everyone."
 
 **Look for asymmetries and surprises.** What should be easy but isn't? What should be hard but isn't? These are often the most useful observations.
 
 ### Organize by observation, not by topic
 
 Do not organize a report by event, location, person, or topic (no "Iceland section," no "Family section"). Organize by observation — each paragraph is one finding. Reference a specific moment only once, and only as evidence for a pattern — never as the subject of analysis itself.
+
+Do not give a single dramatic event its own section. If an event produced a useful insight, it belongs inside the pattern it supports, as one example — not as a standalone chapter weighted equally with weeks of data.
+
+Do not write a closing chronological summary of the period. A timeline retells what happened — that is not analysis. If you write an arc (Section 7's MAP STORY), make it about what changed in the pattern, not what happened on the calendar.
+
+### Language Rules
+
+**Perception, not the world.** Never write "the world felt," "the world turned," or "the world changed" as the grammatical subject of a sentence. "World axis" in Section 2 and the Addendum names which data axis a word belongs to — it is not literal phrasing to output. In the generated text, it is always the person's perception that shifts, not the world itself. Write "your perception of the situation felt X," "the situation felt X to you," "how the circumstances felt to you was X." This is not stylistic — it is the core of the appraisal theory the app is built on.
+
+**Avoid state names for general readers.** "Building," "Protecting," "Receiving," "Enduring," and the other five states mean nothing to someone unfamiliar with the app. Describe the state instead of naming it — "the moments where you felt capable and the situation felt cooperative," not "your Building moments." If a state name appears at all, gloss it on first use. (This supersedes the old "use state names naturally throughout" guidance — see the Addendum's State Names section.)
+
+**Concrete observations need a concrete takeaway.** If the work didn't change but the conditions did, say what specifically changed — the hour, whether they were alone, what platform they were on. Don't stop at the observation; land it.
+
+**Cut transitional sentences that add no information.** "What followed is worth looking at closely" — delete. "Here is something interesting" — delete. Say the thing.
+
+**Don't be alarmistic about temporary states.** One difficult moment after weeks of good ones is not a collapse. Don't write "one bad night undid what weeks had built." The report doesn't know what comes next.
+
+**Open with the most non-obvious finding, not the most obvious summary.** The first sentence sets the standard for everything that follows. "You had mostly good days" fails the core test above. The most surprising or specific observation earns the opening.
 
 ---
 
@@ -70,7 +90,7 @@ Used between developers, in the spec, and in code. **Never appears in any user-f
 ### Report Language
 What users read. Describes experience, perception, feeling — never mechanics.
 
-**For the world axis:**
+**For the world axis** (attach these to "the situation felt..." or "your perception of the circumstances was..." — never to "the world," per "Perception, not the world," Section 1):
 - Cooperative, generous, open, giving, caring, welcoming, with you, supportive, favorable
 - Pressuring, demanding, resistant, against you, pushing back, heavy, hostile
 
@@ -144,7 +164,17 @@ These sound reflective but say nothing concrete. Name the specific moment, condi
 
 ### Never use vague "weight" language
 ❌ "There's weight to this." "Carry the weight of..." "It carries weight."
-✅ Name what actually happened. ("Heavy" itself remains fine as a plain descriptor for how the world felt — see Section 2 — this rule only forbids the vague, ungrounded "weight" metaphor.)
+✅ Name what actually happened. ("Heavy" itself remains fine as a plain descriptor for how the situation felt — see Section 2 — this rule only forbids the vague, ungrounded "weight" metaphor.)
+
+### Never write "every single time"
+If the pattern is consistent, state it once with precision instead of repeating an absolute qualifier.
+
+❌ "Every single time you were online, the situation felt against you."
+✅ "Each time you were online, the situation felt against you."
+
+### Never frame a temporary or isolated state as alarming
+❌ "One bad night undid what weeks had built."
+✅ Describe what happened without projecting collapse. The report doesn't know what comes next.
 
 ### Never use the "not X, but Y" formula
 ❌ "Not because it's unusual, but because it kept happening the same way each time."
@@ -193,7 +223,7 @@ Always point to it. Focus on the return, not the fall. Ask what helped — not w
 
 Template: "[Difficult state] happened. [Recovery] followed. What helped you get there?"
 
-Example: "Three times the world turned pressuring and you felt depleted. Three times you came back. What refueled you each time?"
+Example: "Three times your perception of the situation turned pressuring and you felt depleted. Three times you came back. What refueled you each time?"
 
 ### When emotions don't match perception
 Name the mismatch explicitly when it appears 2+ times or follows a pattern.
@@ -205,11 +235,11 @@ Then describe both sides specifically — the emotion and what the perception sa
 Example: "The work felt demanding and you perceived yourself without much direction — but the emotion was Inspired. What you felt and how you perceived the situation weren't in the same place."
 
 ### When a region is completely absent
-Note it gently, without judgment. Frame it as capability, not deficit.
+State it factually and without judgment. Do not follow it with a capacity claim or reassurance — see "Forbidden: absent-state commentary and capacity claims" (Section 4). Just note that it didn't appear.
 
-Example: "Your two weeks moved through almost every region except one — where the world feels against you and you push back. That capacity exists in everyone. These two weeks simply didn't bring it out."
+Example: "Your two weeks moved through almost every region except one — where the situation feels against you and you push back."
 
-For the always-cooperative-world participant specifically: add a pointer toward activities that introduce friction — games, physical challenges, competitive moments — framed as capability maintenance.
+For a participant whose perception of the situation is consistently cooperative specifically: add a pointer toward activities that introduce friction — games, physical challenges, competitive moments.
 
 ### When sleep or energy crosses threshold
 Only include if: sleep difference > 1h between states, or energy difference > 2 points, or any single energy ≤ 2.
@@ -255,7 +285,7 @@ Pure description of the dominant pattern. What the coordinates showed, in experi
 - No interpretation
 - No quadrant names
 
-Example: "The world felt pressuring — and you perceived yourself as capable of pushing back. That appeared again and again."
+Example: "The situation felt pressuring to you — and you perceived yourself as capable of pushing back. That appeared again and again."
 
 **Card 2 — WHAT THIS REVEALS**
 One layer deeper — what does this recurring perception say about the person's orientation?
@@ -278,9 +308,9 @@ Examples by state:
 
 *Protecting:* "Pushing against resistance burns more than moving with it. Your next moments will show whether — and how — you replenish."
 
-*Receiving:* "The world felt open every time. To notice the part of you that engages with resistance, look for moments that ask something of you — a game, a physical challenge, a competitive situation. Is there anything like that in your life right now?"
+*Receiving:* "The situation felt open to you every time. To notice the part of you that engages with resistance, look for moments that ask something of you — a game, a physical challenge, a competitive situation. Is there anything like that in your life right now?"
 
-*Enduring:* "When the world feels this overpowering, it may drain you. Keep noticing what helps to change the experience even a bit — rest, another person, an activity."
+*Enduring:* "When the situation feels this overpowering, it may drain you. Keep noticing what helps to change the experience even a bit — rest, another person, an activity."
 
 ### Axis State Note (when axis states are present)
 If axis states (Opening, Bracing, Seeking, Drifting, Still) appear alongside quadrant states, include a brief transition note woven into the main text — not as a separate card.
@@ -290,11 +320,11 @@ Focus on: what dimension was ambiguous (self or world), what it was transitionin
 One or two sentences only.
 
 Examples:
-- *Opening:* "Several moments the world felt open but how you saw yourself in it was still forming — not yet directed, not yet flowing."
-- *Bracing:* "Several moments the world felt pressuring before your response to it had settled — neither pushing back nor going with it yet."
-- *Seeking:* "Several moments you felt directed and ready, while the world's direction was still unclear."
-- *Drifting:* "Several moments you were going with something, while the world's direction hadn't declared itself."
-- *Still:* "Several moments neither dimension had settled — both the world and your own role in it were still forming."
+- *Opening:* "Several moments the situation felt open to you but how you saw yourself in it was still forming — not yet directed, not yet flowing."
+- *Bracing:* "Several moments the situation felt pressuring before your response to it had settled — neither pushing back nor going with it yet."
+- *Seeking:* "Several moments you felt directed and ready, while how the situation was headed still felt unclear."
+- *Drifting:* "Several moments you were going with something, while where the situation was headed hadn't declared itself."
+- *Still:* "Several moments neither dimension had settled — both your read on the situation and your own role in it were still forming."
 
 ### Distortion Flag (triggered separately)
 Triggered when: one state > 80% of entries, OR consistent extreme intensity (mean r_norm > 0.65).
@@ -304,16 +334,16 @@ Appears as an additional observation, after the three cards.
 **Template for each state:**
 
 *Building dominant:*
-"The world has felt consistently generous, and you've consistently felt capable. How do you respond to what doesn't fit — the obstacles, the resistance, the moments when circumstances aren't actually with you?"
+"The situation has felt consistently generous to you, and you've consistently felt capable. How do you respond to what doesn't fit — the obstacles, the resistance, the moments when circumstances aren't actually with you?"
 
 *Protecting dominant:*
-"The world has felt consistently pressuring, and you've consistently felt like you needed to push back. How do you respond to the moments when circumstances are actually with you, or when the pressure eases?"
+"The situation has felt consistently pressuring to you, and you've consistently felt like you needed to push back. How do you respond to the moments when circumstances are actually with you, or when the pressure eases?"
 
 *Receiving dominant:*
-"The world has felt consistently open, and you've consistently felt like you were flowing through it. How do you respond to what asks something of you — the moments that require direction, a decision, or a push?"
+"The situation has felt consistently open to you, and you've consistently felt like you were flowing through it. How do you respond to what asks something of you — the moments that require direction, a decision, or a push?"
 
 *Enduring dominant:*
-"The world has felt consistently against you, and you've consistently felt without the resources to meet it. If this reading reflects how life has been feeling more broadly — not just these specific moments — it may be time to talk to someone."
+"The situation has felt consistently against you, and you've consistently felt without the resources to meet it. If this reflects how life has been feeling more broadly — not just these specific moments — it may be time to talk to someone."
 
 ### Closing Encouragement Line
 
@@ -401,12 +431,12 @@ When high challenge + high meaning appear together in a difficult state: "The si
 ### Social context
 Include when one social context appears in ≥75% of a state's moments.
 Online is always flagged separately when it correlates with a difficult state.
-Example: "Two moments logged as online. Both times the world felt pressuring and you felt without direction."
+Example: "Two moments logged as online. Both times the situation felt pressuring to you and you felt without direction."
 
 ### Activity correlations
 Include when a specific activity appears consistently in a state (≥70% of that activity's entries).
 Use specific, concrete language — not category names when free text is available.
-Example: "Driving appeared three times. Every time, the world felt against you and you felt without direction."
+Example: "Driving appeared three times. Each time, the situation felt against you and you felt without direction."
 
 ### Emotion-appraisal mismatches
 Include when ≥3 mismatches or a consistent pattern in one state.
@@ -429,13 +459,13 @@ Every pair below is drawn from real corrections made during pilot report review.
 
 | ❌ Never write | ✅ Write instead |
 |---|---|
-| Your reading of the world | How you perceived the world / how the world felt |
+| Your reading of the world / The world felt | How you perceived the situation / your perception of the situation felt |
 | Your self-reading | How you saw yourself / how you felt about your own capacity |
 | The map shows | [Describe the experience directly] |
 | Entry / entries | Moment / moments |
 | Position on the map | [Describe where the experience landed] |
 | The sliders | How you described the moment / how you perceived the situation |
-| State names used only once, in parentheses | State names are proper names — use them naturally throughout as named moments, transitions, or shorthand. Never as a sentence's grammatical subject; never piled up in one sentence. See the State Names Rule (Addendum, "The Core Principle: Experience First, Coordinates Never"). |
+| Building / Protecting / Receiving / Enduring (bare, unglossed) | State names mean nothing to a reader unfamiliar with the app — describe the state instead ("the moments where you felt capable and the situation felt cooperative"). If a name appears at all, gloss it on first use. See the State Names section (Addendum, "The Core Principle: Experience First, Coordinates Never"). |
 | You took action | You perceived yourself as directing |
 | You pushed back | Your self-perception stayed directed / you saw yourself as capable of meeting it |
 | You arrived in full action | You came to the situation seeing yourself as capable and directed |
@@ -448,7 +478,7 @@ Every pair below is drawn from real corrections made during pilot report review.
 | The world and you are rarely that one-sided | [Remove — it invalidates the person's experience] |
 | No other participant | [Remove — never compare to others] |
 | Average of X | [Use natural language: "mostly", "often", "each time"] |
-| The situation was with you | The world felt open / the circumstances felt generous |
+| The situation was with you | Your perception of the situation felt open / the circumstances felt generous to you |
 | The emotion moved more than the sliders | What you felt and how you perceived the moment weren't in the same place |
 | You should | [Remove — never prescribe] |
 | You need to | [Remove — never prescribe] |
@@ -591,20 +621,20 @@ Bad labels: "Activity correlation", "Sleep finding", "Mismatch detection", "Patt
 
 Every report insight must be translatable into the vocabulary of the two axes. If a sentence cannot be traced back to one or both axes, rewrite it.
 
-**World axis — how the situation/world felt toward the person:**
+**World axis — how the situation felt toward the person (never "the world" as the sentence's subject — see "Perception, not the world," Section 1):**
 
-Positive side (world felt caring, giving, on their side):
-- the world felt friendly / caring / generous / rewarding / on your side
+Positive side (situation felt caring, giving, on their side):
+- the situation felt friendly / caring / generous / rewarding / on your side
 - circumstances felt like they were giving to you
 - things felt like they were working for you
 
-Negative side (world felt hostile, draining, taking):
-- the world felt hostile / draining / working against you / taking from you
+Negative side (situation felt hostile, draining, taking):
+- the situation felt hostile / draining / working against you / taking from you
 - circumstances felt like they were pushing back
-- the world felt indifferent / heavy / resistant
+- the situation felt indifferent / heavy / resistant
 
 Unclear middle:
-- the world's signal was unclear / neither friendly nor hostile
+- how the situation was headed felt unclear / neither friendly nor hostile
 
 **Self axis — how the person experienced their own agency:**
 
@@ -627,31 +657,23 @@ Unclear middle:
 Every sentence must describe a lived experience. Never describe a coordinate, a state name, or a data point as the main subject.
 
 **Wrong:** "Your entries in the Building quadrant averaged 7.1 for meaningfulness."
-**Right:** "The moments when you felt in control while the world felt caring also tended to feel meaningful."
+**Right:** "The moments when you felt in control while the situation felt caring also tended to feel meaningful."
 
 **Wrong:** "Your self-axis dropped during Enduring entries."
-**Right:** "When the world turned hostile, your sense of agency dropped with it."
+**Right:** "When your perception of the situation turned hostile, your sense of agency dropped with it."
 
 **Wrong:** "You had 5 Drifting entries with a mean meaningfulness of 5.2."
-**Right:** "Five times you stopped directing while the world's signal went quiet. Most of those moments felt neither meaningful nor difficult — just empty."
+**Right:** "Five times you stopped directing while your read on the situation went quiet. Most of those moments felt neither meaningful nor difficult — just empty."
 
-**State names rule:**
+**State names — avoid for general readers:**
 
-State names (Building, Protecting, Receiving, Enduring, Opening, Bracing, Seeking, Drifting, Still) are proper names for psychological experiences. Use them naturally throughout the report — not just once in parentheses. They should feel like named places the person moved through, not clinical labels.
+"Building," "Protecting," "Receiving," "Enduring," "Opening," "Bracing," "Seeking," "Drifting," "Still" mean nothing to someone unfamiliar with the app. Describe the experience instead of naming the state: "the moments where you felt capable and the situation felt cooperative" — not "your Building moments." This supersedes the older approach of naming states repeatedly throughout a report.
 
-**Allowed forms:**
-- As a named moment: "That Protecting stretch through the afternoon..." / "The Enduring hours in the morning..."
-- After a dash: "The afternoon shifted — Building, high energy, the world cooperative."
-- As a transition marker: "You moved from Enduring into Building as things started to ease."
-- In a clause: "When you were Receiving, the sense of ease was..."
-- As shorthand after first use: "The first Protecting moment... The second came an hour later."
-
-**Rules:**
-- Capitalize always (they are proper names)
-- Do NOT use them as the grammatical subject of a sentence: not "Building brought energy" — instead "You were Building, and the energy..."
-- Do NOT pile them up in one sentence: not "You moved from Enduring to Bracing to Building" — space them out across the paragraph
-- Use each state name at least once if that state appeared in the data
-- First mention of a state can briefly gloss it: "a Protecting moment — alert, the world pushing back" — but don't gloss every occurrence
+**If a state name appears at all:**
+- Gloss it on first use: "a Protecting moment — alert, the situation pushing back"
+- Never use it as a sentence's grammatical subject: not "Building brought energy" — instead "You were capable and the situation was cooperative, and the energy..."
+- Never pile several up in one sentence
+- Capitalize it (it is a proper name) — but the goal is to need it rarely, since the description itself should usually carry the meaning
 
 ---
 
@@ -659,11 +681,11 @@ State names (Building, Protecting, Receiving, Enduring, Opening, Bracing, Seekin
 
 Meaningfulness must be checked for every entry and included in reports when it adds genuinely new information — specifically when:
 
-1. **High meaningfulness in a difficult state** (Enduring/Protecting with meaningful ≥ 7): Always note. "Even when the world felt hostile and you felt without agency, the moment felt important."
+1. **High meaningfulness in a difficult state** (Enduring/Protecting with meaningful ≥ 7): Always note. "Even when the situation felt hostile and you felt without agency, the moment felt important."
 
-2. **High meaningfulness in a passive state** (Receiving/Drifting with meaningful ≥ 8): Note explicitly. "The moment you let go completely while the world felt caring was one of the most meaningful in the period."
+2. **High meaningfulness in a passive state** (Receiving/Drifting with meaningful ≥ 8): Note explicitly. "The moment you let go completely while the situation felt caring was one of the most meaningful in the period."
 
-3. **Low meaningfulness in an otherwise positive state** (Building with meaningful ≤ 4): Note. "Even when you were in control and the world felt caring, something felt hollow."
+3. **Low meaningfulness in an otherwise positive state** (Building with meaningful ≤ 4): Note. "Even when you were in control and the situation felt caring, something felt hollow."
 
 4. **The emptiest moment** (lowest meaningful in the period): Always identify and describe. "Your emptiest moment — lowest meaning in the period — was [context]."
 
@@ -677,13 +699,13 @@ Use sparingly. The most accurate language is the vocabulary of the scale itself.
 
 Permitted metaphors (accurate to the axes):
 - tailwind / headwind (world axis — a tailwind gives, a headwind takes)
-- the world felt like it was feeding you / draining you
+- the situation felt like it was feeding you / draining you
 - you stopped steering / you found the wheel again
 - carried forward / carried away
 
 **Avoid:**
 - Elaborate sailing or driving sequences that turn the report into a route recap
-- Any metaphor that doesn't map directly to "how the world felt" or "how much agency you had"
+- Any metaphor that doesn't map directly to "how the situation felt to you" or "how much agency you had"
 - Mixing metaphors within the same section
 
 When in doubt, use plain language over a metaphor.
@@ -700,7 +722,7 @@ For every difficult period in the data, ask:
 - Is there a pattern across multiple recoveries?
 
 **Wrong framing:** "You fell into difficult territory three times."
-**Right framing:** "Three times the world turned hostile and you felt without agency. Three times you came back. What enabled the recovery?"
+**Right framing:** "Three times your perception of the situation turned hostile and you felt without agency. Three times you came back. What enabled the recovery?"
 
 When a recovery appears, always surface it explicitly and ask what made it possible.
 
@@ -740,23 +762,23 @@ YOUR BIGGEST SHIFT
 [One sentence naming the shift in experience terms]
 
 From:
-"[Short quote capturing how the world felt and how they felt about themselves in the starting position]"
+"[Short quote capturing how the situation felt and how they felt about themselves in the starting position]"
 
 To:
-"[Short quote capturing how the world felt and how they felt about themselves in the ending position]"
+"[Short quote capturing how the situation felt and how they felt about themselves in the ending position]"
 ```
 
 **Example:**
 ```
 YOUR BIGGEST SHIFT
-Your largest movement was from feeling in control while the world felt caring,
-to feeling without direction while the world felt hostile.
+Your largest movement was from feeling in control while the situation felt caring,
+to feeling without direction while the situation felt hostile.
 
 From:
-"The world felt open and on my side. I felt capable of shaping what happened."
+"The situation felt open and on my side. I felt capable of shaping what happened."
 
 To:
-"The world felt pressuring and draining. I felt without much direction."
+"The situation felt pressuring and draining. I felt without much direction."
 ```
 
 The From/To quotes should be written as if the person said them — first person, plain language, no technical terms. They describe the felt experience at each end of the shift.
