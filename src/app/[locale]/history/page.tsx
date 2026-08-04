@@ -207,8 +207,8 @@ function HistoryPageInner() {
       {showNotifPrompt && <NotificationPrompt onClose={() => setShowNotifPrompt(false)} />}
       <div className="flex min-h-screen flex-col bg-[#f7f6f4]">
         <div className={styles.topBar}>
-          <div className={styles.statsLine}>{statsLine}</div>
           <LanguageToggle />
+          <div className={styles.statsLine}>{statsLine}</div>
         </div>
 
         <div className={styles.scrollArea}>

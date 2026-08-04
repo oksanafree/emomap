@@ -173,7 +173,7 @@ export default function OnboardingPage() {
   if (showLanding) {
     return (
       <div className="relative flex min-h-screen flex-col items-center bg-[#080914] px-8 pt-[calc(env(safe-area-inset-top)+56px)]">
-        <div className="absolute right-6 top-[calc(env(safe-area-inset-top)+20px)]">
+        <div className="absolute left-6 top-[calc(env(safe-area-inset-top)+20px)]">
           <LanguageToggle variant="dark" />
         </div>
         <div className="flex flex-1 flex-col items-center justify-center gap-3">
@@ -223,8 +223,11 @@ export default function OnboardingPage() {
         </button>
       )}
 
-      <div className="absolute right-6 top-[calc(env(safe-area-inset-top)+32px)] flex items-center gap-4">
+      <div className="absolute left-2 top-[calc(env(safe-area-inset-top)+68px)]">
         <LanguageToggle variant="dark" />
+      </div>
+
+      <div className="absolute right-6 top-[calc(env(safe-area-inset-top)+32px)] flex items-center gap-4">
         <button type="button" onClick={handleLogin} className="text-sm text-[#6868b0]">
           {t("login")}
         </button>

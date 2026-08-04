@@ -96,8 +96,9 @@ function ReportPageInner() {
           <Link href="/history" className={checkinStyles.navBack}>
             ‹
           </Link>
-          <div className={checkinStyles.navTitle}>{t("navTitle")}</div>
           <LanguageToggle />
+          <div className={checkinStyles.navTitle}>{t("navTitle")}</div>
+          <div className={checkinStyles.navSp} />
         </div>
 
         <div className={styles.scroll}>
