@@ -11,6 +11,7 @@ import { OnboardingMap } from "@/components/onboarding-map";
 import { TrailMap } from "@/components/trail-map";
 import { OnboardingSliderPreview } from "@/components/onboarding-slider-preview";
 import { OnboardingMilestones } from "@/components/onboarding-milestones";
+import { LanguageToggle } from "@/components/LanguageToggle";
 
 const ONBOARDED_KEY = "em_onboarded";
 const TOTAL_STEPS = 5;
@@ -171,7 +172,10 @@ export default function OnboardingPage() {
 
   if (showLanding) {
     return (
-      <div className="flex min-h-screen flex-col items-center bg-[#080914] px-8 pt-[calc(env(safe-area-inset-top)+56px)]">
+      <div className="relative flex min-h-screen flex-col items-center bg-[#080914] px-8 pt-[calc(env(safe-area-inset-top)+56px)]">
+        <div className="absolute right-6 top-[calc(env(safe-area-inset-top)+20px)]">
+          <LanguageToggle variant="dark" />
+        </div>
         <div className="flex flex-1 flex-col items-center justify-center gap-3">
           <div className="h-2 w-2 animate-pulse rounded-full bg-[#7c6cf0] shadow-[0_0_14px_rgba(124,108,240,0.5)]" />
           <div className="text-xs font-semibold tracking-[0.22em] text-[#6868b0]">EMOMAPP</div>
@@ -219,13 +223,12 @@ export default function OnboardingPage() {
         </button>
       )}
 
-      <button
-        type="button"
-        onClick={handleLogin}
-        className="absolute right-6 top-[calc(env(safe-area-inset-top)+32px)] text-sm text-[#6868b0]"
-      >
-        {t("login")}
-      </button>
+      <div className="absolute right-6 top-[calc(env(safe-area-inset-top)+32px)] flex items-center gap-4">
+        <LanguageToggle variant="dark" />
+        <button type="button" onClick={handleLogin} className="text-sm text-[#6868b0]">
+          {t("login")}
+        </button>
+      </div>
 
       <div className="flex flex-1 flex-col items-center justify-center gap-4">
         {step === 0 && <OnboardingMap {...mapLabels} />}
