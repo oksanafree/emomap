@@ -1,0 +1,32 @@
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+}
+
+.sep {
+  color: #d8d5ce;
+}
+
+.active {
+  background: none;
+  border: none;
+  padding: 0;
+  color: #6a6870;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: default;
+}
+
+.inactive {
+  background: none;
+  border: none;
+  padding: 0;
+  color: #b0adb8;
+  font-size: 12px;
+  cursor: pointer;
+}

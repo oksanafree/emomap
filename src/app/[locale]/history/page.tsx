@@ -17,6 +17,7 @@ import { HeatMapCanvas } from "@/components/HeatMapCanvas";
 import { StateSection } from "@/components/StateSection";
 import { CheckinCountdown } from "@/components/CheckinCountdown";
 import { ReturnNudge } from "@/components/ReturnNudge";
+import { LanguageToggle } from "@/components/LanguageToggle";
 import mapStyles from "@/styles/map-visual.module.css";
 import styles from "./history.module.css";
 
@@ -207,6 +208,7 @@ function HistoryPageInner() {
       <div className="flex min-h-screen flex-col bg-[#f7f6f4]">
         <div className={styles.topBar}>
           <div className={styles.statsLine}>{statsLine}</div>
+          <LanguageToggle />
         </div>
 
         <div className={styles.scrollArea}>

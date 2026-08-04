@@ -7,6 +7,7 @@ import { Link } from "@/i18n/navigation";
 import { useAnonymousAuth } from "@/lib/use-anonymous-auth";
 import { db } from "@/lib/firebase";
 import { AuthGuard } from "@/components/AuthGuard";
+import { LanguageToggle } from "@/components/LanguageToggle";
 import checkinStyles from "@/styles/checkin-screen.module.css";
 import styles from "./report.module.css";
 
@@ -96,7 +97,7 @@ function ReportPageInner() {
             ‹
           </Link>
           <div className={checkinStyles.navTitle}>{t("navTitle")}</div>
-          <div className={checkinStyles.navSp} />
+          <LanguageToggle />
         </div>
 
         <div className={styles.scroll}>
