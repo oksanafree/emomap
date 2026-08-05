@@ -37,12 +37,10 @@ function AuthPageInner() {
   const [gender, setGender] = useState<GenderKey | null>(null);
   const [ageRange, setAgeRange] = useState<AgeRangeKey | null>(null);
   const [profileSaving, setProfileSaving] = useState(false);
-  const [consentTerms, setConsentTerms] = useState(false);
-  const [consentPrivacy, setConsentPrivacy] = useState(false);
-  const [consentPsychData, setConsentPsychData] = useState(false);
-  const [consentAnthropic, setConsentAnthropic] = useState(false);
+  const [consentTermsPrivacy, setConsentTermsPrivacy] = useState(false);
+  const [consentDataProcessing, setConsentDataProcessing] = useState(false);
 
-  const allConsentsChecked = consentTerms && consentPrivacy && consentPsychData && consentAnthropic;
+  const allConsentsChecked = consentTermsPrivacy && consentDataProcessing;
 
   useEffect(() => {
     if (searchParams.get("from") === "onboarding" && localStorage.getItem("em_onboarded")) {
@@ -117,23 +115,18 @@ function AuthPageInner() {
           await setDoc(
             doc(db, "users", signedUpUser.uid),
             {
+              // A freshly signed-up user has already seen the intro carousel
+              // before reaching this screen. Mark onboarding complete here so
+              // the landing/routing logic in page.tsx never sends them back
+              // through the intro pages a second time.
+              onboarding_complete: true,
               consents: {
-                terms_of_service: {
+                terms_and_privacy: {
                   accepted: true,
                   policy_version: CONSENT_POLICY_VERSION,
                   accepted_at: serverTimestamp(),
                 },
-                privacy_policy: {
-                  accepted: true,
-                  policy_version: CONSENT_POLICY_VERSION,
-                  accepted_at: serverTimestamp(),
-                },
-                psychological_data_collection: {
-                  accepted: true,
-                  policy_version: CONSENT_POLICY_VERSION,
-                  accepted_at: serverTimestamp(),
-                },
-                anthropic_api_processing: {
+                data_processing: {
                   accepted: true,
                   policy_version: CONSENT_POLICY_VERSION,
                   accepted_at: serverTimestamp(),
@@ -180,11 +173,13 @@ function AuthPageInner() {
         }
       }
     }
-    router.push("/");
+    // Send the new user straight into their first check-in (first slider),
+    // not back to the home/intro flow.
+    router.push("/world");
   }
 
   function handleProfileSkip() {
-    router.push("/");
+    router.push("/world");
   }
 
   return (
@@ -235,28 +230,17 @@ function AuthPageInner() {
                 <label className={styles.consentRow}>
                   <input
                     type="checkbox"
-                    checked={consentTerms}
-                    onChange={(e) => setConsentTerms(e.target.checked)}
+                    checked={consentTermsPrivacy}
+                    onChange={(e) => setConsentTermsPrivacy(e.target.checked)}
                   />
                   <span>
-                    {t.rich("consent.terms", {
-                      link: (chunks) => (
+                    {t.rich("consent.termsPrivacy", {
+                      termsLink: (chunks) => (
                         <Link href="/terms" target="_blank" rel="noopener noreferrer">
                           {chunks}
                         </Link>
                       ),
-                    })}
-                  </span>
-                </label>
-                <label className={styles.consentRow}>
-                  <input
-                    type="checkbox"
-                    checked={consentPrivacy}
-                    onChange={(e) => setConsentPrivacy(e.target.checked)}
-                  />
-                  <span>
-                    {t.rich("consent.privacy", {
-                      link: (chunks) => (
+                      privacyLink: (chunks) => (
                         <Link href="/privacy" target="_blank" rel="noopener noreferrer">
                           {chunks}
                         </Link>
@@ -267,18 +251,18 @@ function AuthPageInner() {
                 <label className={styles.consentRow}>
                   <input
                     type="checkbox"
-                    checked={consentPsychData}
-                    onChange={(e) => setConsentPsychData(e.target.checked)}
+                    checked={consentDataProcessing}
+                    onChange={(e) => setConsentDataProcessing(e.target.checked)}
                   />
-                  <span>{t("consent.psychData")}</span>
-                </label>
-                <label className={styles.consentRow}>
-                  <input
-                    type="checkbox"
-                    checked={consentAnthropic}
-                    onChange={(e) => setConsentAnthropic(e.target.checked)}
-                  />
-                  <span>{t("consent.anthropic")}</span>
+                  <span>
+                    {t.rich("consent.dataProcessing", {
+                      privacyLink: (chunks) => (
+                        <Link href="/privacy" target="_blank" rel="noopener noreferrer">
+                          {chunks}
+                        </Link>
+                      ),
+                    })}
+                  </span>
                 </label>
               </div>
             )}

@@ -57,6 +57,7 @@
   },
   "World": {
     "navTitle": "Emomapp",
+    "stepLabel": "QUESTION 1 OF 2",
     "category": "SITUATION",
     "question": "At this moment — how does the <b>SITUATION</b> impact you?",
     "liveWord": {
@@ -72,8 +73,9 @@
   },
   "Self": {
     "navTitle": "Emomapp",
+    "stepLabel": "QUESTION 2 OF 2",
     "category": "YOU",
-    "question": "At this moment — how do <b>YOU</b> influence the situation?",
+    "question": "At this moment — how do <b>YOU</b> impact the situation?",
     "liveWord": {
       "ambiguous": "Ambiguous",
       "active": "I influence",
@@ -359,11 +361,9 @@
       "generic": "Something went wrong. Try again."
     },
     "consent": {
-      "terms": "I agree to the <link>Terms of Service</link>.",
-      "privacy": "I have read the <link>Privacy Policy</link>, including how my data is shared with Anthropic's Claude API.",
-      "psychData": "I consent to Emomapp collecting my psychological, emotional, and body-related check-in information to provide personalized reflections and reports.",
-      "anthropic": "I consent to my check-in data (excluding my email address) being sent to Anthropic's Claude API to generate state reflections and pattern reports.",
-      "error": "Please accept all terms to continue."
+      "termsPrivacy": "I agree to the <termsLink>Terms of Service</termsLink> and <privacyLink>Privacy Policy</privacyLink>.",
+      "dataProcessing": "I consent to my data being processed as described in the <privacyLink>Privacy Policy</privacyLink>.",
+      "error": "Please accept both to continue."
     }
   },
   "Profile": {

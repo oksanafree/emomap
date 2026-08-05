@@ -47,6 +47,8 @@ export default function WorldPage() {
             <div className={styles.navSp} />
           </div>
 
+          <div className={styles.stepLabel}>{t("stepLabel")}</div>
+
           <div className={`${styles.catLbl} ${styles.catS}`}>{t("category")}</div>
 
           <div className={styles.qWrap}>

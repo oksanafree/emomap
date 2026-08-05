@@ -47,6 +47,8 @@ export default function SelfPage() {
             <div className={styles.navSp} />
           </div>
 
+          <div className={styles.stepLabel}>{t("stepLabel")}</div>
+
           <div className={`${styles.catLbl} ${styles.catY}`}>{t("category")}</div>
 
           <div className={styles.qWrap}>
