@@ -1,9 +1,8 @@
 .card {
-  margin: 4px 22px 0;
-  padding: 16px 18px;
-  background: #fbfaf8;
-  border: 1px solid #e8e5e0;
-  border-radius: 14px;
+  margin: 10px 22px 0;
+  padding: 0;
+  background: none;
+  border: none;
   text-align: left;
 }
 
@@ -51,9 +50,9 @@
 
 .nudgeLine {
   margin: 0;
-  font-size: 17px;
+  font-size: 19px;
   font-weight: 700;
-  color: #1f1d1b;
-  line-height: 1.4;
+  color: #48a999;
+  line-height: 1.35;
   letter-spacing: -0.01em;
 }
