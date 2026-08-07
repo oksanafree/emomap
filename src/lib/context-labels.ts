@@ -4,11 +4,11 @@ const ACTIVITY_LABELS: Record<ActivityKey, string> = {
   work: "Work",
   study: "Study",
   exercise: "Exercise",
-  resting: "Resting",
-  creative: "Creative",
+  resting: "Rest",
+  creative: "Creating",
   caregiving: "Caregiving",
-  outdoors: "Outdoors",
   chores: "Chores",
+  socializing: "Socializing",
   other: "Other",
 };
 

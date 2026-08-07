@@ -5,8 +5,8 @@ export const ACTIVITY_KEYS = [
   "resting",
   "creative",
   "caregiving",
-  "outdoors",
   "chores",
+  "socializing",
   "other",
 ] as const;
 export type ActivityKey = (typeof ACTIVITY_KEYS)[number];
