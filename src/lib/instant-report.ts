@@ -75,13 +75,9 @@ export function tierFromIntensity(intensity: Intensity): Tier {
   return TIER_BY_INTENSITY[intensity];
 }
 
-// §3 — the italic "Come back …" line. Consistent across every quadrant/edge;
-// anxiety overrides and the center state use the mid nudge.
-const NUDGE: Record<Tier, string> = {
-  near: "Come back if anything shifts.",
-  mid: "Come back when your state shifts, even slightly.",
-  far: "Come back as soon as something shifts.",
-};
+// A single fixed return nudge, shown prominently after every check-in
+// regardless of state or intensity.
+export const RETURN_NUDGE = "Come back soon — the more you log, the clearer your pattern.";
 
 // The descriptive paragraph after the "You feel …" lead, per quadrant per tier.
 const QUADRANT_BODY: Record<Quadrant, Record<Tier, string>> = {
@@ -175,19 +171,19 @@ export function buildInstantReport({
   const isAnxiety = emotion.trim().toLowerCase() === "anxiety";
 
   if (isQuadrant(state)) {
-    if (isAnxiety) return { body: QUADRANT_ANXIETY[state], nudge: NUDGE.mid };
+    if (isAnxiety) return { body: QUADRANT_ANXIETY[state], nudge: RETURN_NUDGE };
     const description = QUADRANT_BODY[state][tier];
     const body = emotion.trim() ? `${buildLead(tier, emotion)} ${description}` : description;
-    return { body, nudge: NUDGE[tier] };
+    return { body, nudge: RETURN_NUDGE };
   }
 
-  if (state === "Still") return { body: CENTER_BODY, nudge: NUDGE.mid };
+  if (state === "Still") return { body: CENTER_BODY, nudge: RETURN_NUDGE };
 
   const edgeBody = EDGE_BODY[state as EdgeState];
-  if (edgeBody) return { body: edgeBody[tier], nudge: NUDGE[tier] };
+  if (edgeBody) return { body: edgeBody[tier], nudge: RETURN_NUDGE };
 
   // Fallback (should not happen): treat as center.
-  return { body: CENTER_BODY, nudge: NUDGE.mid };
+  return { body: CENTER_BODY, nudge: RETURN_NUDGE };
 }
 
 export type Contradiction = {

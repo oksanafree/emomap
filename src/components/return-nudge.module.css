@@ -50,16 +50,10 @@
 }
 
 .nudgeLine {
-  margin: 0 0 4px;
-  font-size: 14px;
-  font-weight: 600;
-  color: #2a2825;
-  line-height: 1.5;
-}
-
-.anchorLine {
   margin: 0;
-  font-size: 12px;
-  color: #9a9890;
-  line-height: 1.5;
+  font-size: 17px;
+  font-weight: 700;
+  color: #1f1d1b;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
 }
