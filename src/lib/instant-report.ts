@@ -75,9 +75,10 @@ export function tierFromIntensity(intensity: Intensity): Tier {
   return TIER_BY_INTENSITY[intensity];
 }
 
-// A single fixed return nudge, shown prominently after every check-in
+// A fixed two-line return nudge, shown prominently after every check-in
 // regardless of state or intensity.
-export const RETURN_NUDGE = "Come back soon — the more you log, the clearer your pattern.";
+export const RETURN_NUDGE_TITLE = "Your unique report is building.";
+export const RETURN_NUDGE_BODY = "Come back soon! Every check-in adds to your inner world picture.";
 
 // The descriptive paragraph after the "You feel …" lead, per quadrant per tier.
 const QUADRANT_BODY: Record<Quadrant, Record<Tier, string>> = {
@@ -152,9 +153,9 @@ function buildLead(tier: Tier, emotion: string): string {
   return `You feel ${lc}.`;
 }
 
-export type InstantReport = { body: string; nudge: string };
+export type InstantReport = { body: string };
 
-// Assemble the report paragraph + nudge for a placement. `emotion` is the raw
+// Assemble the report paragraph for a placement. `emotion` is the raw
 // stored value (may be a title-cased preset, a custom free-text string, or
 // empty). When empty on a quadrant, the "You feel …" lead is dropped and the
 // descriptive body stands alone.
@@ -171,19 +172,19 @@ export function buildInstantReport({
   const isAnxiety = emotion.trim().toLowerCase() === "anxiety";
 
   if (isQuadrant(state)) {
-    if (isAnxiety) return { body: QUADRANT_ANXIETY[state], nudge: RETURN_NUDGE };
+    if (isAnxiety) return { body: QUADRANT_ANXIETY[state] };
     const description = QUADRANT_BODY[state][tier];
     const body = emotion.trim() ? `${buildLead(tier, emotion)} ${description}` : description;
-    return { body, nudge: RETURN_NUDGE };
+    return { body };
   }
 
-  if (state === "Still") return { body: CENTER_BODY, nudge: RETURN_NUDGE };
+  if (state === "Still") return { body: CENTER_BODY };
 
   const edgeBody = EDGE_BODY[state as EdgeState];
-  if (edgeBody) return { body: edgeBody[tier], nudge: RETURN_NUDGE };
+  if (edgeBody) return { body: edgeBody[tier] };
 
   // Fallback (should not happen): treat as center.
-  return { body: CENTER_BODY, nudge: RETURN_NUDGE };
+  return { body: CENTER_BODY };
 }
 
 export type Contradiction = {

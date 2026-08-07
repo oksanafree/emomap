@@ -326,7 +326,7 @@ function HistoryPageInner() {
                     body={report.body}
                     isFirstCheckin={newCheckinData.isFirstCheckin}
                   />
-                  <ReturnNudge state={newCheckinData.state} nudge={report.nudge} />
+                  <ReturnNudge state={newCheckinData.state} />
                 </>
               );
             })()}
