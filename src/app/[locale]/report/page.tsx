@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { collection, doc, getCountFromServer, getDoc, Timestamp } from "firebase/firestore";
+import { collection, doc, getCountFromServer, getDoc, setDoc, Timestamp } from "firebase/firestore";
 import { Link } from "@/i18n/navigation";
 import { useAnonymousAuth } from "@/lib/use-anonymous-auth";
 import { db } from "@/lib/firebase";
@@ -52,6 +52,15 @@ function ReportPageInner() {
         setGeneratedAt(generated instanceof Timestamp ? generated.toDate() : null);
         setReportText(text);
         setStatus("ready");
+
+        // Baseline for the "report updated" map popup: record how many
+        // check-ins the user had when they last actually viewed a report, so
+        // that popup can fire again once they've added 10 more since now.
+        setDoc(
+          doc(db, "users", user.uid),
+          { report_last_viewed_entry_count: count },
+          { merge: true },
+        ).catch((error) => console.error("Failed to record report view count", error));
       } else {
         setReportText(null);
         setStatus(count < MIN_ENTRIES_FOR_REFRESH ? "empty" : "ready");

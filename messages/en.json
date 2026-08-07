@@ -1,4 +1,12 @@
 {
+  "ReportPopup": {
+    "firstHeadline": "Your first report is ready.",
+    "firstSubtitle": "See what your pattern reveals.",
+    "updatedHeadline": "Your report has updated.",
+    "updatedSubtitle": "You've added 10 new check-ins. See what's shifted.",
+    "seeReport": "See Report",
+    "close": "Close"
+  },
   "Common": {
     "logOut": "Log out"
   },

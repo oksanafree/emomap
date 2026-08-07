@@ -1,0 +1,114 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(8, 9, 20, 0.72);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  animation: overlayIn 200ms ease both;
+}
+
+@keyframes overlayIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.card {
+  position: relative;
+  width: 100%;
+  max-width: 340px;
+  background: #12102d;
+  border: 1px solid #3a3468;
+  border-radius: 20px;
+  padding: 40px 26px 26px;
+  text-align: center;
+  animation: cardIn 240ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: #6868b0;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.close:hover {
+  color: #a89ee8;
+}
+
+.badge {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 22px;
+  border-radius: 50%;
+  background: #1e1c38;
+  border: 1px solid #3a3468;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.badgeDot {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #7c6cf0;
+  box-shadow: 0 0 14px rgba(124, 108, 240, 0.5);
+}
+
+.headline {
+  font-size: 22px;
+  font-weight: 500;
+  color: #e8e4ff;
+  line-height: 1.35;
+  margin: 0 0 10px;
+}
+
+.subtitle {
+  font-size: 15px;
+  color: #8a83c8;
+  line-height: 1.6;
+  margin: 0 0 26px;
+}
+
+.primary {
+  width: 100%;
+  padding: 16px;
+  background: #4a3fa0;
+  border: 1px solid #6b5fd0;
+  border-radius: 14px;
+  color: #e0d8ff;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+}

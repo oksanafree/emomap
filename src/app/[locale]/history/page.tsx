@@ -1,9 +1,9 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { collection, doc, getDoc, getDocs, orderBy, query, Timestamp } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, orderBy, query, setDoc, Timestamp } from "firebase/firestore";
 import { Link, useRouter } from "@/i18n/navigation";
 import { useAnonymousAuth } from "@/lib/use-anonymous-auth";
 import { useSliderSound } from "@/lib/use-slider-sound";
@@ -14,6 +14,7 @@ import { buildInstantReport } from "@/lib/instant-report";
 import { getStateColor } from "@/lib/stateConfig";
 import { AuthGuard } from "@/components/AuthGuard";
 import { NotificationPrompt } from "@/components/NotificationPrompt";
+import { ReportPopup } from "@/components/ReportPopup";
 import { HeatMapCanvas } from "@/components/HeatMapCanvas";
 import { StateSection } from "@/components/StateSection";
 import { CheckinCountdown } from "@/components/CheckinCountdown";
@@ -44,6 +45,7 @@ function HistoryPageInner() {
   const tMap = useTranslations("Map");
   const tInstall = useTranslations("Install");
   const tLegal = useTranslations("Legal");
+  const tPopup = useTranslations("ReportPopup");
   const locale = useLocale();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -55,6 +57,13 @@ function HistoryPageInner() {
   const [showIOSBanner, setShowIOSBanner] = useState(false);
   const [reportText, setReportText] = useState<string | null>(null);
   const [showNoReportMessage, setShowNoReportMessage] = useState(false);
+
+  // Report popups (shown on this map page only). `firstPopupSeen === null`
+  // means the user doc hasn't loaded yet — gate popup decisions on it.
+  const [firstPopupSeen, setFirstPopupSeen] = useState<boolean | null>(null);
+  const [reportLastViewedCount, setReportLastViewedCount] = useState<number | null>(null);
+  const [popup, setPopup] = useState<null | "first" | "updated">(null);
+  const popupDecidedRef = useRef(false);
 
   // Captured once via lazy init so the section keeps rendering for the
   // lifetime of this page view even after the URL params below are stripped —
@@ -106,9 +115,15 @@ function HistoryPageInner() {
         const data = snap.data();
         const text = data?.[`report_${locale}`]?.text ?? data?.report?.text ?? null;
         setReportText(typeof text === "string" && text.length > 0 ? text : null);
+        setFirstPopupSeen(data?.first_report_popup_seen === true);
+        const lastViewed = data?.report_last_viewed_entry_count;
+        setReportLastViewedCount(typeof lastViewed === "number" ? lastViewed : null);
       })
       .catch(() => {
-        if (!cancelled) setReportText(null);
+        if (cancelled) return;
+        setReportText(null);
+        setFirstPopupSeen(false);
+        setReportLastViewedCount(null);
       });
     return () => {
       cancelled = true;
@@ -163,6 +178,48 @@ function HistoryPageInner() {
     };
   }, [user]);
 
+  // Decide once per page load which report popup (if any) to show. Popup 1
+  // (first report) takes priority over popup 2 (report updated). Waits for
+  // both the entries list and the user-doc flags to load. Only fires when a
+  // report actually exists so the "ready/updated" copy is truthful.
+  useEffect(() => {
+    if (popupDecidedRef.current) return;
+    if (entries === null || firstPopupSeen === null) return;
+    if (reportText === null) return;
+    const count = entries.length;
+    if (count >= 5 && !firstPopupSeen) {
+      popupDecidedRef.current = true;
+      setPopup("first");
+    } else if (typeof reportLastViewedCount === "number" && count - reportLastViewedCount >= 10) {
+      popupDecidedRef.current = true;
+      setPopup("updated");
+    }
+  }, [entries, firstPopupSeen, reportText, reportLastViewedCount]);
+
+  function markFirstPopupSeen() {
+    setFirstPopupSeen(true);
+    if (!user) return;
+    setDoc(doc(db, "users", user.uid), { first_report_popup_seen: true }, { merge: true }).catch((err) =>
+      console.error("Failed to persist first report popup flag", err),
+    );
+  }
+
+  function handlePopupSeeReport() {
+    // Popup 1 shows only once, so mark it seen whether they view or dismiss.
+    // Popup 2's counter resets when the report page records the view.
+    if (popup === "first") markFirstPopupSeen();
+    setPopup(null);
+    router.push("/report");
+  }
+
+  function handlePopupClose() {
+    // X on popup 1 still counts as "seen" (never reappears). X on popup 2
+    // just hides it — the counter is untouched, so it returns on next app
+    // open until the user actually views the report.
+    if (popup === "first") markFirstPopupSeen();
+    setPopup(null);
+  }
+
   function handleSeeReport() {
     if (reportText) {
       router.push("/report");
@@ -205,6 +262,16 @@ function HistoryPageInner() {
   return (
     <AuthGuard>
       {showNotifPrompt && <NotificationPrompt onClose={() => setShowNotifPrompt(false)} />}
+      {popup && !showNotifPrompt && (
+        <ReportPopup
+          headline={tPopup(popup === "first" ? "firstHeadline" : "updatedHeadline")}
+          subtitle={tPopup(popup === "first" ? "firstSubtitle" : "updatedSubtitle")}
+          primaryLabel={tPopup("seeReport")}
+          closeLabel={tPopup("close")}
+          onPrimary={handlePopupSeeReport}
+          onClose={handlePopupClose}
+        />
+      )}
       <div className="flex min-h-screen flex-col bg-[#f7f6f4]">
         <div className={styles.topBar}>
           <LanguageToggle />
