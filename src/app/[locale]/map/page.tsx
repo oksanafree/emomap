@@ -6,11 +6,16 @@ import { Link, useRouter } from "@/i18n/navigation";
 import { useCheckin } from "@/lib/checkin-context";
 import { useSliderSound } from "@/lib/use-slider-sound";
 import { detectState } from "@/lib/state-detection";
+import { getEmotionsForState } from "@/lib/instant-report";
 import { AuthGuard } from "@/components/AuthGuard";
 import { HomeNavIcon } from "@/components/HomeNavIcon";
 import checkinStyles from "@/styles/checkin-screen.module.css";
 import styles from "@/styles/map-visual.module.css";
 import emoStyles from "./emotion-chips.module.css";
+
+function titleCase(word: string): string {
+  return word.charAt(0).toUpperCase() + word.slice(1);
+}
 
 export default function MapPage() {
   const t = useTranslations("Map");
@@ -72,16 +77,19 @@ export default function MapPage() {
       y: String(y),
       state,
     });
-    const emotion = otherSelected
+    const emotion = isCenter
       ? otherText.trim()
-      : selectedIndex !== null
-        ? (t.raw(`emotions.${state}`) as string[])[selectedIndex]
-        : "";
+      : otherSelected
+        ? otherText.trim()
+        : selectedIndex !== null
+          ? emotionLabels[selectedIndex]
+          : "";
     if (emotion) params.set("emotion", emotion);
     router.push(`/context?${params.toString()}`);
   }
 
-  const emotionLabels = t.raw(`emotions.${state}`) as string[];
+  const isCenter = state === "Still";
+  const emotionLabels = getEmotionsForState(state).map(titleCase);
 
   return (
     <AuthGuard>
@@ -163,35 +171,51 @@ export default function MapPage() {
           <div className={styles.yahSub}>{t(`states.${state}.sub`)}</div>
 
           <div className={emoStyles.emoArea}>
-            <div className={emoStyles.emoQ}>{t("emotionQuestion")}</div>
-            <div className={emoStyles.emoHint}>{t("emotionHint")}</div>
-            <div className={emoStyles.chips}>
-              {emotionLabels.map((label, i) => (
-                <div
-                  key={label}
-                  className={`${emoStyles.chip} ${selectedIndex === i ? emoStyles.chipSelected : ""}`}
-                  onClick={() => selectEmotion(i)}
-                >
-                  {label}
+            {isCenter ? (
+              <>
+                <div className={emoStyles.emoQ}>{t("emotionCenterQuestion")}</div>
+                <input
+                  type="text"
+                  className={emoStyles.otherInput}
+                  placeholder={t("emotionPlaceholder")}
+                  maxLength={locale === "ru" ? 80 : 60}
+                  value={otherText}
+                  onChange={(e) => setOtherText(e.target.value)}
+                />
+              </>
+            ) : (
+              <>
+                <div className={emoStyles.emoQ}>{t("emotionQuestion")}</div>
+                <div className={emoStyles.emoHint}>{t("emotionHint")}</div>
+                <div className={emoStyles.chips}>
+                  {emotionLabels.map((label, i) => (
+                    <div
+                      key={label}
+                      className={`${emoStyles.chip} ${selectedIndex === i ? emoStyles.chipSelected : ""}`}
+                      onClick={() => selectEmotion(i)}
+                    >
+                      {label}
+                    </div>
+                  ))}
+                  <div
+                    className={`${emoStyles.chip} ${emoStyles.chipOther} ${otherSelected ? emoStyles.chipSelected : ""}`}
+                    onClick={selectOther}
+                  >
+                    {t("emotionOther")}
+                  </div>
                 </div>
-              ))}
-              <div
-                className={`${emoStyles.chip} ${emoStyles.chipOther} ${otherSelected ? emoStyles.chipSelected : ""}`}
-                onClick={selectOther}
-              >
-                {t("emotionOther")}
-              </div>
-            </div>
-            {otherSelected && (
-              <input
-                ref={otherInputRef}
-                type="text"
-                className={emoStyles.otherInput}
-                placeholder={t("emotionPlaceholder")}
-                maxLength={locale === "ru" ? 80 : 60}
-                value={otherText}
-                onChange={(e) => setOtherText(e.target.value)}
-              />
+                {otherSelected && (
+                  <input
+                    ref={otherInputRef}
+                    type="text"
+                    className={emoStyles.otherInput}
+                    placeholder={t("emotionPlaceholder")}
+                    maxLength={locale === "ru" ? 80 : 60}
+                    value={otherText}
+                    onChange={(e) => setOtherText(e.target.value)}
+                  />
+                )}
+              </>
             )}
           </div>
 

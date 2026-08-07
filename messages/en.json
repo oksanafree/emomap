@@ -112,6 +112,7 @@
     "emotionHint": "Tap one if it fits — or continue",
     "emotionOther": "Something else...",
     "emotionPlaceholder": "Describe what you're feeling...",
+    "emotionCenterQuestion": "What emotion do you experience now?",
     "emotions": {
       "Building": ["Inspired", "Hopeful", "Confident", "Energized", "Proud", "Joyful"],
       "Protecting": ["Frustrated", "Determined", "Alert", "Defensive", "Irritated", "Impatient"],

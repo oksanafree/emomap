@@ -10,6 +10,7 @@ import { useSliderSound } from "@/lib/use-slider-sound";
 import { db } from "@/lib/firebase";
 import { isIOS, isStandalonePwa } from "@/lib/platform";
 import type { Intensity, StateKey } from "@/lib/state-detection";
+import { buildInstantReport } from "@/lib/instant-report";
 import { getStateColor } from "@/lib/stateConfig";
 import { AuthGuard } from "@/components/AuthGuard";
 import { NotificationPrompt } from "@/components/NotificationPrompt";
@@ -70,7 +71,6 @@ function HistoryPageInner() {
       emotion: searchParams.get("emotion") ?? "",
       intensity,
       isFirstCheckin: searchParams.get("firstCheckin") === "1",
-      showQuestion: searchParams.get("showQuestion") === "1",
     };
   });
 
@@ -312,18 +312,24 @@ function HistoryPageInner() {
             )}
           </div>
 
-          {newCheckinData && (
-            <StateSection
-              state={newCheckinData.state}
-              emotion={newCheckinData.emotion}
-              intensity={newCheckinData.intensity}
-              isFirstCheckin={newCheckinData.isFirstCheckin}
-              showQuestion={newCheckinData.showQuestion}
-              locale={locale}
-            />
-          )}
-
-          {newCheckinData && <ReturnNudge state={newCheckinData.state} />}
+          {newCheckinData &&
+            (() => {
+              const report = buildInstantReport({
+                state: newCheckinData.state,
+                intensity: newCheckinData.intensity,
+                emotion: newCheckinData.emotion,
+              });
+              return (
+                <>
+                  <StateSection
+                    state={newCheckinData.state}
+                    body={report.body}
+                    isFirstCheckin={newCheckinData.isFirstCheckin}
+                  />
+                  <ReturnNudge state={newCheckinData.state} nudge={report.nudge} />
+                </>
+              );
+            })()}
 
           {entries !== null && (
             <CheckinCountdown entryCount={entries.length} color={countdownColor} />

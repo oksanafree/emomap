@@ -30,6 +30,7 @@ import {
   type SocialKey,
 } from "@/lib/context-options";
 import { computeIntensity, type StateKey } from "@/lib/state-detection";
+import { detectContradiction } from "@/lib/instant-report";
 import { AuthGuard } from "@/components/AuthGuard";
 import { HomeNavIcon } from "@/components/HomeNavIcon";
 import checkinStyles from "@/styles/checkin-screen.module.css";
@@ -207,6 +208,11 @@ function ContextPageInner() {
       return;
     }
 
+    // Silently record emotion/placement contradictions (chosen emotion's home
+    // quadrant differs from where the user placed themselves). Reviewed later
+    // to author custom text for the most common combinations. No UI effect.
+    const contradiction = detectContradiction(state, emotion);
+
     try {
       await addDoc(entriesRef, {
         timestamp: serverTimestamp(),
@@ -217,6 +223,7 @@ function ContextPageInner() {
         state,
         lang: locale,
         custom_tokens: customTokens,
+        ...(contradiction ?? {}),
       });
     } catch {
       setError(t("saveError"));
@@ -237,37 +244,11 @@ function ContextPageInner() {
         }).catch(() => {});
       }
 
-      // Entries 1-2 never show the reflection question on the history page's
-      // state section. From entry 3 on, only surface it when the state
-      // repeats within the last 3 check-ins or every 3rd check-in — otherwise
-      // it starts to feel repetitive.
-      let shouldShowQuestion = false;
-      if (count >= 3) {
-        try {
-          const recentSnap = await getDocs(query(entriesRef, orderBy("timestamp", "desc"), limit(3)));
-          const recentStates = recentSnap.docs.map((d) => d.data().state as StateKey | undefined);
-          const previousStates = recentStates.slice(1);
-          const repeatsRecentState = previousStates.some((s) => s === state);
-          shouldShowQuestion = repeatsRecentState || count % 3 === 0;
-        } catch {
-          shouldShowQuestion = count % 3 === 0;
-        }
-      }
-
-      // At high intensity in a pressured state, the user is dealing with
-      // something real — skip the reflection question regardless of the
-      // repeat/divisible-by-3 logic above.
-      const HIGH_INTENSITY_SKIP_STATES: StateKey[] = ["Enduring", "Protecting", "Bracing"];
-      if (intensity === "high" && HIGH_INTENSITY_SKIP_STATES.includes(state)) {
-        shouldShowQuestion = false;
-      }
-
       const historyParams = new URLSearchParams({
         new: "1",
         state,
         emotion,
         intensity,
-        showQuestion: shouldShowQuestion ? "1" : "0",
         firstCheckin: count === 1 ? "1" : "0",
       });
       if (count === 2) historyParams.set("firstDirection", "1");
