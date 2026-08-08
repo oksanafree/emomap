@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { collection, doc, getCountFromServer, getDoc, setDoc, Timestamp } from "firebase/firestore";
+import { collection, doc, getCountFromServer, getDoc, serverTimestamp, setDoc, Timestamp } from "firebase/firestore";
 import { Link } from "@/i18n/navigation";
 import { useAnonymousAuth } from "@/lib/use-anonymous-auth";
 import { db } from "@/lib/firebase";
@@ -13,6 +13,7 @@ import styles from "./report.module.css";
 
 const MIN_ENTRIES_FOR_REFRESH = 5;
 const FULL_REPORT_ENTRIES = 20;
+const REFRESH_COOLDOWN_MS = 24 * 60 * 60 * 1000;
 
 type LoadStatus = "loading" | "ready" | "empty" | "error";
 
@@ -25,6 +26,7 @@ function ReportPageInner() {
   const [generatedAt, setGeneratedAt] = useState<Date | null>(null);
   const [entryCount, setEntryCount] = useState<number | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [lastRefreshedAt, setLastRefreshedAt] = useState<Date | null>(null);
 
   const loadReport = useCallback(async () => {
     if (!user) return;
@@ -36,6 +38,9 @@ function ReportPageInner() {
       const data = userSnap.data();
       const count = countSnap.data().count;
       setEntryCount(count);
+
+      const lastRefreshed = data?.report_last_refreshed_at;
+      setLastRefreshedAt(lastRefreshed instanceof Timestamp ? lastRefreshed.toDate() : null);
 
       const text = data?.[`report_${locale}`]?.text;
       if (typeof text === "string" && text.length > 0) {
@@ -76,7 +81,7 @@ function ReportPageInner() {
   }, [loadReport]);
 
   async function handleRefresh() {
-    if (!user || refreshing) return;
+    if (!user || refreshing || refreshedWithin24h) return;
     setRefreshing(true);
     try {
       const type = (entryCount ?? 0) >= FULL_REPORT_ENTRIES ? "full" : "short";
@@ -86,6 +91,16 @@ function ReportPageInner() {
         body: JSON.stringify({ userId: user.uid, locale, type }),
       });
       if (!res.ok) throw new Error("Report generation failed");
+      // Record the manual refresh so the button rate-limits to once per 24h.
+      // Only the manual-refresh path writes this — automatic milestone
+      // generations (5, 20, 40, …) go through the same endpoint but must not
+      // consume the daily allowance.
+      await setDoc(
+        doc(db, "users", user.uid),
+        { report_last_refreshed_at: serverTimestamp() },
+        { merge: true },
+      );
+      setLastRefreshedAt(new Date());
       await loadReport();
     } catch (error) {
       console.error("Failed to refresh report", error);
@@ -97,6 +112,8 @@ function ReportPageInner() {
 
   const dateFormatter = new Intl.DateTimeFormat(locale, { year: "numeric", month: "long", day: "numeric" });
   const canRefresh = entryCount !== null && entryCount >= MIN_ENTRIES_FOR_REFRESH;
+  const refreshedWithin24h =
+    lastRefreshedAt !== null && Date.now() - lastRefreshedAt.getTime() < REFRESH_COOLDOWN_MS;
 
   return (
     <div className={checkinStyles.lightScreen}>
@@ -129,9 +146,9 @@ function ReportPageInner() {
                   type="button"
                   className={styles.refreshBtn}
                   onClick={handleRefresh}
-                  disabled={refreshing}
+                  disabled={refreshing || refreshedWithin24h}
                 >
-                  {refreshing ? t("updating") : t("refresh")}
+                  {refreshedWithin24h ? t("refreshedToday") : refreshing ? t("updating") : t("refresh")}
                 </button>
               )}
               {reportText && <p className={styles.reportText}>{reportText}</p>}

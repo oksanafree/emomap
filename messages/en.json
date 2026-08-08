@@ -322,7 +322,8 @@
     "refresh": "Refresh report",
     "updating": "Updating...",
     "generatedOn": "Generated {date}",
-    "refreshedRecently": "Refreshed recently"
+    "refreshedRecently": "Refreshed recently",
+    "refreshedToday": "Refreshed today"
   },
   "Legal": {
     "privacyTitle": "Privacy Policy",

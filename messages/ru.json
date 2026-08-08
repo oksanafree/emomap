@@ -322,7 +322,8 @@
     "refresh": "Обновить отчёт",
     "updating": "Обновляем...",
     "generatedOn": "Создан {date}",
-    "refreshedRecently": "Недавно обновлено"
+    "refreshedRecently": "Недавно обновлено",
+    "refreshedToday": "Обновлено сегодня"
   },
   "Legal": {
     "privacyTitle": "Политика конфиденциальности",
