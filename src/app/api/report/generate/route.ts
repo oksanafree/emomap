@@ -17,6 +17,11 @@ import {
 // functions/src/index.ts.
 const REPORT_READY_EMAIL_FROM = "Emomapp <reminder@mail.emomapp.app>";
 
+// Manual refreshes (source: "manual" from the report page's Refresh button)
+// are capped to once per 24h per user. Automatic milestone generations
+// (5, 20, 40, … check-ins) pass no source and are never rate-limited.
+const REFRESH_COOLDOWN_MS = 24 * 60 * 60 * 1000;
+
 const REPORT_READY_EMAIL_CONTENT: Record<"en" | "ru", Record<"short" | "full", { subject: string; body: string }>> = {
   en: {
     short: {
@@ -44,14 +49,18 @@ export async function POST(request: NextRequest) {
   let userId: string | undefined;
   let locale: string | undefined;
   let type: unknown;
+  let source: unknown;
   try {
     const body = await request.json();
     userId = body.userId;
     locale = body.locale;
     type = body.type;
+    source = body.source;
   } catch {
     return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
   }
+
+  const isManualRefresh = source === "manual";
 
   if (!userId) {
     return NextResponse.json({ error: "userId is required." }, { status: 400 });
@@ -65,6 +74,18 @@ export async function POST(request: NextRequest) {
     userData = userSnap.data();
   } catch (error) {
     console.error("Failed to fetch user profile for report generation", error);
+  }
+
+  // Enforce the once-per-24h manual-refresh cap before spending any Claude
+  // calls. The report page mirrors this in the UI, but this is the
+  // authoritative gate — it can't be bypassed from the client.
+  if (isManualRefresh) {
+    const lastRefreshed = userData?.report_last_refreshed_at;
+    const lastRefreshedMs =
+      lastRefreshed && typeof lastRefreshed.toMillis === "function" ? lastRefreshed.toMillis() : null;
+    if (lastRefreshedMs !== null && Date.now() - lastRefreshedMs < REFRESH_COOLDOWN_MS) {
+      return NextResponse.json({ error: "Report can be refreshed once per 24 hours." }, { status: 429 });
+    }
   }
 
   let entriesChronological: ReportEntry[];
@@ -140,20 +161,23 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    await db.collection("users").doc(userId).set(
-      {
-        report_en: {
-          text: reportTextEn,
-          type: reportType,
-          last_generated_at: FieldValue.serverTimestamp(),
-          entry_count: entriesChronological.length,
-        },
-        // Shared across locales: overwritten on every generation, so it
-        // naturally reflects the most recent one.
-        report_generated_at: FieldValue.serverTimestamp(),
+    const reportSave: Record<string, unknown> = {
+      report_en: {
+        text: reportTextEn,
+        type: reportType,
+        last_generated_at: FieldValue.serverTimestamp(),
+        entry_count: entriesChronological.length,
       },
-      { merge: true },
-    );
+      // Shared across locales: overwritten on every generation, so it
+      // naturally reflects the most recent one.
+      report_generated_at: FieldValue.serverTimestamp(),
+    };
+    // Only a successful manual refresh consumes the daily allowance; automatic
+    // milestone generations don't touch this field.
+    if (isManualRefresh) {
+      reportSave.report_last_refreshed_at = FieldValue.serverTimestamp();
+    }
+    await db.collection("users").doc(userId).set(reportSave, { merge: true });
   } catch (error) {
     console.error("Failed to save generated report", error);
     return NextResponse.json({ error: "Could not save report." }, { status: 500 });

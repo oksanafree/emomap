@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { collection, doc, getCountFromServer, getDoc, serverTimestamp, setDoc, Timestamp } from "firebase/firestore";
+import { collection, doc, getCountFromServer, getDoc, setDoc, Timestamp } from "firebase/firestore";
 import { Link } from "@/i18n/navigation";
 import { useAnonymousAuth } from "@/lib/use-anonymous-auth";
 import { db } from "@/lib/firebase";
@@ -88,18 +88,18 @@ function ReportPageInner() {
       const res = await fetch("/api/report/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: user.uid, locale, type }),
+        // source: "manual" — the server rate-limits this to once per 24h and
+        // writes report_last_refreshed_at itself (the authoritative gate).
+        body: JSON.stringify({ userId: user.uid, locale, type, source: "manual" }),
       });
+      // Server enforced the 24h cap (e.g. already refreshed on another
+      // device): reflect it in the UI instead of showing an error.
+      if (res.status === 429) {
+        setLastRefreshedAt(new Date());
+        await loadReport();
+        return;
+      }
       if (!res.ok) throw new Error("Report generation failed");
-      // Record the manual refresh so the button rate-limits to once per 24h.
-      // Only the manual-refresh path writes this — automatic milestone
-      // generations (5, 20, 40, …) go through the same endpoint but must not
-      // consume the daily allowance.
-      await setDoc(
-        doc(db, "users", user.uid),
-        { report_last_refreshed_at: serverTimestamp() },
-        { merge: true },
-      );
       setLastRefreshedAt(new Date());
       await loadReport();
     } catch (error) {
