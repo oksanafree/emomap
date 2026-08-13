@@ -20,6 +20,7 @@ const SWIPE_THRESHOLD = 50;
 export default function OnboardingPage() {
   const t = useTranslations("Onboarding");
   const tHome = useTranslations("home");
+  const tCommon = useTranslations("Common");
   const router = useRouter();
   const [step, setStep] = useState(0);
   const [authUser, setAuthUser] = useState<User | null>(null);
@@ -216,7 +217,7 @@ export default function OnboardingPage() {
         <button
           type="button"
           onClick={goBack}
-          aria-label="Back"
+          aria-label={tCommon("back")}
           className="absolute left-2 top-[calc(env(safe-area-inset-top)+20px)] flex h-11 w-11 items-center justify-center text-2xl text-[#4848a0]"
         >
           ‹

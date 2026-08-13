@@ -22,6 +22,19 @@ const REPORT_READY_EMAIL_FROM = "Emomapp <reminder@mail.emomapp.app>";
 // (5, 20, 40, … check-ins) pass no source and are never rate-limited.
 const REFRESH_COOLDOWN_MS = 24 * 60 * 60 * 1000;
 
+// Push-notification copy for the report-ready alert, keyed by the requested
+// locale (same source of truth as the deep-link URL below).
+const REPORT_READY_PUSH_CONTENT: Record<"en" | "ru", { title: string; body: string }> = {
+  en: {
+    title: "Your report is ready",
+    body: "Your trail has been read. Tap to see your patterns.",
+  },
+  ru: {
+    title: "Твой отчёт готов",
+    body: "Твой путь прочитан. Нажми, чтобы увидеть свои паттерны.",
+  },
+};
+
 const REPORT_READY_EMAIL_CONTENT: Record<"en" | "ru", Record<"short" | "full", { subject: string; body: string }>> = {
   en: {
     short: {
@@ -269,8 +282,8 @@ export async function POST(request: NextRequest) {
             await messaging.send({
               token,
               notification: {
-                title: "Your report is ready",
-                body: "Your trail has been read. Tap to see your patterns.",
+                title: REPORT_READY_PUSH_CONTENT[requestedLocale].title,
+                body: REPORT_READY_PUSH_CONTENT[requestedLocale].body,
               },
               data: { url: `/${requestedLocale}/report` },
             });

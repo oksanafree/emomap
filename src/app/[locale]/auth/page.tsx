@@ -24,6 +24,7 @@ const CONSENT_POLICY_VERSION = "2026-07";
 function AuthPageInner() {
   const t = useTranslations("Auth");
   const tProfile = useTranslations("Profile");
+  const tCommon = useTranslations("Common");
   const router = useRouter();
   const searchParams = useSearchParams();
   const [mode, setMode] = useState<Mode>(searchParams.get("mode") === "login" ? "login" : "signup");
@@ -185,7 +186,7 @@ function AuthPageInner() {
   return (
     <div className={styles.screen}>
       {showBack && (
-        <button type="button" onClick={handleBack} aria-label="Back" className={styles.backButton}>
+        <button type="button" onClick={handleBack} aria-label={tCommon("back")} className={styles.backButton}>
           ‹
         </button>
       )}

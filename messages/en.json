@@ -8,7 +8,12 @@
     "close": "Close"
   },
   "Common": {
-    "logOut": "Log out"
+    "logOut": "Log out",
+    "back": "Back",
+    "home": "Home"
+  },
+  "Meta": {
+    "description": "Track and understand your emotions."
   },
   "HomePage": {
     "title": "Welcome to Emomapp",

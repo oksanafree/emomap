@@ -8,7 +8,12 @@
     "close": "Закрыть"
   },
   "Common": {
-    "logOut": "Выйти"
+    "logOut": "Выйти",
+    "back": "Назад",
+    "home": "На главную"
+  },
+  "Meta": {
+    "description": "Отслеживай и понимай свои эмоции."
   },
   "HomePage": {
     "title": "Добро пожаловать в Emomapp",
