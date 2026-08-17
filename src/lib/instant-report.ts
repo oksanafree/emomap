@@ -83,22 +83,22 @@ export const RETURN_NUDGE_BODY = "Come back soon! Every check-in adds to your in
 // The descriptive paragraph after the "You feel …" lead, per quadrant per tier.
 const QUADRANT_BODY: Record<Quadrant, Record<Tier, string>> = {
   Receiving: {
-    near: "Something gentle is here. Life is offering something small and good — easy to overlook. Let yourself notice it.",
-    mid: "Life is giving right now and you're opening and letting it in. This is exactly right when you rest or absorb what's good. But if it goes on too long, something that needs your attention might go unnoticed.",
-    far: "Life is fully giving and you're wide open to it. This is rare — let yourself be in it completely. Just don't lose sight of what might still need your attention.",
+    near: "Something gentle is here. Life is offering something small and good.",
+    mid: "Life is giving right now and you're opening and letting it in. This is exactly right when you rest or absorb what's good.",
+    far: "Life is fully giving and you're wide open to it. This is rare — let yourself be in it completely.",
   },
   Building: {
-    near: "Things are softly moving in your direction. A good moment to take a small step.",
-    mid: "Circumstances are with you and you have the energy to act on them. This is when things get made — good time to start, push, or commit. Watch that momentum doesn't turn into rushing.",
-    far: "Circumstances are fully with you and your energy is high. This is a powerful place — use it. Just make sure speed doesn't outrun judgment.",
+    near: "Things are softly moving in your direction.",
+    mid: "Circumstances are with you and you have the energy to act on them. This is when things get made — good time to start, push, or commit.",
+    far: "Circumstances are fully with you and your energy is high. This is a powerful place — use it.",
   },
   Protecting: {
-    near: "Something feels slightly off. You're alert but not yet in full defense. Worth paying attention to what's bothering you.",
+    near: "Something feels slightly off. You're alert but not yet in full defense.",
     mid: "Something doesn't feel right and you're resisting it. That sharpness is useful to defend your stance. But when it lasts long it drains fast — worth asking whether the threat is still real.",
     far: "Something is clearly wrong and you're fully braced against it. At this intensity the body and mind burn through resources fast. This is when rest and support matter more than usual, even if they're the last thing on your mind.",
   },
   Enduring: {
-    near: "Things feel harder than they could be and your capacity to change them feels limited. Look for any small thing that restores you.",
+    near: "Things feel harder than they could be and your capacity to change them feels limited.",
     mid: "Things are hard and there's little you can change right now. This is the state of carrying. Look for any small thing that restores you. Don't go too deep into it alone.",
     far: "The weight is real and it is heavy. This is when you need people around you most. Talk to someone.",
   },
@@ -146,10 +146,22 @@ const EDGE_BODY: Record<EdgeState, Record<Tier, string>> = {
 const CENTER_BODY =
   "You're at the center. Circumstances are neither giving nor taking. You're neither driving nor drifting. This is the place of maximum freedom — because you're not pulled in any direction. Everything is possible from here.";
 
+// Every preset emotion word across all quadrants (lowercase). A chosen emotion
+// not in this set is a user-entered "other".
+const STANDARD_EMOTIONS = new Set(
+  Object.values(QUADRANT_EMOTIONS)
+    .flat()
+    .map((emotion) => emotion.toLowerCase()),
+);
+
 function buildLead(tier: Tier, emotion: string): string {
   const lc = emotion.trim().toLowerCase();
-  if (tier === "near") return `You feel a quiet ${lc}.`;
-  if (tier === "far") return `You feel deep ${lc}.`;
+  // For a free-text "other" emotion the intensity modifier reads awkwardly
+  // ("You feel a quiet <phrase>"), so drop it and use the plain lead.
+  if (STANDARD_EMOTIONS.has(lc)) {
+    if (tier === "near") return `You feel a quiet ${lc}.`;
+    if (tier === "far") return `You feel deep ${lc}.`;
+  }
   return `You feel ${lc}.`;
 }
 
