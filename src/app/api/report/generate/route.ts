@@ -22,6 +22,30 @@ const REPORT_READY_EMAIL_FROM = "Emomapp <reminder@mail.emomapp.app>";
 // (5, 20, 40, … check-ins) pass no source and are never rate-limited.
 const REFRESH_COOLDOWN_MS = 24 * 60 * 60 * 1000;
 
+// Editorial style guide, prepended to the report-writing rules so it frames
+// how the model writes before it reaches the detailed data/structure rules.
+const WRITING_STYLE = `WRITING STYLE
+
+You are writing a personal pattern report, not a summary. Your job is to find what the data reveals that the person could not have seen themselves — and say it plainly.
+
+Rules:
+
+1. State each insight once, with its full weight. Do not restate it in the sentences that follow.
+
+2. End every section at the height of its finding. If something is surprising or counterintuitive, close there — don't trail off into neutral description.
+
+3. Be specific, not abstract. Prefer "the situation felt hostile every time energy dropped to 2" over "your perception of circumstances was affected by low energy states."
+
+4. If the user wrote something in their own words — especially self-criticism, surprise, or a raw observation — treat it as the most important data point in that section. Quote it directly and build the finding around it.
+
+5. Do not repeat the same observation in different words within a paragraph or across sections.
+
+6. Close the entire report with one open question. The question should create productive uncertainty — it should not answer itself, resolve anything, or suggest what the person should do. It should point at something the data cannot fully explain.
+
+7. Write in second person ("you"), past tense for events, present tense for patterns.
+
+8. No bullet points. No headers within sections. Flowing prose only.`;
+
 // Push-notification copy for the report-ready alert, keyed by the requested
 // locale (same source of truth as the deep-link URL below).
 const REPORT_READY_PUSH_CONTENT: Record<"en" | "ru", { title: string; body: string }> = {
@@ -142,7 +166,7 @@ export async function POST(request: NextRequest) {
   const maxTokens = reportType === "short" ? 1500 : 4000;
   const patterns = computePatternVariables(entriesChronological);
   const userMessage = buildReportUserMessage(patterns, entriesChronological, "en", reportType);
-  const systemPrompt = `${SYSTEM_PROMPT}\n\n${buildGenderInstruction(userData?.gender)}`;
+  const systemPrompt = `${WRITING_STYLE}\n\n${SYSTEM_PROMPT}\n\n${buildGenderInstruction(userData?.gender)}`;
 
   const anthropic = new Anthropic();
   let reportTextEn: string;
