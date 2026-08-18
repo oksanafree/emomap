@@ -345,19 +345,21 @@ Appears as an additional observation, after the three cards.
 *Enduring dominant:*
 "The situation has felt consistently against you, and you've consistently felt without the resources to meet it. If this reflects how life has been feeling more broadly — not just these specific moments — it may be time to talk to someone."
 
-### Closing Encouragement Line
+### Closing Question
 
-Every five-entry insight (shown between 5 and 19 check-ins, before the full report unlocks) ends with one additional sentence after Card 3 — inviting the person to come back for a fresh read any time, and noting that checking in often builds the fuller picture.
+Every five-entry insight (shown between 5 and 19 check-ins, before the full report unlocks) ends with one open question after Card 3 — something to sit with, not encouragement or advice. This is the same kind of closing the full report uses (Section 7).
 
 Rules:
-- One sentence only, its own short paragraph
+- One question only, its own short paragraph
+- Opens something the data cannot fully explain; does not prescribe, resolve, or suggest what to do
 - Never repeat the same wording twice — write a fresh variant every time
-- Warm and inviting, not a nudge or a growth-hack CTA
+- Not an invitation to return or a growth-hack CTA
+- Never starts with "A useful question" or teacher language
 
 Example variants (write a new one each time, do not reuse verbatim):
-- "You can ask for a new read any time — the more you check in, the fuller the pattern becomes."
-- "Come back whenever you like for an updated look — every new check-in sharpens the picture."
-- "This will keep evolving as you check in more — return any time for a fresh take."
+- "What was different about the moments that didn't fit the rest?"
+- "Which of these shifts did you feel coming, and which only surface now that you can see them together?"
+- "What kept pulling you back to the same place — and was it the thing you thought it was?"
 
 ---
 
@@ -402,7 +404,7 @@ Rules:
 - Should feel like something worth sitting with for a day
 - Never starts with "A useful question" or teacher language
 
-This is the final line of the report. Unlike the five-entry insight, the fourteen-entry/full report never adds a closing encouragement line after it — by 20+ check-ins the habit is already built, so no invitation to return is needed.
+This is the final line of the report — nothing follows it. Both the five-entry insight and the full report close on this open question; neither adds a closing encouragement line or invitation to return.
 
 ---
 

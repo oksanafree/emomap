@@ -44,7 +44,7 @@ Rules:
 
 7. Write in second person ("you"), past tense for events, present tense for patterns.
 
-8. No bullet points. No headers within sections. Flowing prose only.`;
+8. No bullet points. No headers within sections. Capitalized section labels on their own line are allowed. Flowing prose only.`;
 
 // Push-notification copy for the report-ready alert, keyed by the requested
 // locale (same source of truth as the deep-link URL below).

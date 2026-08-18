@@ -79,7 +79,7 @@ export function buildReportUserMessage(
           "Open with the pattern statement as a lead paragraph, no heading.",
           "Write the three angles (what the map shows, what this reveals, something to watch) as connected flowing paragraphs, in that order — no capitalized labels or headings. This report is under 20 entries, and section headers are reserved for reports that long or longer.",
           "Follow with any axis note or distortion flag as plain paragraphs if they apply.",
-          "After the last paragraph, add the closing encouragement line described at the end of Section 6, as its own short paragraph.",
+          "After the last paragraph, close with one open question (something to sit with, not encouragement or advice), as its own short paragraph.",
           "Separate every paragraph with a single blank line. Do not use markdown formatting (no #, *, or backticks) and do not wrap anything in JSON.",
         ]
       : [
