@@ -208,15 +208,11 @@
     "activities": {
       "work": "Work",
       "study": "Study",
-      "exercise": "Exercise",
-      "resting": "Rest",
-      "creative": "Creating",
-      "caregiving": "Caregiving",
-      "chores": "Chores",
-      "socializing": "Socializing",
-      "other": "Other"
+      "move": "Move",
+      "connect": "Connect",
+      "rest": "Rest"
     },
-    "activityOtherPlaceholder": "What were you doing?",
+    "activityNotePlaceholder": "What exactly?",
     "socialQuestion": "Who were you with?",
     "social": {
       "alone": "Alone",

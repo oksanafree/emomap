@@ -208,15 +208,11 @@
     "activities": {
       "work": "Работа",
       "study": "Учёба",
-      "exercise": "Спорт",
-      "resting": "Отдых",
-      "creative": "Творчество",
-      "caregiving": "Забота",
-      "chores": "Домашние дела",
-      "socializing": "Общение",
-      "other": "Другое"
+      "move": "Движение",
+      "connect": "Общение",
+      "rest": "Отдых"
     },
-    "activityOtherPlaceholder": "Что ты делал(а)?",
+    "activityNotePlaceholder": "Что именно?",
     "socialQuestion": "С кем ты был?",
     "social": {
       "alone": "Один / одна",

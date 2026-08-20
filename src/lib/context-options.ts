@@ -1,14 +1,4 @@
-export const ACTIVITY_KEYS = [
-  "work",
-  "study",
-  "exercise",
-  "resting",
-  "creative",
-  "caregiving",
-  "chores",
-  "socializing",
-  "other",
-] as const;
+export const ACTIVITY_KEYS = ["work", "study", "move", "connect", "rest"] as const;
 export type ActivityKey = (typeof ACTIVITY_KEYS)[number];
 
 export const SOCIAL_KEYS = ["alone", "withOthers", "online"] as const;

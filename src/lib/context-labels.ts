@@ -3,13 +3,9 @@ import type { ActivityKey, EngagementLevel, SocialKey } from "@/lib/context-opti
 const ACTIVITY_LABELS: Record<ActivityKey, string> = {
   work: "Work",
   study: "Study",
-  exercise: "Exercise",
-  resting: "Rest",
-  creative: "Creating",
-  caregiving: "Caregiving",
-  chores: "Chores",
-  socializing: "Socializing",
-  other: "Other",
+  move: "Move",
+  connect: "Connect",
+  rest: "Rest",
 };
 
 const SOCIAL_LABELS: Record<SocialKey, string> = {
@@ -30,7 +26,7 @@ export type CustomTokens = {
   social?: string[] | string;
   mental_engagement?: string;
   physical_engagement?: string;
-  activity_other?: string;
+  activityNote?: string;
   sleep?: number;
   energy?: number;
   hunger?: number;
@@ -64,11 +60,18 @@ export function formatCustomTokens(tokens: CustomTokens | undefined | null): str
     parts.push(`Feeling: ${tokens.emotion}`);
   }
 
-  const activityOther = typeof tokens.activity_other === "string" ? tokens.activity_other.trim() : "";
+  // The free-text activity note is passed alongside the category so the report
+  // can reference the specific activity (e.g. "coffee with my daughter") rather
+  // than just the bucket ("Connect").
+  const activityNote = typeof tokens.activityNote === "string" ? tokens.activityNote.trim() : "";
   const activityLabels = toArray(tokens.activity)
     .filter((a): a is ActivityKey => a in ACTIVITY_LABELS)
-    .map((a) => (a === "other" && activityOther ? activityOther : ACTIVITY_LABELS[a]));
-  if (activityLabels.length > 0) parts.push(`Doing: ${activityLabels.join(", ")}`);
+    .map((a) => ACTIVITY_LABELS[a]);
+  if (activityLabels.length > 0 || activityNote) {
+    const categories = activityLabels.join(", ");
+    const doing = activityNote ? (categories ? `${categories} — "${activityNote}"` : `"${activityNote}"`) : categories;
+    parts.push(`Doing: ${doing}`);
+  }
 
   const socialLabels = toArray(tokens.social)
     .filter((s): s is SocialKey => s in SOCIAL_LABELS)
