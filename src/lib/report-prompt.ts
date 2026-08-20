@@ -21,6 +21,35 @@ export function buildGenderInstruction(gender: string | undefined): string {
 // in English and translating it keeps the two languages structurally and
 // substantively identical instead of producing two independently-written
 // analyses that can disagree with each other.
+// Russian-specific writing rules, applied only to the Russian report (the
+// translation output). Kept as a labeled block so the model reads it as a
+// coherent style guide rather than one flattened instruction.
+const RUSSIAN_LANGUAGE_STYLE = `RUSSIAN LANGUAGE STYLE
+
+Write in natural Russian. Do not translate English constructions literally. Specific rules:
+
+1. USE "ТЫ" THROUGHOUT. Never use "вы". No exceptions.
+
+2. VOCABULARY PREFERENCES:
+   - "уверенность в своих силах" not "ощущение способности и направленности"
+   - "бессилие" not "нет ресурсов, чтобы справиться"
+   - "рушиться" not "падать" when describing sudden energy crashes
+   - "восстанавливаться" not "возвращаться" when describing recovery
+   - "затянувшееся общение" not "продолжительное взаимодействие"
+   - "поддержка / помеха" not "сотрудничество / давление" for situation appraisal
+   - "замедление" not "остановка" when referring to slowing down or pausing
+   - "состояние [emotion]" not "моменты, склонявшиеся к [emotion]"
+
+3. SENTENCE LENGTH. Break long sentences. If a sentence contains more than two clauses, split it.
+
+4. NO GENDER SPLITS. Never write "умён/умна" or similar. Use gender-neutral constructions.
+
+5. WHEN DATA IS LIMITED. If the data doesn't fully explain a pattern, do not write "данные не могут полностью назвать." Instead write: "возможно, больше записей помогут понять, что именно на это влияет — продолжай отмечать свои состояния." This is the natural place to invite the user to keep logging.
+
+6. NO SUMMARY PARAGRAPH. Do not add a paragraph summarizing the arc of the period before the closing question. Go directly from the last section to the closing question.
+
+7. CLOSING QUESTION. Must use "замедление" not "остановка" when asking about the user's difficulty with slowing down.`;
+
 export function buildTranslationPrompt(englishReport: string, gender: string | undefined): string {
   const genderDescription =
     gender === "female"
@@ -30,18 +59,16 @@ export function buildTranslationPrompt(englishReport: string, gender: string | u
         : "of unspecified gender — use gender-neutral or plural Russian forms where possible";
 
   const instruction = [
-    "Translate the following psychological pattern report into Russian.",
+    "Translate the following psychological pattern report into Russian, following the RUSSIAN LANGUAGE STYLE rules below.",
     `The user is ${genderDescription}.`,
     "Use grammatically correct Russian verb forms and adjectives that match the user's gender throughout (e.g. \"двигалась\" not \"двигался\" for a female user).",
-    "Use informal \"ты\" throughout, not formal \"вы\".",
-    "Do not split gendered words with a slash (умён/умна) — use gender-neutral constructions instead.",
-    "Preserve all section headings, formatting, and structure exactly.",
+    "Preserve the report's section labels and the order of its sections.",
     "Use the following Russian names for the quadrant states: BUILDING → СТРОЮ, PROTECTING → ЗАЩИЩАЮ, RECEIVING → ПРИНИМАЮ, ENDURING → ТЕРПЛЮ, SEEKING → ИЩУ, DRIFTING → ДРЕЙФУЮ, BRACING → СЖИМАЮСЬ, OPENING → ОТКРЫВАЮСЬ, STILL → ТИШИНА.",
-    "Do not add, remove, or reinterpret any content — translate only.",
+    "Keep the analysis and findings faithful — do not add, remove, or reinterpret them — but render everything in natural Russian per the style rules below, not a literal word-for-word translation.",
     "Output only the Russian translation — do not include the original English text or any English.",
   ].join(" ");
 
-  return `${instruction}\n\n${englishReport}`;
+  return `${instruction}\n\n${RUSSIAN_LANGUAGE_STYLE}\n\n${englishReport}`;
 }
 
 export function buildReportUserMessage(
