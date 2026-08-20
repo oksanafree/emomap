@@ -385,6 +385,7 @@ function HistoryPageInner() {
                 state: newCheckinData.state,
                 intensity: newCheckinData.intensity,
                 emotion: newCheckinData.emotion,
+                locale,
               });
               return (
                 <>
@@ -393,7 +394,7 @@ function HistoryPageInner() {
                     body={report.body}
                     isFirstCheckin={newCheckinData.isFirstCheckin}
                   />
-                  <ReturnNudge state={newCheckinData.state} />
+                  <ReturnNudge state={newCheckinData.state} line={report.comeBack ?? undefined} />
                 </>
               );
             })()}

@@ -165,38 +165,203 @@ function buildLead(tier: Tier, emotion: string): string {
   return `You feel ${lc}.`;
 }
 
-export type InstantReport = { body: string };
+// ── Russian localization ──────────────────────────────────────────────────
+// Rendered when locale === "ru". Verbatim from the RU spec: it deliberately
+// keeps per-tier "come back" lines and directive closers that the English
+// report no longer uses, so RU and EN diverge in wording and closing by design.
 
-// Assemble the report paragraph for a placement. `emotion` is the raw
-// stored value (may be a title-cased preset, a custom free-text string, or
-// empty). When empty on a quadrant, the "You feel …" lead is dropped and the
-// descriptive body stands alone.
+type RuEmotion = { acc: string; gen: string; gender: "f" | "m" | "n"; awe?: true };
+
+// Chosen emotion (English canonical key) → Russian forms. `acc` = accusative
+// (the form after "Ты чувствуешь …"); `gen` = genitive (Protecting-near
+// "…причину <gen>"). Anxiety is handled by its own override text.
+const RU_EMOTIONS: Record<string, RuEmotion> = {
+  // Receiving
+  gratitude: { acc: "благодарность", gen: "благодарности", gender: "f" },
+  peace: { acc: "покой", gen: "покоя", gender: "m" },
+  awe: { acc: "восхищение", gen: "восхищения", gender: "n", awe: true },
+  relief: { acc: "облегчение", gen: "облегчения", gender: "n" },
+  contentment: { acc: "удовлетворённость", gen: "удовлетворённости", gender: "f" },
+  tenderness: { acc: "нежность", gen: "нежности", gender: "f" },
+  // Building
+  excitement: { acc: "воодушевление", gen: "воодушевления", gender: "n" },
+  confidence: { acc: "уверенность", gen: "уверенности", gender: "f" },
+  pride: { acc: "гордость", gen: "гордости", gender: "f" },
+  inspiration: { acc: "вдохновение", gen: "вдохновения", gender: "n" },
+  joy: { acc: "радость", gen: "радости", gender: "f" },
+  curiosity: { acc: "любопытство", gen: "любопытства", gender: "n" },
+  // Protecting
+  frustration: { acc: "фрустрацию", gen: "фрустрации", gender: "f" },
+  anger: { acc: "злость", gen: "злости", gender: "f" },
+  worry: { acc: "беспокойство", gen: "беспокойства", gender: "n" },
+  irritation: { acc: "раздражение", gen: "раздражения", gender: "n" },
+  defensiveness: { acc: "обиду", gen: "обиды", gender: "f" },
+  jealousy: { acc: "ревность", gen: "ревности", gender: "f" },
+  // Enduring
+  sadness: { acc: "грусть", gen: "грусти", gender: "f" },
+  exhaustion: { acc: "истощение", gen: "истощения", gender: "n" },
+  hopelessness: { acc: "безнадёжность", gen: "безнадёжности", gender: "f" },
+  grief: { acc: "горе", gen: "горя", gender: "n" },
+  loneliness: { acc: "одиночество", gen: "одиночества", gender: "n" },
+  shame: { acc: "стыд", gen: "стыда", gender: "m" },
+};
+
+// Near-tier adjective ("спокойн-"), agreeing with the emotion noun's gender.
+const RU_NEAR_ADJ: Record<"f" | "m" | "n", string> = {
+  f: "спокойную",
+  m: "спокойный",
+  n: "спокойное",
+};
+
+// восхищение (awe) takes a different construction at every tier.
+const RU_AWE_LEAD: Record<Tier, string> = {
+  near: "Ты в тихом восхищении.",
+  mid: "Ты в восхищении.",
+  far: "Ты в глубоком восхищении.",
+};
+
+// Body text AFTER the "Ты чувствуешь …" lead, per quadrant per tier.
+// {gen} = the chosen emotion in the genitive (Protecting near only).
+const QUADRANT_BODY_RU: Record<Quadrant, Record<Tier, string>> = {
+  Receiving: {
+    near: "Жизнь дарит приятное состояние и ты его принимаешь. Хорошо.",
+    mid: "Жизнь к тебе добра, и ты принимаешь это. Это время отдохнуть и впитать хорошее. Запомни это состояние.",
+    far: "Жизнь полностью с тобой — и ты принимаешь её всю. Это бывает редко.",
+  },
+  Building: {
+    near: "Жизнь на твоей стороне. Ты в хорошем состоянии.",
+    mid: "Обстоятельства на твоей стороне, и у тебя есть энергия действовать. Сейчас — время действовать.",
+    far: "Обстоятельства полностью с тобой, и ты чувствуешь свои силы. Это очень активное состояние.",
+  },
+  Protecting: {
+    near: "Что-то идёт не так и тебя это напрягает. Обрати внимание на причину {gen}.",
+    mid: "Что-то идёт не так, и ты сопротивляешься этому. Если такая конфронтация длится долго, силы быстро уходят. Важно понимать, насколько реальна эта угроза или только её возможность?",
+    far: "Что-то явно не так, и ты полностью в защите. При такой интенсивности ресурсы уходят быстро. Отдых и поддержка сейчас важнее обычного — даже если это последнее, о чём думаешь.",
+  },
+  Enduring: {
+    near: "Обстоятельства непростые, и возможности что-то изменить сейчас ограничены. Прожить это время легче, когда есть поддержка.",
+    mid: "Сейчас тебе тяжело, и изменить многое не в твоих силах. Сейчас важна любая поддержка. Не оставайся в одиночестве.",
+    far: "Тяжесть реальна. Сейчас важнее всего быть рядом с людьми. Поговори с кем-нибудь.",
+  },
+};
+
+const QUADRANT_ANXIETY_RU: Record<Quadrant, string> = {
+  Receiving:
+    "Ты чувствуешь тревогу — хотя сейчас жизнь к тебе добра. Иногда это значит, что тебе сложно принять хорошее — или ты уже думаешь о том, что будет потом.",
+  Building:
+    "Ты чувствуешь тревогу — хотя обстоятельства на твоей стороне. Часто это тревога перед успехом: страх не справиться именно тогда, когда всё возможно. Замечай её — это тоже важно.",
+  Protecting:
+    "Ты чувствуешь тревогу — и что-то действительно идёт не так. Это тревога в её самой ясной форме: сигнал, что что-то требует внимания. Доверяй ей. И проверь — угроза ещё здесь или уже прошла?",
+  Enduring:
+    "Ты чувствуешь тревогу — и почвы под ногами сейчас нет. Это самый трудный вид тревоги: когда действием из неё не выйти. Самое важное сейчас — не переживать это в одиночестве.",
+};
+
+const EDGE_BODY_RU: Record<EdgeState, Record<Tier, string>> = {
+  Opening: {
+    near: "Тебе хорошо и ты не торопишься действовать. Так ощущается свобода.",
+    mid: "Тебе хорошо. Ты в пространстве, где возможно и активное действие, и полное расслабление. Это состояние настоящей свободы.",
+    far: "Обстоятельства явно на твоей стороне, и энергия есть — но направление ещё не выбрано.",
+  },
+  Seeking: {
+    near: "У тебя есть энергия, но ситуация ещё не прояснилась. Ты в готовности — и этого достаточно.",
+    mid: "У тебя есть энергия и готовность. Ситуация ещё не показала себя — хорошая она или нет, пока неясно. Ты в готовности и можешь действовать. Это сильное место.",
+    far: "Ты в высокой готовности — сканируешь всё вокруг. Ситуация ещё не определилась. При такой интенсивности бдительность быстро истощает. Отдохни, когда сможешь.",
+  },
+  Bracing: {
+    near: "Ситуация непростая, и ещё не ясно, как с ней быть. Где-то между сопротивлением и принятием. Это реальное место.",
+    mid: "Сейчас тяжело. Ты не борешься и не сдаёшься. Это одно из самых редких состояний.",
+    far: "Ситуация очень тяжёлая, и ты на пределе того, что можешь выдержать. Граница между сопротивлением и принятием сейчас тонкая. Сейчас важнее всего поддержка — не чтобы что-то решить, а просто не переживать это в одиночестве.",
+  },
+  Drifting: {
+    near: "Всё тихо. Не плохо и не хорошо. Ты принимаешь это.",
+    mid: "Всё тихо, и ты принимаешь это — что бы это ни было. Состояние покоя.",
+    far: "Ты полностью отпускаешь ситуацию. То, что держалось или сопротивлялось, больше не отнимает силы.",
+  },
+};
+
+const CENTER_BODY_RU =
+  "Ты в центре. Обстоятельства ни за тебя, ни против. Ты ни рулишь, ни дрейфуешь. Это место максимальной свободы — потому что ничто не отвлекает. Это состояние присутствия.";
+
+// Per-tier "come back" line (RU only; EN uses the fixed two-line nudge).
+const RETURN_NUDGE_RU: Record<Tier, string> = {
+  near: "Возвращайся, если что-то изменится.",
+  mid: "Возвращайся, когда что-то сдвинётся.",
+  far: "Возвращайся, как только что-то изменится.",
+};
+
+function buildLeadRu(quadrant: Quadrant, tier: Tier, emotion: string): string {
+  const data = RU_EMOTIONS[emotion.trim().toLowerCase()];
+  if (data?.awe) return RU_AWE_LEAD[tier];
+  if (!data) return `Ты чувствуешь ${emotion.trim()}.`; // user-entered "other"
+  // The "спокойн-" adjective is used only on Receiving/Building near.
+  if (tier === "near" && (quadrant === "Receiving" || quadrant === "Building")) {
+    return `Ты чувствуешь ${RU_NEAR_ADJ[data.gender]} ${data.acc}.`;
+  }
+  if (tier === "far") return `Ты чувствуешь ${data.acc} — глубоко.`;
+  return `Ты чувствуешь ${data.acc}.`;
+}
+
+function buildQuadrantBodyRu(quadrant: Quadrant, tier: Tier, emotion: string): string {
+  const body = QUADRANT_BODY_RU[quadrant][tier];
+  if (!body.includes("{gen}")) return body;
+  const gen = RU_EMOTIONS[emotion.trim().toLowerCase()]?.gen ?? emotion.trim();
+  // No emotion → drop the trailing "…причину <gen>." sentence rather than
+  // leave a dangling fragment.
+  if (!gen) return body.replace(/\s*[^.]*\{gen\}\.\s*$/, "");
+  return body.replace("{gen}", gen);
+}
+
+function buildRuReport(state: StateKey, tier: Tier, emotion: string, isAnxiety: boolean): InstantReport {
+  if (isQuadrant(state)) {
+    if (isAnxiety) return { body: QUADRANT_ANXIETY_RU[state], comeBack: RETURN_NUDGE_RU[tier] };
+    const description = buildQuadrantBodyRu(state, tier, emotion);
+    const body = emotion.trim() ? `${buildLeadRu(state, tier, emotion)} ${description}` : description;
+    return { body, comeBack: RETURN_NUDGE_RU[tier] };
+  }
+  if (state === "Still") return { body: CENTER_BODY_RU, comeBack: RETURN_NUDGE_RU.mid };
+  const edgeBody = EDGE_BODY_RU[state as EdgeState];
+  if (edgeBody) return { body: edgeBody[tier], comeBack: RETURN_NUDGE_RU[tier] };
+  return { body: CENTER_BODY_RU, comeBack: RETURN_NUDGE_RU.mid };
+}
+
+// `comeBack` is the per-tier Russian "come back" line; it is null in English,
+// where the closing is the fixed two-line nudge (RETURN_NUDGE_TITLE/BODY).
+export type InstantReport = { body: string; comeBack: string | null };
+
+// Assemble the report paragraph for a placement. `emotion` is the raw stored
+// value (a title-cased preset, a custom free-text string, or empty). When
+// empty on a quadrant, the "You feel …" lead is dropped and the descriptive
+// body stands alone. `locale` selects English (default) or Russian.
 export function buildInstantReport({
   state,
   intensity,
   emotion,
+  locale,
 }: {
   state: StateKey;
   intensity: Intensity;
   emotion: string;
+  locale: string;
 }): InstantReport {
   const tier = tierFromIntensity(intensity);
   const isAnxiety = emotion.trim().toLowerCase() === "anxiety";
 
+  if (locale === "ru") return buildRuReport(state, tier, emotion, isAnxiety);
+
   if (isQuadrant(state)) {
-    if (isAnxiety) return { body: QUADRANT_ANXIETY[state] };
+    if (isAnxiety) return { body: QUADRANT_ANXIETY[state], comeBack: null };
     const description = QUADRANT_BODY[state][tier];
     const body = emotion.trim() ? `${buildLead(tier, emotion)} ${description}` : description;
-    return { body };
+    return { body, comeBack: null };
   }
 
-  if (state === "Still") return { body: CENTER_BODY };
+  if (state === "Still") return { body: CENTER_BODY, comeBack: null };
 
   const edgeBody = EDGE_BODY[state as EdgeState];
-  if (edgeBody) return { body: edgeBody[tier] };
+  if (edgeBody) return { body: edgeBody[tier], comeBack: null };
 
   // Fallback (should not happen): treat as center.
-  return { body: CENTER_BODY };
+  return { body: CENTER_BODY, comeBack: null };
 }
 
 export type Contradiction = {
