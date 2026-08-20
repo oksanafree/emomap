@@ -17,14 +17,21 @@ export function buildGenderInstruction(gender: string | undefined): string {
   return "Use gender-neutral or plural forms where possible in Russian.";
 }
 
-// Translation only — never re-analyzes the data. Generating the report once
-// in English and translating it keeps the two languages structurally and
-// substantively identical instead of producing two independently-written
-// analyses that can disagree with each other.
-// Russian-specific writing rules, applied only to the Russian report (the
-// translation output). Kept as a labeled block so the model reads it as a
-// coherent style guide rather than one flattened instruction.
-const RUSSIAN_LANGUAGE_STYLE = `RUSSIAN LANGUAGE STYLE
+// The Russian report is written independently from the same check-in data (not
+// a translation of the English report), so it reads as natural Russian. These
+// exports compose the Russian generation's system prompt in the API route.
+
+// Leads the Russian system prompt: write in Russian from scratch, don't translate.
+export const RUSSIAN_REPORT_INTRO =
+  "Write this report in Russian. Do not translate from English. Write it as an original Russian text — use natural Russian sentence structures, Russian emotional vocabulary, and Russian rhythm. The data is the same as for the English report, but your writing should feel as if you thought in Russian from the start.";
+
+// The Russian names for the quadrant/edge states, used in the Russian report.
+export const RUSSIAN_STATE_NAMES =
+  "Use the following Russian names for the quadrant states: BUILDING → СТРОЮ, PROTECTING → ЗАЩИЩАЮ, RECEIVING → ПРИНИМАЮ, ENDURING → ТЕРПЛЮ, SEEKING → ИЩУ, DRIFTING → ДРЕЙФУЮ, BRACING → СЖИМАЮСЬ, OPENING → ОТКРЫВАЮСЬ, STILL → ТИШИНА.";
+
+// Russian-specific writing rules. Kept as a labeled block so the model reads it
+// as a coherent style guide rather than one flattened instruction.
+export const RUSSIAN_LANGUAGE_STYLE = `RUSSIAN LANGUAGE STYLE
 
 Write in natural Russian. Do not translate English constructions literally. Specific rules:
 
@@ -49,27 +56,6 @@ Write in natural Russian. Do not translate English constructions literally. Spec
 6. NO SUMMARY PARAGRAPH. Do not add a paragraph summarizing the arc of the period before the closing question. Go directly from the last section to the closing question.
 
 7. CLOSING QUESTION. Must use "замедление" not "остановка" when asking about the user's difficulty with slowing down.`;
-
-export function buildTranslationPrompt(englishReport: string, gender: string | undefined): string {
-  const genderDescription =
-    gender === "female"
-      ? "female"
-      : gender === "male"
-        ? "male"
-        : "of unspecified gender — use gender-neutral or plural Russian forms where possible";
-
-  const instruction = [
-    "Translate the following psychological pattern report into Russian, following the RUSSIAN LANGUAGE STYLE rules below.",
-    `The user is ${genderDescription}.`,
-    "Use grammatically correct Russian verb forms and adjectives that match the user's gender throughout (e.g. \"двигалась\" not \"двигался\" for a female user).",
-    "Preserve the report's section labels and the order of its sections.",
-    "Use the following Russian names for the quadrant states: BUILDING → СТРОЮ, PROTECTING → ЗАЩИЩАЮ, RECEIVING → ПРИНИМАЮ, ENDURING → ТЕРПЛЮ, SEEKING → ИЩУ, DRIFTING → ДРЕЙФУЮ, BRACING → СЖИМАЮСЬ, OPENING → ОТКРЫВАЮСЬ, STILL → ТИШИНА.",
-    "Keep the analysis and findings faithful — do not add, remove, or reinterpret them — but render everything in natural Russian per the style rules below, not a literal word-for-word translation.",
-    "Output only the Russian translation — do not include the original English text or any English.",
-  ].join(" ");
-
-  return `${instruction}\n\n${RUSSIAN_LANGUAGE_STYLE}\n\n${englishReport}`;
-}
 
 export function buildReportUserMessage(
   patterns: PatternVariables,

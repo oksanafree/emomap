@@ -6,7 +6,14 @@ import { getMessaging } from "firebase-admin/messaging";
 import { getAdminApp, getAdminAuth, getAdminDb } from "@/lib/firebase-admin";
 import { computePatternVariables, type ReportEntry } from "@/lib/report-patterns";
 import { formatCustomTokens } from "@/lib/context-labels";
-import { SYSTEM_PROMPT, buildReportUserMessage, buildTranslationPrompt } from "@/lib/report-prompt";
+import {
+  SYSTEM_PROMPT,
+  RUSSIAN_LANGUAGE_STYLE,
+  RUSSIAN_REPORT_INTRO,
+  RUSSIAN_STATE_NAMES,
+  buildGenderInstruction,
+  buildReportUserMessage,
+} from "@/lib/report-prompt";
 
 // Same verified Resend sending domain used by the welcome/reminder emails in
 // functions/src/index.ts.
@@ -16,6 +23,11 @@ const REPORT_READY_EMAIL_FROM = "Emomapp <reminder@mail.emomapp.app>";
 // are capped to once per 24h per user. Automatic milestone generations
 // (5, 20, 40, … check-ins) pass no source and are never rate-limited.
 const REFRESH_COOLDOWN_MS = 24 * 60 * 60 * 1000;
+
+// TEMP (testing): the 24h manual-refresh cap is disabled so the Russian report
+// can be regenerated freely during testing. RESTORE to `true` when done. The
+// client-side guard in report/page.tsx is disabled with the same flag.
+const MANUAL_REFRESH_RATE_LIMIT_ENABLED = false;
 
 // Editorial style guide, prepended to the report-writing rules so it frames
 // how the model writes before it reaches the detailed data/structure rules.
@@ -111,7 +123,7 @@ export async function POST(request: NextRequest) {
   // Enforce the once-per-24h manual-refresh cap before spending any Claude
   // calls. The report page mirrors this in the UI, but this is the
   // authoritative gate — it can't be bypassed from the client.
-  if (isManualRefresh) {
+  if (isManualRefresh && MANUAL_REFRESH_RATE_LIMIT_ENABLED) {
     const lastRefreshed = userData?.report_last_refreshed_at;
     const lastRefreshedMs =
       lastRefreshed && typeof lastRefreshed.toMillis === "function" ? lastRefreshed.toMillis() : null;
@@ -150,22 +162,20 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Could not load entries." }, { status: 500 });
   }
 
+  // Both language reports are generated independently from the same check-in
+  // data below (the Russian report is written from scratch, not translated).
   // The requested locale only controls which saved version the push
-  // notification links to below — generation itself always happens in
-  // English, then gets translated, so both languages come from the same
-  // analysis instead of being written independently and potentially
-  // disagreeing with each other.
+  // notification links to.
   const requestedLocale = locale === "ru" ? "ru" : "en";
   const reportType: "short" | "full" =
     type === "short" || type === "full" ? type : entriesChronological.length >= 20 ? "full" : "short";
   const maxTokens = reportType === "short" ? 1500 : 4000;
   const patterns = computePatternVariables(entriesChronological);
   const userMessage = buildReportUserMessage(patterns, entriesChronological, "en", reportType);
-  // English-only guard. Gender/Russian handling belongs to the separate
-  // translation step (buildTranslationPrompt) — injecting a "use Russian
-  // forms" instruction here made the model emit Russian inside the English
-  // report, so the stored report_en held both languages.
-  const systemPrompt = `${WRITING_STYLE}\n\n${SYSTEM_PROMPT}\n\nWrite this report entirely in English. Do not include any Russian text — the Russian version is produced separately by a later translation step.`;
+  // English-only guard. Gender/Russian handling belongs to the separate Russian
+  // generation below — injecting a "use Russian forms" instruction here made the
+  // model emit Russian inside the English report, so report_en held both.
+  const systemPrompt = `${WRITING_STYLE}\n\n${SYSTEM_PROMPT}\n\nWrite this report entirely in English. Do not include any Russian text — the Russian version is generated separately.`;
 
   const anthropic = new Anthropic();
   let reportTextEn: string;
@@ -219,16 +229,21 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Could not save report." }, { status: 500 });
   }
 
-  // Translation is best-effort: the English report is already saved above,
-  // so a translation failure shouldn't fail the whole request.
+  // The Russian report is written independently from the same data (not a
+  // translation), so it reads as natural Russian. Best-effort: the English
+  // report is already saved above, so a Russian failure doesn't fail the request.
   try {
-    const translationPrompt = buildTranslationPrompt(reportTextEn, userData?.gender);
-    const translationMessage = await anthropic.messages.create({
+    const russianSystemPrompt = `${RUSSIAN_REPORT_INTRO}\n\n${WRITING_STYLE}\n\n${SYSTEM_PROMPT}\n\n${RUSSIAN_LANGUAGE_STYLE}\n\n${RUSSIAN_STATE_NAMES}\n\n${buildGenderInstruction(userData?.gender)}`;
+    // Russian prose runs longer than English for the same content, so give the
+    // output extra headroom.
+    const russianStream = anthropic.messages.stream({
       model: "claude-opus-4-6",
       max_tokens: Math.ceil(maxTokens * 1.3),
-      messages: [{ role: "user", content: translationPrompt }],
+      system: russianSystemPrompt,
+      messages: [{ role: "user", content: buildReportUserMessage(patterns, entriesChronological, "ru", reportType) }],
     });
-    const reportTextRu = translationMessage.content
+    const russianFinal = await russianStream.finalMessage();
+    const reportTextRu = russianFinal.content
       .filter((block): block is Anthropic.TextBlock => block.type === "text")
       .map((block) => block.text)
       .join("")
@@ -247,10 +262,10 @@ export async function POST(request: NextRequest) {
         { merge: true },
       );
     } else {
-      console.error("Report translation produced no text output");
+      console.error("Russian report generation produced no text output");
     }
   } catch (error) {
-    console.error("Failed to translate report to Russian", error);
+    console.error("Failed to generate Russian report", error);
   }
 
   // Report-ready email — gated per report type (short = 5-entry milestone,

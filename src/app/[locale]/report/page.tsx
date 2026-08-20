@@ -15,6 +15,11 @@ const MIN_ENTRIES_FOR_REFRESH = 5;
 const FULL_REPORT_ENTRIES = 20;
 const REFRESH_COOLDOWN_MS = 24 * 60 * 60 * 1000;
 
+// TEMP (testing): the 24h manual-refresh cap is disabled so the Russian report
+// can be regenerated freely during testing. RESTORE to `true` when done (must
+// match MANUAL_REFRESH_RATE_LIMIT_ENABLED in api/report/generate/route.ts).
+const MANUAL_REFRESH_RATE_LIMIT_ENABLED = false;
+
 type LoadStatus = "loading" | "ready" | "empty" | "error";
 
 function ReportPageInner() {
@@ -113,7 +118,9 @@ function ReportPageInner() {
   const dateFormatter = new Intl.DateTimeFormat(locale, { year: "numeric", month: "long", day: "numeric" });
   const canRefresh = entryCount !== null && entryCount >= MIN_ENTRIES_FOR_REFRESH;
   const refreshedWithin24h =
-    lastRefreshedAt !== null && Date.now() - lastRefreshedAt.getTime() < REFRESH_COOLDOWN_MS;
+    MANUAL_REFRESH_RATE_LIMIT_ENABLED &&
+    lastRefreshedAt !== null &&
+    Date.now() - lastRefreshedAt.getTime() < REFRESH_COOLDOWN_MS;
 
   return (
     <div className={checkinStyles.lightScreen}>
