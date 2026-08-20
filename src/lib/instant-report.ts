@@ -21,7 +21,7 @@ function isQuadrant(state: StateKey): state is Quadrant {
 export const QUADRANT_EMOTIONS: Record<Quadrant, string[]> = {
   Receiving: ["gratitude", "peace", "awe", "relief", "contentment", "tenderness", "anxiety"],
   Building: ["excitement", "confidence", "pride", "inspiration", "joy", "curiosity", "anxiety"],
-  Protecting: ["frustration", "anger", "worry", "irritation", "defensiveness", "jealousy", "anxiety"],
+  Protecting: ["frustration", "anger", "worry", "irritation", "defensiveness", "jealousy", "determination", "anxiety"],
   Enduring: ["sadness", "exhaustion", "hopelessness", "grief", "loneliness", "shame", "anxiety"],
 };
 
@@ -154,12 +154,13 @@ const STANDARD_EMOTIONS = new Set(
     .map((emotion) => emotion.toLowerCase()),
 );
 
-function buildLead(tier: Tier, emotion: string): string {
+function buildLead(quadrant: Quadrant, tier: Tier, emotion: string): string {
   const lc = emotion.trim().toLowerCase();
   // For a free-text "other" emotion the intensity modifier reads awkwardly
   // ("You feel a quiet <phrase>"), so drop it and use the plain lead.
   if (STANDARD_EMOTIONS.has(lc)) {
-    if (tier === "near") return `You feel a quiet ${lc}.`;
+    // Protecting near reads better without the softening "a quiet".
+    if (tier === "near" && quadrant !== "Protecting") return `You feel a quiet ${lc}.`;
     if (tier === "far") return `You feel deep ${lc}.`;
   }
   return `You feel ${lc}.`;
@@ -197,6 +198,7 @@ const RU_EMOTIONS: Record<string, RuEmotion> = {
   irritation: { acc: "раздражение", gen: "раздражения", gender: "n" },
   defensiveness: { acc: "обиду", gen: "обиды", gender: "f" },
   jealousy: { acc: "ревность", gen: "ревности", gender: "f" },
+  determination: { acc: "решимость", gen: "решимости", gender: "f" },
   // Enduring
   sadness: { acc: "грусть", gen: "грусти", gender: "f" },
   exhaustion: { acc: "истощение", gen: "истощения", gender: "n" },
@@ -304,9 +306,10 @@ function buildLeadRu(quadrant: Quadrant, tier: Tier, emotion: string): string {
 function buildQuadrantBodyRu(quadrant: Quadrant, tier: Tier, emotion: string): string {
   const body = QUADRANT_BODY_RU[quadrant][tier];
   if (!body.includes("{gen}")) return body;
-  const gen = RU_EMOTIONS[emotion.trim().toLowerCase()]?.gen ?? emotion.trim();
-  // No emotion → drop the trailing "…причину <gen>." sentence rather than
-  // leave a dangling fragment.
+  // Only preset emotions have a declined genitive form. For a user-typed
+  // "other" (or no emotion at all), drop the trailing "…причину <gen>."
+  // sentence entirely rather than insert an undeclinable phrase.
+  const gen = RU_EMOTIONS[emotion.trim().toLowerCase()]?.gen;
   if (!gen) return body.replace(/\s*[^.]*\{gen\}\.\s*$/, "");
   return body.replace("{gen}", gen);
 }
@@ -351,7 +354,7 @@ export function buildInstantReport({
   if (isQuadrant(state)) {
     if (isAnxiety) return { body: QUADRANT_ANXIETY[state], comeBack: null };
     const description = QUADRANT_BODY[state][tier];
-    const body = emotion.trim() ? `${buildLead(tier, emotion)} ${description}` : description;
+    const body = emotion.trim() ? `${buildLead(state, tier, emotion)} ${description}` : description;
     return { body, comeBack: null };
   }
 
