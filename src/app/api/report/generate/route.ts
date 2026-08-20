@@ -51,7 +51,9 @@ Rules:
 
 7. Write in second person ("you"), past tense for events, present tense for patterns.
 
-8. No bullet points. No headers within sections. Capitalized section labels on their own line are allowed. Flowing prose only.`;
+8. No bullet points. No headers within sections. Capitalized section labels on their own line are allowed. Flowing prose only.
+
+9. Cross-reference contradictions. When the same variable — a person, activity, or context — appears at both the high and low ends of the data, name that contradiction explicitly, within a single section. Do not split the two ends across different sections.`;
 
 // Push-notification copy for the report-ready alert, keyed by the requested
 // locale (same source of truth as the deep-link URL below).
