@@ -33,9 +33,12 @@ export function buildTranslationPrompt(englishReport: string, gender: string | u
     "Translate the following psychological pattern report into Russian.",
     `The user is ${genderDescription}.`,
     "Use grammatically correct Russian verb forms and adjectives that match the user's gender throughout (e.g. \"двигалась\" not \"двигался\" for a female user).",
+    "Use informal \"ты\" throughout, not formal \"вы\".",
+    "Do not split gendered words with a slash (умён/умна) — use gender-neutral constructions instead.",
     "Preserve all section headings, formatting, and structure exactly.",
     "Use the following Russian names for the quadrant states: BUILDING → СТРОЮ, PROTECTING → ЗАЩИЩАЮ, RECEIVING → ПРИНИМАЮ, ENDURING → ТЕРПЛЮ, SEEKING → ИЩУ, DRIFTING → ДРЕЙФУЮ, BRACING → СЖИМАЮСЬ, OPENING → ОТКРЫВАЮСЬ, STILL → ТИШИНА.",
     "Do not add, remove, or reinterpret any content — translate only.",
+    "Output only the Russian translation — do not include the original English text or any English.",
   ].join(" ");
 
   return `${instruction}\n\n${englishReport}`;

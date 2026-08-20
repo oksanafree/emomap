@@ -6,12 +6,7 @@ import { getMessaging } from "firebase-admin/messaging";
 import { getAdminApp, getAdminAuth, getAdminDb } from "@/lib/firebase-admin";
 import { computePatternVariables, type ReportEntry } from "@/lib/report-patterns";
 import { formatCustomTokens } from "@/lib/context-labels";
-import {
-  SYSTEM_PROMPT,
-  buildGenderInstruction,
-  buildReportUserMessage,
-  buildTranslationPrompt,
-} from "@/lib/report-prompt";
+import { SYSTEM_PROMPT, buildReportUserMessage, buildTranslationPrompt } from "@/lib/report-prompt";
 
 // Same verified Resend sending domain used by the welcome/reminder emails in
 // functions/src/index.ts.
@@ -166,7 +161,11 @@ export async function POST(request: NextRequest) {
   const maxTokens = reportType === "short" ? 1500 : 4000;
   const patterns = computePatternVariables(entriesChronological);
   const userMessage = buildReportUserMessage(patterns, entriesChronological, "en", reportType);
-  const systemPrompt = `${WRITING_STYLE}\n\n${SYSTEM_PROMPT}\n\n${buildGenderInstruction(userData?.gender)}`;
+  // English-only guard. Gender/Russian handling belongs to the separate
+  // translation step (buildTranslationPrompt) — injecting a "use Russian
+  // forms" instruction here made the model emit Russian inside the English
+  // report, so the stored report_en held both languages.
+  const systemPrompt = `${WRITING_STYLE}\n\n${SYSTEM_PROMPT}\n\nWrite this report entirely in English. Do not include any Russian text — the Russian version is produced separately by a later translation step.`;
 
   const anthropic = new Anthropic();
   let reportTextEn: string;
