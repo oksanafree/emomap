@@ -1,16 +1,33 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { deleteUser } from "firebase/auth";
-import { collection, deleteDoc, doc, getDocs, writeBatch } from "firebase/firestore";
+import { collection, deleteDoc, doc, getDoc, getDocs, setDoc, writeBatch } from "firebase/firestore";
 import { Link, useRouter } from "@/i18n/navigation";
+import { useAnonymousAuth } from "@/lib/use-anonymous-auth";
 import { db, getFirebaseAuth } from "@/lib/firebase";
 import { AuthGuard } from "@/components/AuthGuard";
 import checkinStyles from "@/styles/checkin-screen.module.css";
 import styles from "./settings.module.css";
 
 const BATCH_DELETE_SIZE = 450;
+
+type Gender = "f" | "m" | null;
+
+// Stored as "f" | "m" | null. Also normalizes the legacy signup values
+// ("female" | "male") so an existing profile shows the right selection.
+function normalizeGender(value: unknown): Gender {
+  if (value === "f" || value === "female") return "f";
+  if (value === "m" || value === "male") return "m";
+  return null;
+}
+
+const GENDER_OPTIONS: { value: Gender; key: "f" | "m" | "none" }[] = [
+  { value: "f", key: "f" },
+  { value: "m", key: "m" },
+  { value: null, key: "none" },
+];
 
 async function deleteAllUserData(uid: string) {
   const entriesSnap = await getDocs(collection(db, "users", uid, "entries"));
@@ -26,9 +43,39 @@ async function deleteAllUserData(uid: string) {
 function SettingsPageInner() {
   const t = useTranslations("Settings");
   const router = useRouter();
+  const { user } = useAnonymousAuth();
   const [showConfirm, setShowConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [gender, setGender] = useState<Gender>(null);
+  const [genderLoaded, setGenderLoaded] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    let cancelled = false;
+    getDoc(doc(db, "users", user.uid))
+      .then((snap) => {
+        if (cancelled) return;
+        setGender(normalizeGender(snap.data()?.gender));
+        setGenderLoaded(true);
+      })
+      .catch(() => {
+        if (!cancelled) setGenderLoaded(true);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
+
+  async function selectGender(value: Gender) {
+    if (!user) return;
+    setGender(value);
+    try {
+      await setDoc(doc(db, "users", user.uid), { gender: value }, { merge: true });
+    } catch (err) {
+      console.error("Failed to save gender", err);
+    }
+  }
 
   async function handleConfirmDelete() {
     const currentUser = getFirebaseAuth().currentUser;
@@ -62,6 +109,22 @@ function SettingsPageInner() {
         </div>
 
         <div className={styles.scroll}>
+          <div className={styles.section}>
+            <p className={styles.sectionLabel}>{t("genderLabel")}</p>
+            <p className={styles.sectionHint}>{t("genderHint")}</p>
+            <div className={styles.chips}>
+              {GENDER_OPTIONS.map(({ value, key }) => (
+                <div
+                  key={key}
+                  className={`${styles.chip} ${genderLoaded && gender === value ? styles.chipSelected : ""}`}
+                  onClick={() => selectGender(value)}
+                >
+                  {t(`gender.${key}`)}
+                </div>
+              ))}
+            </div>
+          </div>
+
           <div className={styles.section}>
             <p className={styles.sectionLabel}>{t("dangerZone")}</p>
             <p className={styles.sectionHint}>{t("deleteAccountHint")}</p>

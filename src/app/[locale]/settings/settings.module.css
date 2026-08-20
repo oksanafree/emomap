@@ -108,3 +108,26 @@
   opacity: 0.6;
   cursor: default;
 }
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.chip {
+  padding: 9px 16px;
+  border: 1px solid #d8d5ce;
+  border-radius: 18px;
+  background: #fff;
+  color: #2a2825;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.chipSelected {
+  border-color: #7c6cf0;
+  background: #efecff;
+  color: #4a3fa0;
+}

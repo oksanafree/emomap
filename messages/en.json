@@ -336,6 +336,13 @@
   },
   "Settings": {
     "navTitle": "Settings",
+    "genderLabel": "Gender",
+    "genderHint": "Used to match grammatical forms in your Russian report.",
+    "gender": {
+      "f": "Feminine",
+      "m": "Masculine",
+      "none": "Prefer not to say"
+    },
     "dangerZone": "Danger zone",
     "deleteAccountHint": "Permanently delete your account and all check-in data.",
     "deleteAccountButton": "Delete Account",

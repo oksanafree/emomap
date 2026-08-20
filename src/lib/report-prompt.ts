@@ -8,13 +8,15 @@ export const SYSTEM_PROMPT = fs.readFileSync(
 );
 
 export function buildGenderInstruction(gender: string | undefined): string {
-  if (gender === "female") {
-    return "The user is female. In Russian, use feminine grammatical forms throughout (чувствовала, была, уверена, etc.)";
+  // Accepts the current Settings values ("f"/"m"/null) and the legacy signup
+  // values ("female"/"male"); anything else is treated as unspecified.
+  if (gender === "f" || gender === "female") {
+    return "The user is female. Use feminine grammatical forms throughout (ощущала, чувствовала, одна, etc.).";
   }
-  if (gender === "male") {
-    return "The user is male. Use masculine forms (чувствовал, был, уверен, etc.)";
+  if (gender === "m" || gender === "male") {
+    return "The user is male. Use masculine grammatical forms throughout (ощущал, чувствовал, один, etc.).";
   }
-  return "Use gender-neutral or plural forms where possible in Russian.";
+  return "The user's gender is unspecified. Use gender-neutral constructions; do not assume a gender.";
 }
 
 // The Russian report is written independently from the same check-in data (not
