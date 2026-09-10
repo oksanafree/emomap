@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { subscribeUserToPush } from "@/lib/notifications";
+import { subscribeUserToPush, isNativePushWrapper } from "@/lib/notifications";
 import { isIOS, isStandalonePwa } from "@/lib/platform";
 import styles from "./notification-prompt.module.css";
 
@@ -31,7 +31,12 @@ export function NotificationPrompt({ onClose }: NotificationPromptProps) {
       // Web push requires the app to be installed to the home screen on iOS
       // Safari — getToken() will always fail in a plain browser tab there,
       // so point the user at the install step instead of a generic error.
-      setError(isIOS() && !isStandalonePwa() ? "iosBrowser" : "generic");
+      // Inside the native wrapper push goes through the native bridge, not
+      // home-screen web push, so the "install to home screen" hint never
+      // applies there — fall back to the generic error instead.
+      setError(
+        isIOS() && !isStandalonePwa() && !isNativePushWrapper() ? "iosBrowser" : "generic",
+      );
     }
   }
 

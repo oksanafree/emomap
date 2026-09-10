@@ -2,7 +2,48 @@ import { getMessaging, getToken } from "firebase/messaging";
 import { arrayUnion, doc, getDoc, setDoc } from "firebase/firestore";
 import { firebaseApp, db, getFirebaseAuth } from "./firebase";
 
+type PushMessageHandler = { postMessage: (message: unknown) => void };
+
+// The native iOS Xcode wrapper injects WKScriptMessageHandlers onto
+// window.webkit.messageHandlers. When they're present we're running inside
+// the wrapper's WKWebView (not a Safari tab / home-screen PWA), so push must
+// go through the native bridge — Firebase FCM web push is unavailable there.
+function getNativePushHandlers(): Record<string, PushMessageHandler> | null {
+  if (typeof window === "undefined") return null;
+  const handlers = (
+    window as unknown as {
+      webkit?: { messageHandlers?: Record<string, PushMessageHandler> };
+    }
+  ).webkit?.messageHandlers;
+  if (handlers?.["push-permission-request"] && handlers?.["push-subscribe"]) {
+    return handlers;
+  }
+  return null;
+}
+
+// True when the app is running inside the native iOS wrapper, where push is
+// handled by the native bridge rather than Firebase FCM web push.
+export function isNativePushWrapper(): boolean {
+  return getNativePushHandlers() !== null;
+}
+
 export async function subscribeUserToPush(): Promise<boolean> {
+  const nativeHandlers = getNativePushHandlers();
+  if (nativeHandlers) {
+    try {
+      // Fire-and-forget to the native wrapper: request OS permission, then
+      // subscribe. The wrapper owns the APNs token and persists it server-side
+      // once the user grants permission, so there's no token to write here.
+      nativeHandlers["push-permission-request"].postMessage({});
+      nativeHandlers["push-subscribe"].postMessage({});
+      console.log("[subscribeUserToPush] native wrapper -> posted push-permission-request + push-subscribe");
+      return true;
+    } catch (err) {
+      console.error("[subscribeUserToPush] native wrapper bridge failed:", err);
+      return false;
+    }
+  }
+
   try {
     const vapidKey = process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY;
     console.log(
