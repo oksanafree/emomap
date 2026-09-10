@@ -210,7 +210,8 @@
       "study": "Study",
       "move": "Move",
       "connect": "Connect",
-      "rest": "Rest"
+      "rest": "Rest",
+      "other": "Other"
     },
     "activityNotePlaceholder": "What exactly?",
     "socialQuestion": "Who were you with?",

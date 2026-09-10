@@ -6,6 +6,7 @@ const ACTIVITY_LABELS: Record<ActivityKey, string> = {
   move: "Move",
   connect: "Connect",
   rest: "Rest",
+  other: "Other",
 };
 
 const SOCIAL_LABELS: Record<SocialKey, string> = {

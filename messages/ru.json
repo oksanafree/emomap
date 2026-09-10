@@ -210,7 +210,8 @@
       "study": "Учёба",
       "move": "Движение",
       "connect": "Общение",
-      "rest": "Отдых"
+      "rest": "Отдых",
+      "other": "Другое"
     },
     "activityNotePlaceholder": "Что именно?",
     "socialQuestion": "С кем ты был?",
