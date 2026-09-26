@@ -161,6 +161,23 @@
   cursor: pointer;
 }
 
+.forgot {
+  background: none;
+  border: none;
+  color: #6868b0;
+  font-size: 13px;
+  text-align: center;
+  cursor: pointer;
+  margin-top: -12px;
+}
+
+.resetMessage {
+  font-size: 14px;
+  color: #b8b4e0;
+  text-align: center;
+  line-height: 1.6;
+}
+
 .profileQ {
   display: flex;
   flex-direction: column;

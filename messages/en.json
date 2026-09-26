@@ -371,6 +371,11 @@
     "submitting": "Please wait…",
     "toggleToLogin": "Already have an account? Log in",
     "toggleToSignup": "New here? Create account",
+    "forgotPassword": "Forgot password?",
+    "resetHeadline": "Reset password",
+    "sendReset": "Send reset link",
+    "resetSent": "We've sent a password reset link to your email. Check your inbox.",
+    "backToLogin": "Back to log in",
     "errors": {
       "emailInUse": "Email already in use",
       "wrongPassword": "Wrong password",

@@ -7,6 +7,7 @@ import {
   createUserWithEmailAndPassword,
   EmailAuthProvider,
   linkWithCredential,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
   type User,
 } from "firebase/auth";
@@ -17,7 +18,7 @@ import { AGE_RANGE_KEYS, GENDER_KEYS, type AgeRangeKey, type GenderKey } from "@
 import styles from "./auth.module.css";
 
 type Mode = "signup" | "login";
-type Step = "form" | "profile";
+type Step = "form" | "profile" | "reset";
 
 const CONSENT_POLICY_VERSION = "2026-07";
 
@@ -40,6 +41,7 @@ function AuthPageInner() {
   const [profileSaving, setProfileSaving] = useState(false);
   const [consentTermsPrivacy, setConsentTermsPrivacy] = useState(false);
   const [consentDataProcessing, setConsentDataProcessing] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
 
   const allConsentsChecked = consentTermsPrivacy && consentDataProcessing;
 
@@ -157,6 +159,33 @@ function AuthPageInner() {
   function toggleMode() {
     setMode((m) => (m === "signup" ? "login" : "signup"));
     setError(null);
+  }
+
+  function goToReset() {
+    setError(null);
+    setResetSent(false);
+    setStep("reset");
+  }
+
+  function backToLogin() {
+    setError(null);
+    setResetSent(false);
+    setMode("login");
+    setStep("form");
+  }
+
+  async function handleSendReset(e: FormEvent) {
+    e.preventDefault();
+    setError(null);
+    setSubmitting(true);
+    try {
+      await sendPasswordResetEmail(getFirebaseAuth(), email);
+      setResetSent(true);
+    } catch (err) {
+      setError(mapError((err as { code?: string }).code));
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   async function handleProfileContinue() {
@@ -279,9 +308,52 @@ function AuthPageInner() {
             </button>
           </form>
 
+          {mode === "login" && (
+            <button type="button" className={styles.forgot} onClick={goToReset}>
+              {t("forgotPassword")}
+            </button>
+          )}
+
           <button type="button" className={styles.toggle} onClick={toggleMode}>
             {mode === "signup" ? t("toggleToLogin") : t("toggleToSignup")}
           </button>
+        </div>
+      ) : step === "reset" ? (
+        <div className={styles.content}>
+          <h1 className={styles.headline}>{t("resetHeadline")}</h1>
+
+          {resetSent ? (
+            <>
+              <p className={styles.resetMessage}>{t("resetSent")}</p>
+              <button type="button" className={styles.submit} onClick={backToLogin}>
+                {t("backToLogin")}
+              </button>
+            </>
+          ) : (
+            <>
+              <form className={styles.form} onSubmit={handleSendReset}>
+                <input
+                  type="email"
+                  required
+                  autoComplete="email"
+                  placeholder={t("emailPlaceholder")}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className={styles.input}
+                />
+
+                {error && <p className={styles.error}>{error}</p>}
+
+                <button type="submit" className={styles.submit} disabled={submitting}>
+                  {submitting ? t("submitting") : t("sendReset")}
+                </button>
+              </form>
+
+              <button type="button" className={styles.toggle} onClick={backToLogin}>
+                {t("backToLogin")}
+              </button>
+            </>
+          )}
         </div>
       ) : (
         <div className={styles.content}>
