@@ -265,3 +265,87 @@ export const sendInstallPromptEmail = onDocumentCreated(
     }
   },
 );
+
+const DAILY_CHECKIN_PUSH_CONTENT: Record<Locale, { title: string; body: string }> = {
+  en: {
+    title: "Emomapp",
+    body: "How are you feeling right now? Take a moment to check in.",
+  },
+  ru: {
+    title: "Emomapp",
+    body: "Как ты сейчас? Сделай отметку.",
+  },
+};
+
+// Daily nudge to every opted-in user to log a check-in. Unlike sendReminders,
+// this is unconditional (no recency/activity gating) — it fires for all users
+// with notifications_enabled === true.
+async function sendDailyCheckInPush() {
+  const db = getFirestore();
+  const messaging = getMessaging();
+
+  const usersSnapshot = await db
+    .collection("users")
+    .where("notifications_enabled", "==", true)
+    .get();
+
+  let notifiedUsers = 0;
+  let cleanedTokens = 0;
+
+  await Promise.all(
+    usersSnapshot.docs.map(async (userDoc) => {
+      const data = userDoc.data();
+
+      const tokensArray = (data.fcm_tokens as string[] | undefined) ?? [];
+      const legacyToken = data.fcm_token as string | undefined;
+      const usingLegacyTokenOnly = tokensArray.length === 0 && !!legacyToken;
+      const fcmTokens = tokensArray.length > 0 ? tokensArray : legacyToken ? [legacyToken] : [];
+
+      if (fcmTokens.length === 0) return;
+
+      const content = DAILY_CHECKIN_PUSH_CONTENT[resolveLocale(data.locale)];
+
+      const response = await messaging.sendEachForMulticast({
+        tokens: fcmTokens,
+        notification: { title: content.title, body: content.body },
+        data: { url: "/history" },
+      });
+
+      if (response.successCount > 0) notifiedUsers += 1;
+
+      const staleTokens: string[] = [];
+      response.responses.forEach((res, index) => {
+        if (res.success) return;
+        const code = res.error?.code;
+        if (
+          code === "messaging/registration-token-not-registered" ||
+          code === "messaging/invalid-registration-token"
+        ) {
+          staleTokens.push(fcmTokens[index]);
+        } else {
+          logger.error(`Failed to send daily check-in push to ${userDoc.id}`, res.error);
+        }
+      });
+
+      if (staleTokens.length > 0) {
+        if (usingLegacyTokenOnly) {
+          await userDoc.ref.update({ fcm_token: FieldValue.delete() });
+        } else {
+          await userDoc.ref.update({ fcm_tokens: FieldValue.arrayRemove(...staleTokens) });
+        }
+        cleanedTokens += staleTokens.length;
+      }
+    }),
+  );
+
+  logger.info(
+    `Daily check-in push complete: notified ${notifiedUsers} users, cleaned up ${cleanedTokens} stale tokens`,
+  );
+}
+
+export const dailyCheckInPush = onSchedule(
+  { schedule: "0 14 * * *", timeZone: "UTC" },
+  async () => {
+    await sendDailyCheckInPush();
+  },
+);
