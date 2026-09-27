@@ -266,21 +266,21 @@ export const sendInstallPromptEmail = onDocumentCreated(
   },
 );
 
-const DAILY_CHECKIN_PUSH_CONTENT: Record<Locale, { title: string; body: string }> = {
+const CHECKIN_PUSH_CONTENT: Record<Locale, { title: string; body: string }> = {
   en: {
     title: "Emomapp",
-    body: "How are you feeling right now? Take a moment to check in.",
+    body: "How are you feeling now? Take a moment to check in.",
   },
   ru: {
     title: "Emomapp",
-    body: "Как ты сейчас? Сделай отметку.",
+    body: "Как ты сейчас? Отметь на Эмокарте.",
   },
 };
 
-// Daily nudge to every opted-in user to log a check-in. Unlike sendReminders,
-// this is unconditional (no recency/activity gating) — it fires for all users
-// with notifications_enabled === true.
-async function sendDailyCheckInPush() {
+// Nudge every opted-in user to log a check-in. Unlike sendReminders, this is
+// unconditional (no recency/activity gating) — it fires for all users with
+// notifications_enabled === true. Shared by the morning and evening schedules.
+async function sendCheckInToAllUsers() {
   const db = getFirestore();
   const messaging = getMessaging();
 
@@ -303,7 +303,7 @@ async function sendDailyCheckInPush() {
 
       if (fcmTokens.length === 0) return;
 
-      const content = DAILY_CHECKIN_PUSH_CONTENT[resolveLocale(data.locale)];
+      const content = CHECKIN_PUSH_CONTENT[resolveLocale(data.locale)];
 
       const response = await messaging.sendEachForMulticast({
         tokens: fcmTokens,
@@ -323,7 +323,7 @@ async function sendDailyCheckInPush() {
         ) {
           staleTokens.push(fcmTokens[index]);
         } else {
-          logger.error(`Failed to send daily check-in push to ${userDoc.id}`, res.error);
+          logger.error(`Failed to send check-in push to ${userDoc.id}`, res.error);
         }
       });
 
@@ -339,13 +339,20 @@ async function sendDailyCheckInPush() {
   );
 
   logger.info(
-    `Daily check-in push complete: notified ${notifiedUsers} users, cleaned up ${cleanedTokens} stale tokens`,
+    `Check-in push complete: notified ${notifiedUsers} users, cleaned up ${cleanedTokens} stale tokens`,
   );
 }
 
-export const dailyCheckInPush = onSchedule(
-  { schedule: "0 14 * * *", timeZone: "UTC" },
+export const sendMorningCheckIn = onSchedule(
+  { schedule: "0 10 * * *", timeZone: "UTC" },
   async () => {
-    await sendDailyCheckInPush();
+    await sendCheckInToAllUsers();
+  },
+);
+
+export const sendEveningCheckIn = onSchedule(
+  { schedule: "30 17 * * *", timeZone: "UTC" },
+  async () => {
+    await sendCheckInToAllUsers();
   },
 );
